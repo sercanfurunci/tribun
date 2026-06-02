@@ -29,7 +29,10 @@ export function Navbar() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        <div className="max-w-7xl mx-auto px-5 sm:px-7 lg:px-10">
+        <div
+          className="px-6 sm:px-8 lg:px-12"
+          style={{ maxWidth: '1200px', marginLeft: 'auto', marginRight: 'auto' }}
+        >
           <div className="flex h-14 items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 shrink-0 group">

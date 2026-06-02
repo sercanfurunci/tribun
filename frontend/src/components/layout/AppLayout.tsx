@@ -5,7 +5,10 @@ export function AppLayout() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="mx-auto w-full max-w-7xl px-5 sm:px-7 lg:px-10 py-6 sm:py-8 pb-28 md:pb-12">
+      <main
+        className="w-full px-6 sm:px-8 lg:px-12 py-8 sm:py-10 pb-28 md:pb-14"
+        style={{ maxWidth: '1200px', marginLeft: 'auto', marginRight: 'auto' }}
+      >
         <Outlet />
       </main>
     </div>
