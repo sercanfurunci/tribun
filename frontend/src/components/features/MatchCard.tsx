@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { enUS, tr as trLocale } from 'date-fns/locale';
 import { Badge } from '../ui/Badge';
 import { Match } from '../../types';
-import { useT } from '../../store/language';
+import { useLanguageStore, useT } from '../../store/language';
+import { formatMatchDay, formatTeamName } from '../../lib/matchDisplay';
 import type { TranslationKey } from '../../i18n/translations';
 
 interface MatchCardProps {
@@ -57,11 +59,16 @@ function TeamBlock({ logo, name, score, isLive }: {
 
 export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
   const t = useT();
+  const lang = useLanguageStore((s) => s.lang);
+  const dateLocale = lang === 'tr' ? trLocale : enUS;
   const { key, variant } = statusConfig[match.status];
   const label = t(key);
   const isLive = match.status === 'live';
   const isFinished = match.status === 'finished';
   const showScore = isLive || isFinished;
+  const homeTeam = formatTeamName(match.home_team, lang);
+  const awayTeam = formatTeamName(match.away_team, lang);
+  const matchDay = formatMatchDay(match.match_day, lang);
 
   return (
     <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`} className="block match-card-link">
@@ -72,15 +79,15 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
         <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-4 pb-3">
           <Badge variant={variant}>{label}</Badge>
           <div className="text-right min-w-0">
-            {match.match_day && (
+            {matchDay && (
               <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] truncate font-heading">
-                {match.match_day}
+                {matchDay}
               </p>
             )}
             <p className="text-[11px] text-slate-400 tabular-nums sm:text-xs">
               {showScore
-                ? format(new Date(match.kickoff_time), 'dd MMM yyyy')
-                : format(new Date(match.kickoff_time), 'dd MMM · HH:mm')}
+                ? format(new Date(match.kickoff_time), 'dd MMM yyyy', { locale: dateLocale })
+                : format(new Date(match.kickoff_time), 'dd MMM · HH:mm', { locale: dateLocale })}
             </p>
           </div>
         </div>
@@ -88,7 +95,7 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
         <div className="px-4 pb-5 sm:px-5 sm:pb-6">
           {showScore ? (
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-              <TeamBlock logo={match.home_team_logo} name={match.home_team} />
+              <TeamBlock logo={match.home_team_logo} name={homeTeam} />
               <div className="flex flex-col items-center justify-center gap-1.5 shrink-0 px-1">
                 <div className="flex items-baseline gap-1">
                   <span
@@ -109,11 +116,11 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
                   <span className="text-[10px] font-bold text-red-400 live-indicator">● LIVE</span>
                 )}
               </div>
-              <TeamBlock logo={match.away_team_logo} name={match.away_team} />
+              <TeamBlock logo={match.away_team_logo} name={awayTeam} />
             </div>
           ) : (
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-              <TeamBlock logo={match.home_team_logo} name={match.home_team} />
+              <TeamBlock logo={match.home_team_logo} name={homeTeam} />
               <div className="flex flex-col items-center justify-center shrink-0 px-1 gap-1">
                 <span className="h-px w-6 bg-white/10" />
                 <span className="font-heading text-[10px] font-bold tracking-[0.25em] text-slate-600 uppercase">
@@ -121,10 +128,10 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
                 </span>
                 <span className="h-px w-6 bg-white/10" />
                 <span className="text-[10px] tabular-nums text-green-400">
-                  {format(new Date(match.kickoff_time), 'HH:mm')}
+                  {format(new Date(match.kickoff_time), 'HH:mm', { locale: dateLocale })}
                 </span>
               </div>
-              <TeamBlock logo={match.away_team_logo} name={match.away_team} />
+              <TeamBlock logo={match.away_team_logo} name={awayTeam} />
             </div>
           )}
 

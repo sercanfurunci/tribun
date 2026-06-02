@@ -24,15 +24,15 @@ function ScoreInput({
   label: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 flex-1">
-      <label className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest text-center truncate w-full max-w-[90px]">
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-3 rounded-[24px] border border-white/8 bg-[#0F172A] px-4 py-4 shadow-[0_10px_28px_-20px_rgba(0,0,0,0.75)]">
+      <label className="w-full truncate text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
         {label}
       </label>
-      <div className="flex flex-col items-center gap-1">
+      <div className="flex flex-col items-center gap-1.5">
         <button
           type="button"
           onClick={() => onChange(String(Math.min(99, Number(value || 0) + 1)))}
-          className="size-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/8 transition-all text-lg leading-none"
+          className="grid size-9 place-items-center rounded-xl border border-white/8 bg-white/[0.04] text-slate-400 transition-[background-color,color,transform,border-color] duration-150 hover:border-white/12 hover:bg-white/[0.08] hover:text-white active:scale-95"
         >
           ▲
         </button>
@@ -42,14 +42,14 @@ function ScoreInput({
           max="99"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-20 h-16 text-center font-score text-4xl text-white bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/40 focus:bg-white/8 transition-all"
+          className="w-20 h-16 rounded-[18px] border border-white/10 bg-[#0B1220] text-center font-score text-4xl text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-[background-color,border-color,box-shadow] duration-150 focus:border-green-500/45 focus:bg-[#0E1728] focus:outline-none focus:ring-2 focus:ring-green-500/35"
           placeholder="0"
           required
         />
         <button
           type="button"
           onClick={() => onChange(String(Math.max(0, Number(value || 0) - 1)))}
-          className="size-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/8 transition-all text-lg leading-none"
+          className="grid size-9 place-items-center rounded-xl border border-white/8 bg-white/[0.04] text-slate-400 transition-[background-color,color,transform,border-color] duration-150 hover:border-white/12 hover:bg-white/[0.08] hover:text-white active:scale-95"
         >
           ▼
         </button>
@@ -81,8 +81,7 @@ export function PredictionForm({
   if (isLocked) {
     return (
       <div
-        className="flex items-center gap-2 text-sm text-slate-500 px-4 py-3 rounded-xl"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+        className="flex items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-slate-500"
       >
         <svg className="size-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -94,17 +93,25 @@ export function PredictionForm({
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="space-y-5">
-      <div className="flex items-center gap-4">
-        <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
-        <div className="flex flex-col items-center gap-1 pb-8">
-          <span className="font-score text-3xl text-slate-700 leading-none">–</span>
+      <div className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#12213A] via-[#0F172A] to-[#0B1220] px-4 py-5 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.8)] sm:px-5">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80">Prediction</p>
+          <p className="text-xs text-slate-500">Set the final scoreline</p>
         </div>
-        <ScoreInput value={awayScore} onChange={setAwayScore} label={awayName} />
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
+          <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
+          <div className="flex items-center justify-center">
+            <div className="flex size-12 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04] font-score text-lg text-slate-500 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.7)]">
+              VS
+            </div>
+          </div>
+          <ScoreInput value={awayScore} onChange={setAwayScore} label={awayName} />
+        </div>
       </div>
       <Button
         type="submit"
         loading={mutation.isPending}
-        className="w-full"
+        className="w-full shadow-[0_14px_32px_-18px_rgba(34,197,94,0.9)]"
         size="lg"
       >
         {initialHome !== undefined ? 'Update Prediction' : 'Save Prediction'}

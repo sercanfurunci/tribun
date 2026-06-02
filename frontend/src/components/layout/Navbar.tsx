@@ -1,4 +1,5 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/auth';
 import { useLanguageStore, useT } from '../../store/language';
 import { Icon, type IconName } from '../ui/Icon';
@@ -8,6 +9,8 @@ export function Navbar() {
   const { lang, toggle } = useLanguageStore();
   const t = useT();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const NAV_LINKS: { to: string; label: string; icon: IconName }[] = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: 'zap' },
@@ -19,7 +22,19 @@ export function Navbar() {
   function handleLogout() {
     clearAuth();
     navigate('/login');
+    setMobileMenuOpen(false);
   }
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   return (
     <>
@@ -36,6 +51,7 @@ export function Navbar() {
           <button
             type="button"
             aria-label="Open navigation"
+            onClick={() => setMobileMenuOpen(true)}
             className="inline-flex size-10 items-center justify-center rounded-xl text-slate-300 hover:bg-white/5 hover:text-white"
           >
             <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -80,8 +96,110 @@ export function Navbar() {
         </div>
       </header>
 
+      {isAuthenticated && mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            type="button"
+            aria-label="Close navigation"
+            onClick={() => setMobileMenuOpen(false)}
+            className="absolute inset-0 bg-black/70 backdrop-blur-[3px]"
+          />
+          <aside
+            className="absolute left-0 top-0 h-full w-[86%] max-w-[320px] border-r border-white/8 bg-[#060D1A]/98 px-4 py-5 shadow-[20px_0_60px_-30px_rgba(0,0,0,0.8)]"
+            style={{
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+            }}
+          >
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between gap-3">
+                <Link to="/dashboard" className="flex items-center gap-2.5 px-1">
+                  <div
+                    className="size-9 rounded-xl flex items-center justify-center font-heading font-bold text-base text-white"
+                    style={{
+                      background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
+                      boxShadow: '0 0 16px rgba(22,163,74,0.45)',
+                    }}
+                  >
+                    T
+                  </div>
+                  <span className="font-heading font-bold text-base text-white tracking-tight">Tribün</span>
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Close navigation"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex size-10 items-center justify-center rounded-xl text-slate-300 hover:bg-white/5 hover:text-white"
+                >
+                  <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="mt-5 flex items-center gap-2">
+                <button
+                  onClick={toggle}
+                  aria-label="Toggle language"
+                  className="inline-flex items-center gap-1 rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-white"
+                >
+                  <span className={lang === 'tr' ? 'text-green-400' : ''}>TR</span>
+                  <span className="text-slate-700">/</span>
+                  <span className={lang === 'en' ? 'text-green-400' : ''}>EN</span>
+                </button>
+                <span className="text-[10px] uppercase tracking-[0.28em] text-slate-600">{t('common.tagline')}</span>
+              </div>
+
+              <nav className="mt-6 flex flex-col gap-1">
+                {NAV_LINKS.map(({ to, label, icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'bg-green-600/12 text-green-400'
+                          : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      }`
+                    }
+                  >
+                    <Icon name={icon} size={18} />
+                    {label}
+                  </NavLink>
+                ))}
+              </nav>
+
+              <div className="mt-auto space-y-3 pt-6">
+                <div className="rounded-2xl border border-white/8 bg-[#0B1220] p-4">
+                  <Link to="/profile" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
+                    <div
+                      className="size-10 rounded-xl flex items-center justify-center text-sm font-bold text-white font-heading shrink-0"
+                      style={{ background: 'linear-gradient(135deg, #16a34a, #15803d)' }}
+                    >
+                      {user?.username?.[0]?.toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-white">{user?.username}</p>
+                      <p className="text-xs text-slate-500">{t('nav.profile')}</p>
+                    </div>
+                  </Link>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/8 bg-[#0B1220] px-4 py-3 text-sm font-semibold text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-red-400"
+                >
+                  <Icon name="log-out" size={16} />
+                  {t('nav.logout')}
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
       <aside
-        className="sticky top-0 hidden h-screen shrink-0 border-r border-white/8 bg-[#060D1A]/95 px-4 py-6 lg:flex lg:flex-col"
+        className="sticky top-0 hidden h-[calc(100vh-2rem)] shrink-0 border-r border-white/8 bg-[#060D1A]/95 px-4 py-6 lg:flex lg:flex-col"
         style={{
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
@@ -100,7 +218,23 @@ export function Navbar() {
           <span className="font-heading text-lg font-bold text-white tracking-tight">Tribün</span>
         </Link>
 
-        <nav className="mt-8 flex flex-col gap-1">
+        <div className="mt-6 rounded-2xl border border-white/8 bg-[#0B1220] px-3 py-3 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.75)]">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-600">{t('common.language')}</span>
+            <button
+              onClick={toggle}
+              aria-label="Toggle language"
+              className="inline-flex items-center gap-1 rounded-xl border border-white/8 bg-white/[0.04] px-4 py-2 text-[12px] font-bold uppercase tracking-wider text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-white"
+            >
+              <span className={lang === 'tr' ? 'text-green-400' : ''}>TR</span>
+              <span className="text-slate-700">/</span>
+              <span className={lang === 'en' ? 'text-green-400' : ''}>EN</span>
+            </button>
+          </div>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.26em] text-slate-700">{t('common.tagline')}</p>
+        </div>
+
+        <nav className="mt-6 flex flex-col gap-1">
           {NAV_LINKS.map(({ to, label, icon }) => (
             <NavLink
               key={to}
@@ -119,8 +253,8 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="mt-auto space-y-3">
-          <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+        <div className="mt-auto space-y-3 pt-6">
+          <div className="rounded-2xl border border-white/8 bg-[#0F172A] p-4 shadow-[0_10px_30px_-22px_rgba(0,0,0,0.8)]">
             <Link to="/profile" className="flex items-center gap-3">
               <div
                 className="size-10 rounded-xl flex items-center justify-center text-sm font-bold text-white font-heading shrink-0"
@@ -137,7 +271,7 @@ export function Navbar() {
 
           <button
             onClick={handleLogout}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/8 px-4 py-3 text-sm font-semibold text-slate-400 transition-colors hover:bg-white/5 hover:text-red-400"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/8 bg-[#0F172A] px-4 py-3 text-sm font-semibold text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-red-400"
           >
             <Icon name="log-out" size={16} />
             {t('nav.logout')}
@@ -145,51 +279,6 @@ export function Navbar() {
         </div>
       </aside>
 
-      {/* Mobile bottom nav — FLOATING PILL with margin from edges */}
-      {isAuthenticated && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none lg:hidden"
-          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)' }}
-        >
-          <nav
-            className="pointer-events-auto mx-4 flex items-center rounded-2xl px-1 py-1"
-            style={{
-              background: 'rgba(8, 16, 32, 0.92)',
-              backdropFilter: 'blur(28px)',
-              WebkitBackdropFilter: 'blur(28px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 16px 48px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset',
-            }}
-          >
-            {NAV_LINKS.map(({ to, label, icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl transition-all duration-200 ${
-                    isActive
-                      ? 'text-green-400 bg-green-600/12'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon
-                      name={icon}
-                      size={20}
-                      style={isActive ? { filter: 'drop-shadow(0 0 6px rgba(74,222,128,0.55))' } : undefined}
-                    />
-                    <span className="text-[9.5px] font-bold font-heading tracking-wide leading-none uppercase">
-                      {label}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      )}
     </>
   );
 }

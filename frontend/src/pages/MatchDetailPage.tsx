@@ -12,6 +12,7 @@ import { Spinner } from '../components/ui/Spinner';
 import { useAuthStore } from '../store/auth';
 import { useLanguageStore, useT } from '../store/language';
 import { Icon, type IconName } from '../components/ui/Icon';
+import { formatMatchDay, formatTeamName } from '../lib/matchDisplay';
 import type { TranslationKey } from '../i18n/translations';
 
 const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'blue' | 'live' | 'slate' | 'yellow' }> = {
@@ -119,6 +120,9 @@ export default function MatchDetailPage() {
   const variant = statusEntry.variant;
   const isLive = match.status === 'live';
   const showScore = match.status === 'finished' || isLive;
+  const homeTeam = formatTeamName(match.home_team, lang);
+  const awayTeam = formatTeamName(match.away_team, lang);
+  const matchDay = formatMatchDay(match.match_day, lang);
 
   return (
     <div className="space-y-5 animate-fade-up">
@@ -165,7 +169,7 @@ export default function MatchDetailPage() {
                 }
               </div>
               <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
-                {match.home_team}
+                {homeTeam}
               </span>
             </div>
 
@@ -217,16 +221,16 @@ export default function MatchDetailPage() {
                 }
               </div>
               <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
-                {match.away_team}
+                {awayTeam}
               </span>
             </div>
           </div>
 
           {/* Match meta */}
-          {(match.venue || match.match_day) && (
+          {(match.venue || matchDay) && (
             <div className="flex items-center justify-center gap-4 mt-6 flex-wrap">
-              {match.match_day && (
-                <span className="text-xs text-slate-600 uppercase tracking-widest font-heading">{match.match_day}</span>
+              {matchDay && (
+                <span className="text-xs text-slate-600 uppercase tracking-widest font-heading">{matchDay}</span>
               )}
               {match.venue && (
                 <span className="inline-flex items-center gap-1 text-xs text-slate-600">
@@ -246,10 +250,15 @@ export default function MatchDetailPage() {
 
         {/* Prediction section */}
         <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+          className="rounded-[24px] overflow-hidden"
+          style={{
+            background: 'linear-gradient(180deg, rgba(18,30,52,0.96) 0%, rgba(12,22,40,0.98) 100%)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 10px 30px -18px rgba(0,0,0,0.55)',
+          }}
         >
           <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80 mb-1">{t('matchDetail.sectionHint')}</p>
             <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.yourPrediction')}</h2>
           </div>
           <div className="p-5">
@@ -262,8 +271,8 @@ export default function MatchDetailPage() {
                 initialHome={myPrediction?.predicted_home_score}
                 initialAway={myPrediction?.predicted_away_score}
                 isLocked={isLocked}
-                homeName={match.home_team}
-                awayName={match.away_team}
+                homeName={homeTeam}
+                awayName={awayTeam}
               />
             ) : (
               <div>
@@ -298,11 +307,11 @@ export default function MatchDetailPage() {
               {apiPrediction.advice && (
                 <p className="text-sm text-slate-300 italic">"{apiPrediction.advice}"</p>
               )}
-              <div className="grid grid-cols-3 gap-3 text-center">
-                {[
-                  { label: match.home_team, value: apiPrediction.percent.home, color: 'text-blue-400' },
+            <div className="grid grid-cols-3 gap-3 text-center">
+              {[
+                  { label: homeTeam, value: apiPrediction.percent.home, color: 'text-blue-400' },
                   { label: t('matchDetail.draw'), value: apiPrediction.percent.draw, color: 'text-slate-400' },
-                  { label: match.away_team, value: apiPrediction.percent.away, color: 'text-green-400' },
+                  { label: awayTeam, value: apiPrediction.percent.away, color: 'text-green-400' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex flex-col gap-2">
                     <span className={`font-score text-2xl leading-none ${color}`}>{value}</span>
@@ -378,7 +387,7 @@ export default function MatchDetailPage() {
               return (
                 <div key={teamName} className="p-5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading mb-3">
-                    {teamName}
+                    {formatTeamName(teamName, lang)}
                   </p>
                   {list.length === 0 ? (
                     <p className="text-xs text-slate-600">{t('matchDetail.noInjuries')}</p>

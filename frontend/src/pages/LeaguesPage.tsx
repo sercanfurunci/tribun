@@ -57,7 +57,9 @@ export default function LeaguesPage() {
           <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white">{t('leagues.title')}</h1>
           <p className="text-slate-500 text-sm mt-1">{t('leagues.subtitle')}</p>
         </div>
-        <div className="flex gap-2">
+        <div
+          className="flex flex-wrap gap-2 rounded-[20px] border border-white/8 bg-[#0B1220] p-2 shadow-[0_10px_28px_-20px_rgba(0,0,0,0.7)]"
+        >
           <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>
             {t('leagues.joinWithCode')}
           </Button>
@@ -97,7 +99,7 @@ export default function LeaguesPage() {
       )}
 
       {/* Create modal */}
-      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title={t('leagues.createModal.title')}>
+      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title={t('leagues.createModal.title')} size="lg">
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
             id="league-name"
@@ -130,7 +132,7 @@ export default function LeaguesPage() {
       </Modal>
 
       {/* Join modal */}
-      <Modal isOpen={showJoin} onClose={() => setShowJoin(false)} title={t('leagues.joinModal.title')}>
+      <Modal isOpen={showJoin} onClose={() => setShowJoin(false)} title={t('leagues.joinModal.title')} size="lg">
         <form onSubmit={(e) => { e.preventDefault(); joinMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
             id="invite-code"

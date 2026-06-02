@@ -146,6 +146,7 @@ export const translations = {
     'matchDetail.upcoming': 'Upcoming',
     'matchDetail.postponed': 'Postponed',
     'matchDetail.yourPrediction': 'Your Prediction',
+    'matchDetail.sectionHint': 'Pick a league and set your score',
     'matchDetail.joinLeagueFirst': 'Join a league to make predictions',
     'matchDetail.selectLeague': 'Select a league to predict:',
     'matchDetail.aiPrediction': 'AI Match Prediction',
@@ -177,6 +178,7 @@ export const translations = {
     // Common
     'common.loading': 'Loading',
     'common.tagline': 'Predict · Compete · Conquer',
+    'common.language': 'Language',
     'common.notFound': 'Not found',
   },
   tr: {
@@ -324,6 +326,7 @@ export const translations = {
     'matchDetail.upcoming': 'Yaklaşan',
     'matchDetail.postponed': 'Ertelendi',
     'matchDetail.yourPrediction': 'Tahminin',
+    'matchDetail.sectionHint': 'Bir lig seç ve skorunu gir',
     'matchDetail.joinLeagueFirst': 'Tahmin yapmak için bir lige katıl',
     'matchDetail.selectLeague': 'Tahmin için lig seç:',
     'matchDetail.aiPrediction': 'AI Maç Tahmini',
@@ -355,6 +358,7 @@ export const translations = {
     // Common
     'common.loading': 'Yükleniyor',
     'common.tagline': 'Tahmin · Yarış · Kazan',
+    'common.language': 'Dil',
     'common.notFound': 'Bulunamadı',
   },
 } as const;

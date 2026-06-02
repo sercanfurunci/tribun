@@ -16,7 +16,7 @@ export function AppLayout() {
       />
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-[1600px] flex-col overflow-hidden rounded-[28px] border border-white/8 bg-navy-950/50 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.85)] backdrop-blur-[18px] lg:grid lg:grid-cols-[280px_minmax(0,1fr)] sm:rounded-[32px]">
         <Navbar />
-        <main className="flex-1 px-4 py-6 pb-32 sm:px-6 sm:py-8 lg:px-8 lg:py-10 md:pb-16">
+        <main className="flex-1 px-4 py-6 pb-10 sm:px-6 sm:py-8 lg:px-8 lg:py-10 md:pb-12">
           <Outlet />
         </main>
       </div>
