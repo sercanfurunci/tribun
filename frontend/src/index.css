@@ -101,6 +101,15 @@ body::before {
   border: 1px solid var(--border);
 }
 
+/* Elevated card — more visible against dark body background */
+.card-elevated {
+  background: linear-gradient(180deg, rgba(18, 30, 52, 0.95) 0%, rgba(12, 22, 40, 0.92) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
 .glass-hover {
   transition: all 0.25s ease;
 }
@@ -193,9 +202,9 @@ body::before {
 
 /* Match card — CSS hover (Emil: no JS handlers, specify exact properties) */
 .match-card {
-  background: rgba(12, 22, 40, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  /* Specify exact animated properties — Emil: never transition: all */
+  background: linear-gradient(180deg, rgba(18, 30, 52, 0.95) 0%, rgba(12, 22, 40, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
   transition:
     transform 200ms var(--ease-out),
     border-color 200ms ease,

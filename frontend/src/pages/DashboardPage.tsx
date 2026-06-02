@@ -21,8 +21,9 @@ function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
     <div
       className="rounded-2xl p-5 flex flex-col gap-4"
       style={{
-        background: 'rgba(12,22,40,0.8)',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4)',
         backdropFilter: 'blur(20px)',
       }}
     >
