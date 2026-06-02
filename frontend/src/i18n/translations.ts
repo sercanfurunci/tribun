@@ -26,6 +26,13 @@ export const translations = {
     'dashboard.createOrJoin': 'Create or join a league',
     'dashboard.nextUp': 'Next up',
     'dashboard.kickoffIn': 'Kicks off',
+    'dashboard.predictCta': 'Make a Prediction',
+    'dashboard.inviteTitle': 'Invite Friends',
+    'dashboard.inviteSubtitle': 'Build a private league and compete with your friends throughout the tournament.',
+    'dashboard.inviteCreate': 'Create League',
+    'dashboard.inviteJoin': 'Join with Code',
+    'dashboard.emptyLeaguesTitle': 'No leagues yet',
+    'dashboard.emptyLeaguesSubtitle': 'Create your own league or join one with an invite code.',
 
     // Stats
     'stats.points': 'Points',
@@ -189,6 +196,13 @@ export const translations = {
     'dashboard.createOrJoin': 'Lig oluştur veya katıl',
     'dashboard.nextUp': 'Sırada',
     'dashboard.kickoffIn': 'Başlangıç',
+    'dashboard.predictCta': 'Tahmin Yap',
+    'dashboard.inviteTitle': 'Arkadaşlarını Davet Et',
+    'dashboard.inviteSubtitle': 'Özel bir lig kur ve tüm turnuva boyunca arkadaşlarınla yarış.',
+    'dashboard.inviteCreate': 'Lig Oluştur',
+    'dashboard.inviteJoin': 'Kod ile Katıl',
+    'dashboard.emptyLeaguesTitle': 'Henüz lig yok',
+    'dashboard.emptyLeaguesSubtitle': 'Kendi ligini kur ya da bir davet kodu ile bir lige katıl.',
 
     // Stats
     'stats.points': 'Puan',
