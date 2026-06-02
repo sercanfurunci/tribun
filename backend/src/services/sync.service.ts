@@ -1,5 +1,6 @@
 import { pool } from '../db/pool';
 import { footballApiService, FootballApiService } from './football-api.service';
+import { theSportsDBService } from './thesportsdb.service';
 import { predictionService } from './prediction.service';
 
 export interface SyncResult {
@@ -151,6 +152,94 @@ export class SyncService {
     }
     return { scored, errors };
   }
+
+  /** Sync WC 2026 fixtures from TheSportsDB (free, no key required) */
+  async syncFromSportsDB(leagueId: string, season: string): Promise<SyncResult> {
+    const result: SyncResult = { inserted: 0, updated: 0, scored: 0, errors: [] };
+
+    let events;
+    try {
+      events = await theSportsDBService.getSeasonEvents(leagueId, season);
+    } catch (err) {
+      result.errors.push(err instanceof Error ? err.message : 'TheSportsDB fetch failed');
+      return result;
+    }
+
+    for (const e of events) {
+      try {
+        const status = theSportsDBService.mapStatus(e.strStatus, e.strPostponed);
+        const homeScore = e.intHomeScore !== null ? parseInt(e.intHomeScore) : null;
+        const awayScore = e.intAwayScore !== null ? parseInt(e.intAwayScore) : null;
+        const kickoff = new Date(e.strTimestamp + (e.strTimestamp.endsWith('Z') ? '' : 'Z'));
+
+        const existing = await pool.query(
+          'SELECT id, status FROM matches WHERE external_id = $1',
+          [e.idEvent]
+        );
+
+        if (existing.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO matches
+               (external_id, home_team, away_team, home_team_logo, away_team_logo,
+                kickoff_time, status, home_score, away_score, tournament, match_day,
+                external_league_id, external_season, venue, referee)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+            [
+              e.idEvent,
+              e.strHomeTeam,
+              e.strAwayTeam,
+              e.strHomeTeamBadge,
+              e.strAwayTeamBadge,
+              kickoff.toISOString(),
+              status,
+              homeScore,
+              awayScore,
+              e.strLeague,
+              e.intRound ? `Round ${e.intRound}` : null,
+              e.idLeague,
+              e.strSeason,
+              e.strVenue || null,
+              null,
+            ]
+          );
+          result.inserted++;
+        } else {
+          const wasFinished = existing.rows[0].status === 'finished';
+          await pool.query(
+            `UPDATE matches
+             SET status = $1, home_score = $2, away_score = $3,
+                 home_team_logo = $4, away_team_logo = $5, kickoff_time = $6
+             WHERE external_id = $7`,
+            [status, homeScore, awayScore, e.strHomeTeamBadge, e.strAwayTeamBadge, kickoff.toISOString(), e.idEvent]
+          );
+          result.updated++;
+
+          if (!wasFinished && status === 'finished' && homeScore !== null && awayScore !== null) {
+            try {
+              await predictionService.scoreFinishedMatch(existing.rows[0].id);
+              result.scored++;
+            } catch (scoreErr) {
+              result.errors.push(`Scoring failed for match ${existing.rows[0].id}: ${scoreErr}`);
+            }
+          }
+        }
+      } catch (err) {
+        result.errors.push(`Event ${e.idEvent}: ${err instanceof Error ? err.message : err}`);
+      }
+    }
+
+    return result;
+  }
+
+  /** Delete all matches for a given source leagueId + season */
+  async clearFixtures(externalLeagueId: string, externalSeason: string): Promise<{ deleted: number }> {
+    const res = await pool.query(
+      'DELETE FROM matches WHERE external_league_id = $1 AND external_season::text = $2',
+      [externalLeagueId, externalSeason]
+    );
+    return { deleted: res.rowCount ?? 0 };
+  }
 }
 
 export const syncService = new SyncService();
+

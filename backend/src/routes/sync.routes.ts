@@ -11,6 +11,8 @@ import {
   getApiPrediction,
   getTopScorers,
   scoreMatch,
+  syncFromSportsDB,
+  clearFixtures,
 } from '../controllers/sync.controller';
 import { requireApiSecret } from '../middleware/apiSecret';
 
@@ -27,6 +29,8 @@ router.get('/predictions/:fixtureId', getApiPrediction);
 router.get('/topscorers', getTopScorers);
 
 router.post('/fixtures', syncFixtures);
+router.post('/fixtures/sportsdb', syncFromSportsDB);
+router.delete('/fixtures', clearFixtures);
 router.post('/live', syncLive);
 router.post('/score', scoreMatches);
 router.post('/score-match/:id', scoreMatch);

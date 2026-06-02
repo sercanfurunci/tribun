@@ -141,6 +141,36 @@ export async function getTopScorers(req: Request, res: Response): Promise<void> 
   }
 }
 
+/** POST /api/sync/fixtures/sportsdb — sync from TheSportsDB (free, WC 2026) */
+export async function syncFromSportsDB(req: Request, res: Response): Promise<void> {
+  const { leagueId, season } = req.body;
+  if (!leagueId || !season) {
+    res.status(400).json({ error: 'leagueId and season are required' });
+    return;
+  }
+  try {
+    const result = await syncService.syncFromSportsDB(String(leagueId), String(season));
+    res.json({ message: 'Fixtures synced from TheSportsDB', ...result });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Sync failed' });
+  }
+}
+
+/** DELETE /api/sync/fixtures — clear all matches for a league+season */
+export async function clearFixtures(req: Request, res: Response): Promise<void> {
+  const { leagueId, season } = req.body;
+  if (!leagueId || !season) {
+    res.status(400).json({ error: 'leagueId and season are required' });
+    return;
+  }
+  try {
+    const result = await syncService.clearFixtures(String(leagueId), String(season));
+    res.json({ message: 'Fixtures cleared', ...result });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Clear failed' });
+  }
+}
+
 /** POST /api/sync/score-match/:id — manually score a specific match */
 export async function scoreMatch(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
