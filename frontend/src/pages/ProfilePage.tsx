@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { enUS, tr as trLocale } from 'date-fns/locale';
 import { useAuthStore } from '../store/auth';
+import { useLanguageStore, useT } from '../store/language';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
 import { LeagueCard } from '../components/features/LeagueCard';
@@ -9,6 +11,9 @@ import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
+  const t = useT();
+  const lang = useLanguageStore((s) => s.lang);
+  const dateLocale = lang === 'tr' ? trLocale : enUS;
 
   const { data: statsData, isLoading: loadingStats } = useQuery({
     queryKey: ['stats', 'profile'],
@@ -59,7 +64,7 @@ export default function ProfilePage() {
             <p className="text-slate-500 truncate mt-0.5">{user?.email}</p>
             {user?.created_at && (
               <p className="text-xs text-slate-600 mt-1.5 font-heading uppercase tracking-widest">
-                Member since {format(new Date(user.created_at), 'MMMM yyyy')}
+                {t('profile.memberSince')} {format(new Date(user.created_at), 'MMMM yyyy', { locale: dateLocale })}
               </p>
             )}
           </div>
@@ -74,10 +79,10 @@ export default function ProfilePage() {
 
           {/* Stat cards */}
           {[
-            { label: 'Total Points', value: stats.total_points, accent: 'text-green-400', icon: '⚡', sub: 'earned' },
-            { label: 'Predictions', value: stats.total_predictions, accent: 'text-white', icon: '🎯', sub: 'submitted' },
-            { label: 'Exact Scores', value: stats.exact_scores, accent: 'text-amber-400', icon: '🥇', sub: '3 pts each' },
-            { label: 'Correct Outcomes', value: stats.correct_outcomes, accent: 'text-blue-400', icon: '✓', sub: '1–2 pts each' },
+            { label: t('stats.totalPoints'), value: stats.total_points, accent: 'text-green-400', icon: '⚡', sub: t('stats.earned') },
+            { label: t('stats.predictions'), value: stats.total_predictions, accent: 'text-white', icon: '🎯', sub: t('stats.submitted') },
+            { label: t('stats.exactScores'), value: stats.exact_scores, accent: 'text-amber-400', icon: '🥇', sub: t('stats.exactSub') },
+            { label: t('stats.correctOutcomes'), value: stats.correct_outcomes, accent: 'text-blue-400', icon: '✓', sub: t('stats.correctSub') },
           ].map(({ label, value, accent, icon, sub }) => (
             <div
               key={label}
@@ -106,7 +111,7 @@ export default function ProfilePage() {
               boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4)',
             }}
           >
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">Accuracy</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{t('stats.accuracy')}</span>
             <div className="flex items-center gap-6">
               <div className="relative size-24 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
@@ -121,10 +126,10 @@ export default function ProfilePage() {
               <div>
                 <p className="text-slate-400 text-sm">
                   {stats.total_predictions > 0
-                    ? `${stats.correct_outcomes} of ${stats.total_predictions} correct`
-                    : 'No predictions yet'}
+                    ? `${stats.correct_outcomes} ${t('stats.ofCorrect', { total: stats.total_predictions })}`
+                    : t('stats.noPredictions')}
                 </p>
-                <p className="text-xs text-slate-600 mt-1">outcome accuracy</p>
+                <p className="text-xs text-slate-600 mt-1">{t('stats.outcomeAccuracy')}</p>
               </div>
             </div>
           </div>
@@ -134,7 +139,7 @@ export default function ProfilePage() {
       {/* Leagues */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-heading">My Leagues</h2>
+          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-heading">{t('profile.myLeagues')}</h2>
           <span
             className="text-xs font-bold px-2 py-0.5 rounded-full"
             style={{ background: 'rgba(255,255,255,0.06)', color: '#64748b' }}
@@ -149,7 +154,7 @@ export default function ProfilePage() {
             className="rounded-2xl p-10 text-center text-slate-600 text-sm"
             style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
           >
-            No leagues joined yet
+            {t('profile.noLeagues')}
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

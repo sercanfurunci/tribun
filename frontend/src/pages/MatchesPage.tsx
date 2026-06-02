@@ -3,17 +3,20 @@ import { useQuery } from '@tanstack/react-query';
 import { matchesApi } from '../services/matches';
 import { MatchCard } from '../components/features/MatchCard';
 import { Spinner } from '../components/ui/Spinner';
+import { useT } from '../store/language';
+import type { TranslationKey } from '../i18n/translations';
 
 type Tab = 'upcoming' | 'live' | 'finished';
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
-  { id: 'upcoming', label: 'Upcoming', icon: '📅' },
-  { id: 'live', label: 'Live', icon: '🔴' },
-  { id: 'finished', label: 'Finished', icon: '✓' },
+const TABS: { id: Tab; labelKey: TranslationKey; icon: string }[] = [
+  { id: 'upcoming', labelKey: 'matches.upcoming', icon: '📅' },
+  { id: 'live', labelKey: 'matches.live', icon: '🔴' },
+  { id: 'finished', labelKey: 'matches.finished', icon: '✓' },
 ];
 
 export default function MatchesPage() {
   const [tab, setTab] = useState<Tab>('upcoming');
+  const t = useT();
 
   const { data: upcomingData, isLoading: loadingUpcoming } = useQuery({
     queryKey: ['matches', 'upcoming'],
@@ -52,9 +55,9 @@ export default function MatchesPage() {
   const liveCount = liveCountData?.data.matches.length ?? 0;
 
   const emptyMessages: Record<Tab, string> = {
-    live: 'No matches live right now',
-    upcoming: 'No upcoming matches scheduled',
-    finished: 'No finished matches yet',
+    live: t('matches.empty.live'),
+    upcoming: t('matches.empty.upcoming'),
+    finished: t('matches.empty.finished'),
   };
 
   return (
@@ -62,9 +65,9 @@ export default function MatchesPage() {
 
       {/* Page header */}
       <div>
-        <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">Browse</p>
-        <h1 className="font-heading font-bold text-2xl text-white">Matches</h1>
-        <p className="text-slate-500 text-sm mt-1">All FIFA World Cup 2026 fixtures</p>
+        <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">{t('matches.browse')}</p>
+        <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white">{t('matches.title')}</h1>
+        <p className="text-slate-500 text-sm mt-1">{t('matches.subtitle')}</p>
       </div>
 
       {/* Tab bar */}
@@ -72,7 +75,7 @@ export default function MatchesPage() {
         className="flex gap-1 p-1 rounded-2xl w-fit"
         style={{ background: 'rgba(12,22,40,0.9)', border: '1px solid rgba(255,255,255,0.06)' }}
       >
-        {TABS.map(({ id, label, icon }) => (
+        {TABS.map(({ id, labelKey, icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
@@ -84,7 +87,7 @@ export default function MatchesPage() {
             }}
           >
             <span className="text-sm">{icon}</span>
-            {label}
+            {t(labelKey)}
             {id === 'live' && liveCount > 0 && (
               <span
                 className="size-4 rounded-full text-[9px] font-black flex items-center justify-center text-white live-indicator"

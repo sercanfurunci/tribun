@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { authApi } from '../services/auth';
 import { useAuthStore } from '../store/auth';
+import { useLanguageStore, useT } from '../store/language';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 
@@ -11,15 +12,17 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
+  const t = useT();
+  const { lang, toggle } = useLanguageStore();
 
   const mutation = useMutation({
     mutationFn: () => authApi.register(form.username, form.email, form.password),
     onSuccess: ({ data }) => {
       setAuth(data.user, data.token);
-      toast.success('Welcome to Tribün!');
+      toast.success(t('auth.welcomeToTribun'));
       navigate('/dashboard');
     },
-    onError: () => toast.error('Registration failed. Try a different username or email.'),
+    onError: () => toast.error(t('auth.registerFailed')),
   });
 
   const update = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -33,6 +36,18 @@ export default function RegisterPage() {
           'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(22,163,74,0.18) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 50% 100%, rgba(14,48,100,0.25) 0%, transparent 60%), #060d1a',
       }}
     >
+      {/* Top-right lang toggle */}
+      <button
+        onClick={toggle}
+        aria-label="Toggle language"
+        className="absolute top-5 right-5 sm:top-7 sm:right-7 z-10 flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold font-heading uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+        style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(12,22,40,0.6)', backdropFilter: 'blur(8px)' }}
+      >
+        <span className={lang === 'tr' ? 'text-green-400' : ''}>TR</span>
+        <span className="text-slate-700">/</span>
+        <span className={lang === 'en' ? 'text-green-400' : ''}>EN</span>
+      </button>
+
       {/* Atmospheric background */}
       <div className="absolute inset-0 pointer-events-none">
         <div
@@ -92,12 +107,12 @@ export default function RegisterPage() {
           {/* Heading */}
           <div className="text-center mb-8">
             <p className="text-[10px] font-bold text-green-500 uppercase tracking-[0.35em] mb-3 font-heading">
-              Create Account
+              {t('auth.register.eyebrow')}
             </p>
             <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white leading-tight tracking-tight">
-              Join the league
+              {t('auth.register.title')}
             </h1>
-            <p className="text-slate-500 text-sm mt-3">Free to join. No card required.</p>
+            <p className="text-slate-500 text-sm mt-3">{t('auth.register.subtitle')}</p>
           </div>
 
           {/* Form */}
@@ -110,7 +125,7 @@ export default function RegisterPage() {
           >
             <Input
               id="username"
-              label="Username"
+              label={t('auth.field.username')}
               placeholder="coolpredictor"
               value={form.username}
               onChange={update('username')}
@@ -123,7 +138,7 @@ export default function RegisterPage() {
             <Input
               id="email"
               type="email"
-              label="Email"
+              label={t('auth.field.email')}
               placeholder="you@example.com"
               value={form.email}
               onChange={update('email')}
@@ -133,8 +148,8 @@ export default function RegisterPage() {
             <Input
               id="password"
               type="password"
-              label="Password"
-              placeholder="Min. 8 characters"
+              label={t('auth.field.password')}
+              placeholder="Min. 8"
               value={form.password}
               onChange={update('password')}
               required
@@ -142,14 +157,14 @@ export default function RegisterPage() {
               autoComplete="new-password"
             />
             <Button type="submit" loading={mutation.isPending} size="lg" className="w-full mt-3">
-              Create Account
+              {t('auth.createButton')}
             </Button>
           </form>
 
           {/* Divider */}
           <div className="flex items-center gap-4 my-7">
             <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
-            <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading">Already a member?</span>
+            <span className="text-[10px] text-slate-700 uppercase tracking-widest font-heading">{t('auth.alreadyMember')}</span>
             <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
           </div>
 
@@ -161,7 +176,7 @@ export default function RegisterPage() {
               border: '1px solid rgba(255,255,255,0.08)',
             }}
           >
-            Sign in instead
+            {t('auth.signInInstead')}
           </Link>
         </div>
 
@@ -172,15 +187,15 @@ export default function RegisterPage() {
         >
           <div className="text-center">
             <p className="font-score text-2xl text-amber-400 leading-none">3</p>
-            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">Exact</p>
+            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">{t('scoring.exact')}</p>
           </div>
           <div className="text-center" style={{ borderLeft: '1px solid rgba(255,255,255,0.05)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
             <p className="font-score text-2xl text-green-400 leading-none">2</p>
-            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">Goal diff</p>
+            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">{t('scoring.goalDiff')}</p>
           </div>
           <div className="text-center">
             <p className="font-score text-2xl text-blue-400 leading-none">1</p>
-            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">Outcome</p>
+            <p className="text-[9px] text-slate-600 uppercase tracking-widest font-heading mt-1.5">{t('scoring.outcome')}</p>
           </div>
         </div>
       </div>

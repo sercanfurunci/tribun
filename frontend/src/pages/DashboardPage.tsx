@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
+import { useT } from '../store/language';
 import { matchesApi } from '../services/matches';
 import { leaguesApi } from '../services/leagues';
 import { predictionsApi } from '../services/predictions';
@@ -39,7 +40,7 @@ function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
   );
 }
 
-function SectionHeader({ title, linkTo, linkLabel = 'View all' }: { title: string; linkTo: string; linkLabel?: string }) {
+function SectionHeader({ title, linkTo, linkLabel }: { title: string; linkTo: string; linkLabel: string }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">{title}</h2>
@@ -58,6 +59,7 @@ function SectionHeader({ title, linkTo, linkLabel = 'View all' }: { title: strin
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const t = useT();
 
   const { data: upcomingData, isLoading: loadingMatches } = useQuery({
     queryKey: ['matches', 'upcoming'],
@@ -83,58 +85,64 @@ export default function DashboardPage() {
 
       {/* Hero */}
       <div
-        className="relative rounded-2xl overflow-hidden px-6 py-8"
+        className="relative rounded-3xl overflow-hidden px-6 sm:px-10 py-10 sm:py-14"
         style={{
-          background: 'linear-gradient(135deg, rgba(22,163,74,0.18) 0%, rgba(12,22,40,0.95) 55%)',
-          border: '1px solid rgba(22,163,74,0.2)',
+          background: 'linear-gradient(135deg, rgba(22,163,74,0.22) 0%, rgba(12,22,40,0.95) 55%)',
+          border: '1px solid rgba(22,163,74,0.22)',
+          boxShadow: '0 12px 48px -16px rgba(0,0,0,0.5)',
         }}
       >
         <div
-          className="absolute -top-12 -right-12 w-56 h-56 rounded-full opacity-10 pointer-events-none"
+          className="absolute -top-12 -right-12 w-72 h-72 rounded-full opacity-15 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
         />
         <div
-          className="absolute bottom-0 right-0 w-32 h-32 opacity-5 pointer-events-none"
+          className="absolute bottom-0 right-0 w-40 h-40 opacity-[0.06] pointer-events-none"
           style={{
             backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 1px, transparent 0, transparent 50%)`,
             backgroundSize: '8px 8px',
           }}
         />
-        <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-2 font-heading">Dashboard</p>
-        <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white leading-tight">
-          Welcome back,<br />
+        <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-3 font-heading">
+          {t('dashboard.eyebrow')}
+        </p>
+        <h1 className="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight">
+          {t('dashboard.welcome')}<br />
           <span className="text-green-400">{user?.username}</span>
         </h1>
-        <p className="text-slate-500 text-sm mt-2">Track your predictions and climb the leaderboard.</p>
+        <p className="text-slate-400 text-sm sm:text-base mt-4 max-w-xl">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats */}
       {stats && (
         <section>
-          <SectionHeader title="Your Stats" linkTo="/profile" linkLabel="Full profile" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger">
-            <StatCard label="Points" value={stats.total_points} sublabel="total earned" accent="text-green-400" icon="⚡" />
-            <StatCard label="Predictions" value={stats.total_predictions} sublabel="submitted" accent="text-white" icon="🎯" />
-            <StatCard label="Exact Scores" value={stats.exact_scores} sublabel="3 pts each" accent="text-amber-400" icon="🥇" />
-            <StatCard label="Correct" value={stats.correct_outcomes} sublabel="outcomes" accent="text-blue-400" icon="✓" />
+          <SectionHeader title={t('dashboard.yourStats')} linkTo="/profile" linkLabel={t('dashboard.fullProfile')} />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 stagger">
+            <StatCard label={t('stats.points')} value={stats.total_points} sublabel={t('stats.totalEarned')} accent="text-green-400" icon="⚡" />
+            <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="🎯" />
+            <StatCard label={t('stats.exactScores')} value={stats.exact_scores} sublabel={t('stats.exactSub')} accent="text-amber-400" icon="🥇" />
+            <StatCard label={t('stats.correct')} value={stats.correct_outcomes} sublabel={t('stats.outcomes')} accent="text-blue-400" icon="✓" />
           </div>
         </section>
       )}
 
       {/* Upcoming matches */}
       <section>
-        <SectionHeader title="Upcoming Matches" linkTo="/matches" />
+        <SectionHeader title={t('dashboard.upcomingMatches')} linkTo="/matches" linkLabel={t('dashboard.viewAll')} />
         {loadingMatches ? (
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : matches.length === 0 ? (
           <div
             className="rounded-2xl p-10 text-center text-slate-600 text-sm"
-            style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+            style={{
+              background: 'linear-gradient(180deg, rgba(18,30,52,0.6) 0%, rgba(12,22,40,0.6) 100%)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
           >
-            No upcoming matches scheduled
+            {t('dashboard.noUpcoming')}
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {matches.map((match) => <MatchCard key={match.id} match={match} />)}
           </div>
         )}
@@ -142,27 +150,30 @@ export default function DashboardPage() {
 
       {/* My leagues */}
       <section>
-        <SectionHeader title="My Leagues" linkTo="/leagues" />
+        <SectionHeader title={t('dashboard.myLeagues')} linkTo="/leagues" linkLabel={t('dashboard.viewAll')} />
         {loadingLeagues ? (
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : leagues.length === 0 ? (
           <div
             className="rounded-2xl p-10 text-center"
-            style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+            style={{
+              background: 'linear-gradient(180deg, rgba(18,30,52,0.6) 0%, rgba(12,22,40,0.6) 100%)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
           >
-            <p className="text-slate-600 text-sm mb-4">No leagues yet</p>
+            <p className="text-slate-600 text-sm mb-4">{t('dashboard.noLeagues')}</p>
             <Link
               to="/leagues"
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-400 hover:text-green-300 transition-colors"
             >
-              Create or join a league
+              {t('dashboard.createOrJoin')}
               <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}
           </div>
         )}

@@ -7,6 +7,7 @@ import { Spinner } from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
+import { useT } from '../store/language';
 
 export default function LeaguesPage() {
   const [showCreate, setShowCreate] = useState(false);
@@ -14,6 +15,7 @@ export default function LeaguesPage() {
   const [newLeague, setNewLeague] = useState({ name: '', description: '' });
   const [inviteCode, setInviteCode] = useState('');
   const queryClient = useQueryClient();
+  const t = useT();
 
   const { data, isLoading } = useQuery({
     queryKey: ['leagues'],
@@ -50,16 +52,16 @@ export default function LeaguesPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">Prediction</p>
-          <h1 className="font-heading font-bold text-2xl text-white">Leagues</h1>
-          <p className="text-slate-500 text-sm mt-1">Compete with friends in prediction leagues</p>
+          <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">{t('leagues.eyebrow')}</p>
+          <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white">{t('leagues.title')}</h1>
+          <p className="text-slate-500 text-sm mt-1">{t('leagues.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>
-            Join with Code
+            {t('leagues.joinWithCode')}
           </Button>
           <Button size="sm" onClick={() => setShowCreate(true)}>
-            + New League
+            {t('leagues.newLeague')}
           </Button>
         </div>
       </div>
@@ -79,12 +81,12 @@ export default function LeaguesPage() {
             🏅
           </div>
           <div>
-            <p className="font-heading font-bold text-white mb-1">No leagues yet</p>
-            <p className="text-slate-600 text-sm">Create a league or join one with an invite code</p>
+            <p className="font-heading font-bold text-white mb-1">{t('leagues.empty.title')}</p>
+            <p className="text-slate-600 text-sm">{t('leagues.empty.subtitle')}</p>
           </div>
           <div className="flex gap-2 mt-1">
-            <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>Join with Code</Button>
-            <Button size="sm" onClick={() => setShowCreate(true)}>Create League</Button>
+            <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>{t('leagues.joinWithCode')}</Button>
+            <Button size="sm" onClick={() => setShowCreate(true)}>{t('leagues.create')}</Button>
           </div>
         </div>
       ) : (
@@ -94,11 +96,11 @@ export default function LeaguesPage() {
       )}
 
       {/* Create modal */}
-      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create League">
+      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title={t('leagues.createModal.title')}>
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
             id="league-name"
-            label="League Name"
+            label={t('leagues.field.name')}
             placeholder="Friends WC 2026"
             value={newLeague.name}
             onChange={(e) => setNewLeague((p) => ({ ...p, name: e.target.value }))}
@@ -108,7 +110,7 @@ export default function LeaguesPage() {
           />
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-slate-400 uppercase tracking-widest font-heading">
-              Description <span className="text-slate-700 normal-case tracking-normal font-normal">(optional)</span>
+              {t('leagues.field.description')} <span className="text-slate-700 normal-case tracking-normal font-normal">{t('leagues.field.optional')}</span>
             </label>
             <textarea
               value={newLeague.description}
@@ -120,18 +122,18 @@ export default function LeaguesPage() {
             />
           </div>
           <div className="flex gap-2 pt-1">
-            <Button variant="secondary" type="button" onClick={() => setShowCreate(false)} className="flex-1">Cancel</Button>
-            <Button type="submit" loading={createMutation.isPending} className="flex-1">Create</Button>
+            <Button variant="secondary" type="button" onClick={() => setShowCreate(false)} className="flex-1">{t('leagues.cancel')}</Button>
+            <Button type="submit" loading={createMutation.isPending} className="flex-1">{t('leagues.create')}</Button>
           </div>
         </form>
       </Modal>
 
       {/* Join modal */}
-      <Modal isOpen={showJoin} onClose={() => setShowJoin(false)} title="Join League">
+      <Modal isOpen={showJoin} onClose={() => setShowJoin(false)} title={t('leagues.joinModal.title')}>
         <form onSubmit={(e) => { e.preventDefault(); joinMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
             id="invite-code"
-            label="Invite Code"
+            label={t('leagues.field.inviteCode')}
             placeholder="ABC12345"
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
@@ -140,8 +142,8 @@ export default function LeaguesPage() {
             className="uppercase tracking-[0.3em] text-center font-mono text-lg"
           />
           <div className="flex gap-2 pt-1">
-            <Button variant="secondary" type="button" onClick={() => setShowJoin(false)} className="flex-1">Cancel</Button>
-            <Button type="submit" loading={joinMutation.isPending} className="flex-1">Join</Button>
+            <Button variant="secondary" type="button" onClick={() => setShowJoin(false)} className="flex-1">{t('leagues.cancel')}</Button>
+            <Button type="submit" loading={joinMutation.isPending} className="flex-1">{t('leagues.join')}</Button>
           </div>
         </form>
       </Modal>

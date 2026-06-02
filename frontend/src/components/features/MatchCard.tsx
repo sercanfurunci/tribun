@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Badge } from '../ui/Badge';
 import { Match } from '../../types';
+import { useT } from '../../store/language';
+import type { TranslationKey } from '../../i18n/translations';
 
 interface MatchCardProps {
   match: Match;
@@ -9,11 +11,11 @@ interface MatchCardProps {
   leagueId?: string;
 }
 
-const statusConfig = {
-  scheduled: { label: 'Upcoming', variant: 'blue' as const },
-  live: { label: 'LIVE', variant: 'live' as const },
-  finished: { label: 'FT', variant: 'slate' as const },
-  postponed: { label: 'PST', variant: 'yellow' as const },
+const statusConfig: Record<Match['status'], { key: TranslationKey; variant: 'blue' | 'live' | 'slate' | 'yellow' }> = {
+  scheduled: { key: 'match.upcomingBadge', variant: 'blue' },
+  live: { key: 'match.liveBadge', variant: 'live' },
+  finished: { key: 'match.ftBadge', variant: 'slate' },
+  postponed: { key: 'match.pstBadge', variant: 'yellow' },
 };
 
 function TeamBlock({ logo, name, score, isLive }: {
@@ -54,7 +56,9 @@ function TeamBlock({ logo, name, score, isLive }: {
 }
 
 export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
-  const { label, variant } = statusConfig[match.status];
+  const t = useT();
+  const { key, variant } = statusConfig[match.status];
+  const label = t(key);
   const isLive = match.status === 'live';
   const isFinished = match.status === 'finished';
   const showScore = isLive || isFinished;
@@ -118,7 +122,7 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
             <div className="flex items-start gap-2">
               <TeamBlock logo={match.home_team_logo} name={match.home_team} />
               <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-16 pt-3">
-                <span className="font-score text-2xl text-slate-600 leading-none">VS</span>
+                <span className="font-score text-2xl text-slate-600 leading-none">{t('match.vs')}</span>
                 <span
                   className="text-[11px] font-bold tabular-nums px-2.5 py-1.5 rounded-lg whitespace-nowrap"
                   style={{ background: 'rgba(22,163,74,0.12)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.22)' }}
@@ -141,7 +145,7 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
                   color: '#4ade80',
                 }}
               >
-                <span>Your pick:</span>
+                <span>{t('match.yourPick')}</span>
                 <span className="tabular-nums">{prediction.predicted_home_score}–{prediction.predicted_away_score}</span>
                 {prediction.points_awarded !== undefined && isFinished && (
                   <span
