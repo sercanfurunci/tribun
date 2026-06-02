@@ -21,7 +21,7 @@ interface StatCardProps {
 function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
   return (
     <div
-      className="rounded-2xl p-4 flex flex-col items-center text-center gap-2 min-w-0"
+      className="rounded-2xl p-6 flex flex-col items-center text-center gap-3 min-w-0"
       style={{
         background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
         border: '1px solid rgba(255,255,255,0.08)',
@@ -29,11 +29,11 @@ function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
       }}
     >
       <div className={`flex items-center gap-1.5 ${accent}`}>
-        <Icon name={icon} size={14} />
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading">{label}</span>
+        <Icon name={icon} size={16} />
+        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading">{label}</span>
       </div>
-      <span className={`font-score text-4xl sm:text-[2.75rem] leading-none ${accent}`}>{value}</span>
-      {sublabel && <p className="text-[10px] sm:text-[11px] text-slate-600 truncate w-full">{sublabel}</p>}
+      <span className={`font-score text-5xl sm:text-6xl leading-none ${accent}`}>{value}</span>
+      {sublabel && <p className="text-xs text-slate-600 truncate w-full">{sublabel}</p>}
     </div>
   );
 }
@@ -75,11 +75,11 @@ export default function DashboardPage() {
   });
 
   const stats = statsData?.data.stats;
-  const matches = upcomingData?.data.matches.slice(0, 8) ?? [];
-  const leagues = leaguesData?.data.leagues.slice(0, 8) ?? [];
+  const matches = upcomingData?.data.matches.slice(0, 6) ?? [];
+  const leagues = leaguesData?.data.leagues.slice(0, 6) ?? [];
 
   return (
-    <div className="space-y-10 animate-fade-up">
+    <div className="space-y-8 sm:space-y-12 animate-fade-up">
 
       {/* Hero — centered greeting */}
       <div
@@ -107,7 +107,7 @@ export default function DashboardPage() {
       {stats && (
         <section>
           <SectionHeader title={t('dashboard.yourStats')} linkTo="/profile" linkLabel={t('dashboard.fullProfile')} />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 stagger">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 stagger">
             <StatCard label={t('stats.points')} value={stats.total_points} sublabel={t('stats.totalEarned')} accent="text-green-400" icon="zap" />
             <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="target" />
             <StatCard label={t('stats.exactScores')} value={stats.exact_scores} sublabel={t('stats.exactSub')} accent="text-amber-400" icon="award" />
@@ -132,7 +132,7 @@ export default function DashboardPage() {
             {t('dashboard.noUpcoming')}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {matches.map((match) => <MatchCard key={match.id} match={match} />)}
           </div>
         )}
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}
           </div>
         )}
