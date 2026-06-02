@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { footballApi, Standing } from '../services/football';
 import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Spinner } from '../components/ui/Spinner';
+import { useT } from '../store/language';
+import type { TranslationKey } from '../i18n/translations';
 
 const TOURNAMENTS = [
   { name: 'FIFA World Cup 2026', leagueId: 1, season: 2026 },
@@ -28,21 +30,21 @@ function FormBadge({ result }: { result: string }) {
   );
 }
 
-function StandingsGroup({ standings }: { standings: Standing[] }) {
+function StandingsGroup({ standings, t }: { standings: Standing[]; t: (key: TranslationKey) => string }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-slate-700/50 text-xs text-slate-500">
             <th className="text-left py-2 px-3 w-8">#</th>
-            <th className="text-left py-2 px-3">Team</th>
-            <th className="text-center py-2 px-2">P</th>
-            <th className="text-center py-2 px-2">W</th>
-            <th className="text-center py-2 px-2">D</th>
-            <th className="text-center py-2 px-2">L</th>
-            <th className="text-center py-2 px-2">GD</th>
-            <th className="text-center py-2 px-2 font-bold">Pts</th>
-            <th className="text-center py-2 px-3 hidden sm:table-cell">Form</th>
+            <th className="text-left py-2 px-3">{t('standings.col.team')}</th>
+            <th className="text-center py-2 px-2">{t('standings.col.played')}</th>
+            <th className="text-center py-2 px-2">{t('standings.col.wins')}</th>
+            <th className="text-center py-2 px-2">{t('standings.col.draws')}</th>
+            <th className="text-center py-2 px-2">{t('standings.col.losses')}</th>
+            <th className="text-center py-2 px-2">{t('standings.col.gd')}</th>
+            <th className="text-center py-2 px-2 font-bold">{t('standings.col.pts')}</th>
+            <th className="text-center py-2 px-3 hidden sm:table-cell">{t('standings.col.form')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800/50">
@@ -82,6 +84,7 @@ function StandingsGroup({ standings }: { standings: Standing[] }) {
 }
 
 export default function StandingsPage() {
+  const t = useT();
   const [selected, setSelected] = useState(TOURNAMENTS[0]);
 
   const { data, isLoading, error } = useQuery({
@@ -95,8 +98,8 @@ export default function StandingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1">Standings</h1>
-        <p className="text-slate-400 text-sm">Live tournament standings from API-Football</p>
+        <h1 className="text-2xl font-bold text-white mb-1">{t('standings.title')}</h1>
+        <p className="text-slate-400 text-sm">{t('standings.subtitle')}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -120,13 +123,13 @@ export default function StandingsPage() {
       ) : error ? (
         <Card>
           <CardBody className="text-center py-8 text-slate-500">
-            Failed to load standings. Check your API key configuration.
+            {t('standings.error')}
           </CardBody>
         </Card>
       ) : standingsGroups.length === 0 ? (
         <Card>
           <CardBody className="text-center py-8 text-slate-500">
-            No standings available for this tournament yet.
+            {t('standings.empty')}
           </CardBody>
         </Card>
       ) : (
@@ -138,7 +141,7 @@ export default function StandingsPage() {
                   <h2 className="font-semibold text-white text-sm">{group[0]?.group}</h2>
                 </CardHeader>
               )}
-              <StandingsGroup standings={group} />
+              <StandingsGroup standings={group} t={t} />
             </Card>
           ))}
         </div>

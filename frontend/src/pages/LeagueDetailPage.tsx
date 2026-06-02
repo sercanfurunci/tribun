@@ -13,6 +13,7 @@ import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import { useAuthStore } from '../store/auth';
+import { useT } from '../store/language';
 
 type Tab = 'leaderboard' | 'matches' | 'members';
 
@@ -21,6 +22,7 @@ export default function LeagueDetailPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const t = useT();
   const [tab, setTab] = useState<Tab>('leaderboard');
   const [copied, setCopied] = useState(false);
 
@@ -67,7 +69,7 @@ export default function LeagueDetailPage() {
   if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>;
 
   const league = leagueData?.data.league;
-  if (!league) return <div className="text-center text-slate-400 py-16">League not found</div>;
+  if (!league) return <div className="text-center text-slate-400 py-16">{t('leagueDetail.notFound')}</div>;
 
   const myPosition = leaderboardData?.data.leaderboard.find((e) => e.user_id === user?.id);
   const matches = matchesData?.data.matches ?? [];
@@ -80,9 +82,9 @@ export default function LeagueDetailPage() {
   }
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'leaderboard', label: 'Leaderboard' },
-    { id: 'matches', label: 'Matches' },
-    { id: 'members', label: 'Members' },
+    { id: 'leaderboard', label: t('leagueDetail.tab.leaderboard') },
+    { id: 'matches', label: t('leagueDetail.tab.matches') },
+    { id: 'members', label: t('leagueDetail.tab.members') },
   ];
 
   return (
@@ -91,10 +93,10 @@ export default function LeagueDetailPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl font-bold text-white">{league.name}</h1>
-            {league.is_owner && <Badge variant="gold">Owner</Badge>}
+            {league.is_owner && <Badge variant="gold">{t('leagueDetail.owner')}</Badge>}
           </div>
           {league.description && <p className="text-slate-400 text-sm">{league.description}</p>}
-          <p className="text-xs text-slate-600 mt-1">{league.member_count} members</p>
+          <p className="text-xs text-slate-600 mt-1">{league.member_count} {t('leagueDetail.members').toLowerCase()}</p>
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -106,7 +108,7 @@ export default function LeagueDetailPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            {copied ? 'Copied!' : league.invite_code}
+            {copied ? t('leagueDetail.copied') : league.invite_code}
           </button>
           {!league.is_owner && (
             <Button
@@ -115,7 +117,7 @@ export default function LeagueDetailPage() {
               onClick={() => leaveMutation.mutate()}
               loading={leaveMutation.isPending}
             >
-              Leave League
+              {t('leagueDetail.leave')}
             </Button>
           )}
         </div>
@@ -124,9 +126,9 @@ export default function LeagueDetailPage() {
       {myPosition && (
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Your Position', value: `#${myPosition.position}` },
-            { label: 'Total Points', value: myPosition.total_points },
-            { label: 'Exact Scores', value: myPosition.exact_scores },
+            { label: `#`, value: `#${myPosition.position}` },
+            { label: t('stats.totalPoints'), value: myPosition.total_points },
+            { label: t('stats.exactScores'), value: myPosition.exact_scores },
           ].map(({ label, value }) => (
             <Card key={label}>
               <CardBody className="text-center py-3">
@@ -165,7 +167,7 @@ export default function LeagueDetailPage() {
       {tab === 'matches' && (
         <div className="space-y-3">
           {matches.length === 0 ? (
-            <Card><CardBody className="text-center text-slate-500 py-8">No upcoming matches</CardBody></Card>
+            <Card><CardBody className="text-center text-slate-500 py-8">{t('leagueDetail.noUpcoming')}</CardBody></Card>
           ) : (
             matches.map((match) => {
               const pred = myPredictions.find((p) => p.match_id === match.id);
@@ -185,7 +187,7 @@ export default function LeagueDetailPage() {
       {tab === 'members' && (
         <Card>
           <CardHeader>
-            <h2 className="font-semibold text-white">{league.member_count} Members</h2>
+            <h2 className="font-semibold text-white">{league.member_count} {t('leagueDetail.members')}</h2>
           </CardHeader>
           {membersData ? (
             <CardBody className="p-0">
@@ -198,8 +200,8 @@ export default function LeagueDetailPage() {
                     <div>
                       <p className="text-sm font-medium text-white">
                         {member.username}
-                        {member.id === user?.id && <span className="text-xs text-slate-500 ml-1">(you)</span>}
-                        {league.owner_id === member.id && <Badge variant="gold" className="ml-2">Owner</Badge>}
+                        {member.id === user?.id && <span className="text-xs text-slate-500 ml-1">{t('leagueDetail.you')}</span>}
+                        {league.owner_id === member.id && <Badge variant="gold" className="ml-2">{t('leagueDetail.owner')}</Badge>}
                       </p>
                     </div>
                   </div>

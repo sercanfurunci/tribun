@@ -109,9 +109,53 @@ export const translations = {
     'scoring.goalDiff': 'Goal diff',
     'scoring.outcome': 'Outcome',
 
+    // Standings
+    'standings.title': 'Standings',
+    'standings.subtitle': 'Live tournament standings',
+    'standings.col.team': 'Team',
+    'standings.col.played': 'P',
+    'standings.col.wins': 'W',
+    'standings.col.draws': 'D',
+    'standings.col.losses': 'L',
+    'standings.col.gd': 'GD',
+    'standings.col.pts': 'Pts',
+    'standings.col.form': 'Form',
+    'standings.empty': 'No standings available for this tournament yet.',
+    'standings.error': 'Failed to load standings. Check your API key configuration.',
+
+    // Match detail
+    'matchDetail.notFound': 'Match not found',
+    'matchDetail.live': 'Live',
+    'matchDetail.upcoming': 'Upcoming',
+    'matchDetail.postponed': 'Postponed',
+    'matchDetail.yourPrediction': 'Your Prediction',
+    'matchDetail.joinLeagueFirst': 'Join a league to make predictions',
+    'matchDetail.selectLeague': 'Select a league to predict:',
+    'matchDetail.aiPrediction': 'AI Match Prediction',
+    'matchDetail.draw': 'Draw',
+    'matchDetail.predictedWinner': 'Predicted winner:',
+    'matchDetail.leaguePredictions': 'League Predictions',
+    'matchDetail.matchEvents': 'Match Events',
+
+    // League detail
+    'leagueDetail.notFound': 'League not found',
+    'leagueDetail.owner': 'Owner',
+    'leagueDetail.members': 'Members',
+    'leagueDetail.you': '(you)',
+    'leagueDetail.tab.leaderboard': 'Leaderboard',
+    'leagueDetail.tab.matches': 'Matches',
+    'leagueDetail.tab.members': 'Members',
+    'leagueDetail.noUpcoming': 'No upcoming matches',
+    'leagueDetail.inviteCode': 'Invite code',
+    'leagueDetail.copy': 'Copy',
+    'leagueDetail.copied': 'Copied!',
+    'leagueDetail.leave': 'Leave league',
+    'leagueDetail.confirmLeave': 'Leave this league?',
+
     // Common
     'common.loading': 'Loading',
     'common.tagline': 'Predict · Compete · Conquer',
+    'common.notFound': 'Not found',
   },
   tr: {
     // Navbar
@@ -221,9 +265,53 @@ export const translations = {
     'scoring.goalDiff': 'Fark',
     'scoring.outcome': 'Sonuç',
 
+    // Standings
+    'standings.title': 'Sıralama',
+    'standings.subtitle': 'Canlı turnuva sıralaması',
+    'standings.col.team': 'Takım',
+    'standings.col.played': 'O',
+    'standings.col.wins': 'G',
+    'standings.col.draws': 'B',
+    'standings.col.losses': 'M',
+    'standings.col.gd': 'AV',
+    'standings.col.pts': 'P',
+    'standings.col.form': 'Form',
+    'standings.empty': 'Bu turnuva için henüz sıralama yok.',
+    'standings.error': 'Sıralama yüklenemedi. API anahtarı yapılandırmanı kontrol et.',
+
+    // Match detail
+    'matchDetail.notFound': 'Maç bulunamadı',
+    'matchDetail.live': 'Canlı',
+    'matchDetail.upcoming': 'Yaklaşan',
+    'matchDetail.postponed': 'Ertelendi',
+    'matchDetail.yourPrediction': 'Tahminin',
+    'matchDetail.joinLeagueFirst': 'Tahmin yapmak için bir lige katıl',
+    'matchDetail.selectLeague': 'Tahmin için lig seç:',
+    'matchDetail.aiPrediction': 'AI Maç Tahmini',
+    'matchDetail.draw': 'Beraberlik',
+    'matchDetail.predictedWinner': 'Tahmini kazanan:',
+    'matchDetail.leaguePredictions': 'Lig Tahminleri',
+    'matchDetail.matchEvents': 'Maç Olayları',
+
+    // League detail
+    'leagueDetail.notFound': 'Lig bulunamadı',
+    'leagueDetail.owner': 'Sahip',
+    'leagueDetail.members': 'Üyeler',
+    'leagueDetail.you': '(sen)',
+    'leagueDetail.tab.leaderboard': 'Lider Tablosu',
+    'leagueDetail.tab.matches': 'Maçlar',
+    'leagueDetail.tab.members': 'Üyeler',
+    'leagueDetail.noUpcoming': 'Yaklaşan maç yok',
+    'leagueDetail.inviteCode': 'Davet kodu',
+    'leagueDetail.copy': 'Kopyala',
+    'leagueDetail.copied': 'Kopyalandı!',
+    'leagueDetail.leave': 'Ligden ayrıl',
+    'leagueDetail.confirmLeave': 'Bu ligden ayrılmak istiyor musun?',
+
     // Common
     'common.loading': 'Yükleniyor',
     'common.tagline': 'Tahmin · Yarış · Kazan',
+    'common.notFound': 'Bulunamadı',
   },
 } as const;
 

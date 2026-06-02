@@ -1,6 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { enUS, tr as trLocale } from 'date-fns/locale';
 import { matchesApi } from '../services/matches';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
@@ -9,12 +10,14 @@ import { PredictionForm } from '../components/features/PredictionForm';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
 import { useAuthStore } from '../store/auth';
+import { useLanguageStore, useT } from '../store/language';
+import type { TranslationKey } from '../i18n/translations';
 
-const STATUS_CONFIG = {
-  scheduled: { label: 'Upcoming', variant: 'blue' as const },
-  live: { label: 'LIVE', variant: 'live' as const },
-  finished: { label: 'FT', variant: 'slate' as const },
-  postponed: { label: 'Postponed', variant: 'yellow' as const },
+const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'blue' | 'live' | 'slate' | 'yellow' }> = {
+  scheduled: { labelKey: 'matchDetail.upcoming', variant: 'blue' },
+  live: { labelKey: 'matchDetail.live', variant: 'live' },
+  finished: { labelKey: 'match.ftBadge', variant: 'slate' },
+  postponed: { labelKey: 'matchDetail.postponed', variant: 'yellow' },
 };
 
 const EVENT_ICONS: Record<string, string> = {
@@ -48,6 +51,9 @@ export default function MatchDetailPage() {
   const [searchParams] = useSearchParams();
   const leagueId = searchParams.get('leagueId') || '';
   const { user } = useAuthStore();
+  const t = useT();
+  const lang = useLanguageStore((s) => s.lang);
+  const dateLocale = lang === 'tr' ? trLocale : enUS;
 
   const { data: matchData, isLoading } = useQuery({
     queryKey: ['match', id],
@@ -89,7 +95,7 @@ export default function MatchDetailPage() {
   });
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
-  if (!match) return <div className="text-center text-slate-400 py-20 text-sm">Match not found</div>;
+  if (!match) return <div className="text-center text-slate-400 py-20 text-sm">{t('matchDetail.notFound')}</div>;
 
   const myPrediction = myPredictionsData?.data.predictions.find((p) => p.match_id === id);
   const events = eventsData?.data.events ?? [];
@@ -97,7 +103,9 @@ export default function MatchDetailPage() {
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
   const predictions = predictionsData?.data.predictions ?? [];
-  const { label, variant } = STATUS_CONFIG[match.status];
+  const statusEntry = STATUS_CONFIG[match.status] ?? STATUS_CONFIG.scheduled;
+  const label = t(statusEntry.labelKey);
+  const variant = statusEntry.variant;
   const isLive = match.status === 'live';
   const showScore = match.status === 'finished' || isLive;
 
@@ -125,7 +133,7 @@ export default function MatchDetailPage() {
               <p className="text-xs text-slate-600 uppercase tracking-wide">{match.tournament}</p>
             )}
             <p className="text-sm text-slate-400 mt-0.5">
-              {format(new Date(match.kickoff_time), 'EEEE, d MMMM yyyy · HH:mm')}
+              {format(new Date(match.kickoff_time), 'EEEE, d MMMM yyyy · HH:mm', { locale: dateLocale })}
             </p>
           </div>
         </div>
@@ -170,17 +178,17 @@ export default function MatchDetailPage() {
                     </span>
                   </div>
                   {isLive && (
-                    <span className="text-xs font-bold text-red-400 live-indicator uppercase tracking-widest">● Live</span>
+                    <span className="text-xs font-bold text-red-400 live-indicator uppercase tracking-widest">● {t('matchDetail.live')}</span>
                   )}
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <span className="font-score text-3xl text-slate-600 leading-none">VS</span>
+                  <span className="font-score text-3xl text-slate-600 leading-none">{t('match.vs')}</span>
                   <span
                     className="text-sm font-bold tabular-nums px-3 py-1.5 rounded-xl font-score"
                     style={{ background: 'rgba(22,163,74,0.12)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.2)' }}
                   >
-                    {format(new Date(match.kickoff_time), 'HH:mm')}
+                    {format(new Date(match.kickoff_time), 'HH:mm', { locale: dateLocale })}
                   </span>
                 </div>
               )}
@@ -229,11 +237,11 @@ export default function MatchDetailPage() {
           style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
           <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">Your Prediction</h2>
+            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.yourPrediction')}</h2>
           </div>
           <div className="p-5">
             {leagues.length === 0 ? (
-              <p className="text-sm text-slate-500">Join a league to make predictions</p>
+              <p className="text-sm text-slate-500">{t('matchDetail.joinLeagueFirst')}</p>
             ) : leagueId ? (
               <PredictionForm
                 matchId={match.id}
@@ -246,7 +254,7 @@ export default function MatchDetailPage() {
               />
             ) : (
               <div>
-                <p className="text-sm text-slate-400 mb-3">Select a league to predict:</p>
+                <p className="text-sm text-slate-400 mb-3">{t('matchDetail.selectLeague')}</p>
                 <div className="flex flex-wrap gap-2">
                   {leagues.map((league) => (
                     <a
@@ -271,7 +279,7 @@ export default function MatchDetailPage() {
             style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
           >
             <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="text-sm font-bold text-white font-heading">AI Match Prediction</h2>
+              <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.aiPrediction')}</h2>
             </div>
             <div className="p-5 space-y-4">
               {apiPrediction.advice && (
@@ -280,7 +288,7 @@ export default function MatchDetailPage() {
               <div className="grid grid-cols-3 gap-3 text-center">
                 {[
                   { label: match.home_team, value: apiPrediction.percent.home, color: 'text-blue-400' },
-                  { label: 'Draw', value: apiPrediction.percent.draw, color: 'text-slate-400' },
+                  { label: t('matchDetail.draw'), value: apiPrediction.percent.draw, color: 'text-slate-400' },
                   { label: match.away_team, value: apiPrediction.percent.away, color: 'text-green-400' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex flex-col gap-2">
@@ -294,7 +302,7 @@ export default function MatchDetailPage() {
               </div>
               {apiPrediction.winner?.name && (
                 <p className="text-xs text-slate-600 text-center">
-                  Predicted winner: <span className="text-slate-300 font-medium">{apiPrediction.winner.name}</span>
+                  {t('matchDetail.predictedWinner')} <span className="text-slate-300 font-medium">{apiPrediction.winner.name}</span>
                 </p>
               )}
             </div>
@@ -305,7 +313,7 @@ export default function MatchDetailPage() {
             style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
           >
             <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="text-sm font-bold text-white font-heading">League Predictions</h2>
+              <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.leaguePredictions')}</h2>
             </div>
             <div>
               {predictions.map((pred) => (
@@ -349,7 +357,7 @@ export default function MatchDetailPage() {
           style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
         >
           <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">Match Events</h2>
+            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.matchEvents')}</h2>
           </div>
           <div>
             {events.map((event: FixtureEvent, i: number) => (
