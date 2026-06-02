@@ -26,23 +26,23 @@ export default function LeaguesPage() {
   const createMutation = useMutation({
     mutationFn: () => leaguesApi.create(newLeague.name, newLeague.description || undefined),
     onSuccess: ({ data: resData }) => {
-      toast.success(`"${resData.league.name}" created!`);
+      toast.success(t('leagues.createdToast', { name: resData.league.name }));
       queryClient.invalidateQueries({ queryKey: ['leagues'] });
       setShowCreate(false);
       setNewLeague({ name: '', description: '' });
     },
-    onError: () => toast.error('Failed to create league'),
+    onError: () => toast.error(t('leagues.createError')),
   });
 
   const joinMutation = useMutation({
     mutationFn: () => leaguesApi.join(inviteCode.trim()),
     onSuccess: ({ data: resData }) => {
-      toast.success(`Joined "${resData.league.name}"!`);
+      toast.success(t('leagues.joinedToast', { name: resData.league.name }));
       queryClient.invalidateQueries({ queryKey: ['leagues'] });
       setShowJoin(false);
       setInviteCode('');
     },
-    onError: () => toast.error('Invalid code or already a member'),
+    onError: () => toast.error(t('leagues.joinError')),
   });
 
   const leagues = data?.data.leagues ?? [];
@@ -104,7 +104,7 @@ export default function LeaguesPage() {
           <Input
             id="league-name"
             label={t('leagues.field.name')}
-            placeholder="Friends WC 2026"
+            placeholder={t('leagues.field.name')}
             value={newLeague.name}
             onChange={(e) => setNewLeague((p) => ({ ...p, name: e.target.value }))}
             required
@@ -118,7 +118,7 @@ export default function LeaguesPage() {
             <textarea
               value={newLeague.description}
               onChange={(e) => setNewLeague((p) => ({ ...p, description: e.target.value }))}
-              placeholder="A friendly league for our group..."
+              placeholder={t('leagues.field.description')}
               maxLength={500}
               rows={3}
               className="w-full rounded-xl border border-white/8 bg-white/4 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/40 resize-none transition-all"
@@ -137,7 +137,7 @@ export default function LeaguesPage() {
           <Input
             id="invite-code"
             label={t('leagues.field.inviteCode')}
-            placeholder="ABC12345"
+            placeholder={t('leagues.field.inviteCode')}
             value={inviteCode}
             onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
             required

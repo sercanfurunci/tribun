@@ -169,7 +169,7 @@ export function Navbar() {
                 ))}
               </nav>
 
-              <div className="mt-auto space-y-3 pt-6">
+              <div className="mt-8 space-y-3 pt-6">
                 <div className="rounded-2xl border border-white/8 bg-[#0B1220] p-4">
                   <Link to="/profile" className="flex items-center gap-3" onClick={() => setMobileMenuOpen(false)}>
                     <div
@@ -253,7 +253,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="mt-auto space-y-3 pt-6">
+        <div className="mt-8 space-y-3 pt-6">
           <div className="rounded-2xl border border-white/8 bg-[#0F172A] p-4 shadow-[0_10px_30px_-22px_rgba(0,0,0,0.8)]">
             <Link to="/profile" className="flex items-center gap-3">
               <div

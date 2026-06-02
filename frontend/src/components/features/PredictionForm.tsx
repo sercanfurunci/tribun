@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { predictionsApi } from '../../services/predictions';
 import Button from '../ui/Button';
+import { useT } from '../../store/language';
 
 interface PredictionFormProps {
   matchId: string;
@@ -64,16 +65,17 @@ export function PredictionForm({
   const [homeScore, setHomeScore] = useState<string | number>(initialHome ?? '');
   const [awayScore, setAwayScore] = useState<string | number>(initialAway ?? '');
   const queryClient = useQueryClient();
+  const t = useT();
 
   const mutation = useMutation({
     mutationFn: () =>
       predictionsApi.upsert(matchId, leagueId, Number(homeScore), Number(awayScore)),
     onSuccess: () => {
-      toast.success('Prediction saved!');
+      toast.success(t('matchDetail.predictionSavedToast'));
       queryClient.invalidateQueries({ queryKey: ['predictions'] });
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : 'Failed to save prediction';
+      const msg = err instanceof Error ? err.message : t('matchDetail.predictionFailed');
       toast.error(msg);
     },
   });
@@ -86,7 +88,7 @@ export function PredictionForm({
         <svg className="size-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        Predictions locked for this match
+        {t('matchDetail.predictionLocked')}
       </div>
     );
   }
@@ -95,8 +97,8 @@ export function PredictionForm({
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="space-y-5">
       <div className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#12213A] via-[#0F172A] to-[#0B1220] px-4 py-5 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.8)] sm:px-5">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80">Prediction</p>
-          <p className="text-xs text-slate-500">Set the final scoreline</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80">{t('matchDetail.predictionEyebrow')}</p>
+          <p className="text-xs text-slate-500">{t('matchDetail.predictionSubheading')}</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
           <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
@@ -114,7 +116,7 @@ export function PredictionForm({
         className="w-full shadow-[0_14px_32px_-18px_rgba(34,197,94,0.9)]"
         size="lg"
       >
-        {initialHome !== undefined ? 'Update Prediction' : 'Save Prediction'}
+        {initialHome !== undefined ? t('matchDetail.predictionUpdate') : t('matchDetail.predictionSave')}
       </Button>
     </form>
   );

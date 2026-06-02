@@ -59,11 +59,11 @@ export default function LeagueDetailPage() {
   const leaveMutation = useMutation({
     mutationFn: () => leaguesApi.leave(id!),
     onSuccess: () => {
-      toast.success('Left league');
+      toast.success(t('leagueDetail.left'));
       queryClient.invalidateQueries({ queryKey: ['leagues'] });
       navigate('/leagues');
     },
-    onError: () => toast.error('Failed to leave league'),
+    onError: () => toast.error(t('leagueDetail.leaveError')),
   });
 
   if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>;

@@ -86,6 +86,11 @@ export const translations = {
     'leagues.field.inviteCode': 'Invite Code',
     'leagues.cancel': 'Cancel',
     'leagues.join': 'Join',
+    'leagues.createdToast': '"{name}" created!',
+    'leagues.joinedToast': 'Joined "{name}"!',
+    'leagues.createError': 'Failed to create league',
+    'leagues.joinError': 'Invalid code or already a member',
+    'leagueCard.members': 'members',
 
     // Profile
     'profile.memberSince': 'Member since',
@@ -149,6 +154,13 @@ export const translations = {
     'matchDetail.sectionHint': 'Pick a league and set your score',
     'matchDetail.joinLeagueFirst': 'Join a league to make predictions',
     'matchDetail.selectLeague': 'Select a league to predict:',
+    'matchDetail.predictionEyebrow': 'Prediction',
+    'matchDetail.predictionSubheading': 'Set the final scoreline',
+    'matchDetail.predictionLocked': 'Predictions locked for this match',
+    'matchDetail.predictionSave': 'Save Prediction',
+    'matchDetail.predictionUpdate': 'Update Prediction',
+    'matchDetail.predictionSavedToast': 'Prediction saved!',
+    'matchDetail.predictionFailed': 'Failed to save prediction',
     'matchDetail.aiPrediction': 'AI Match Prediction',
     'matchDetail.draw': 'Draw',
     'matchDetail.predictedWinner': 'Predicted winner:',
@@ -174,6 +186,8 @@ export const translations = {
     'leagueDetail.copied': 'Copied!',
     'leagueDetail.leave': 'Leave league',
     'leagueDetail.confirmLeave': 'Leave this league?',
+    'leagueDetail.left': 'Left league',
+    'leagueDetail.leaveError': 'Failed to leave league',
 
     // Common
     'common.loading': 'Loading',
@@ -266,6 +280,11 @@ export const translations = {
     'leagues.field.inviteCode': 'Davet Kodu',
     'leagues.cancel': 'Vazgeç',
     'leagues.join': 'Katıl',
+    'leagues.createdToast': '"{name}" oluşturuldu!',
+    'leagues.joinedToast': '"{name}" ligine katıldın!',
+    'leagues.createError': 'Lig oluşturulamadı',
+    'leagues.joinError': 'Geçersiz kod veya zaten üyeysin',
+    'leagueCard.members': 'üye',
 
     // Profile
     'profile.memberSince': 'Üyelik tarihi',
@@ -329,6 +348,13 @@ export const translations = {
     'matchDetail.sectionHint': 'Bir lig seç ve skorunu gir',
     'matchDetail.joinLeagueFirst': 'Tahmin yapmak için bir lige katıl',
     'matchDetail.selectLeague': 'Tahmin için lig seç:',
+    'matchDetail.predictionEyebrow': 'Tahmin',
+    'matchDetail.predictionSubheading': 'Maçın skorunu gir',
+    'matchDetail.predictionLocked': 'Bu maç için tahminler kilitlendi',
+    'matchDetail.predictionSave': 'Tahmini Kaydet',
+    'matchDetail.predictionUpdate': 'Tahmini Güncelle',
+    'matchDetail.predictionSavedToast': 'Tahmin kaydedildi!',
+    'matchDetail.predictionFailed': 'Tahmin kaydedilemedi',
     'matchDetail.aiPrediction': 'AI Maç Tahmini',
     'matchDetail.draw': 'Beraberlik',
     'matchDetail.predictedWinner': 'Tahmini kazanan:',
@@ -354,6 +380,8 @@ export const translations = {
     'leagueDetail.copied': 'Kopyalandı!',
     'leagueDetail.leave': 'Ligden ayrıl',
     'leagueDetail.confirmLeave': 'Bu ligden ayrılmak istiyor musun?',
+    'leagueDetail.left': 'Ligden ayrıldın',
+    'leagueDetail.leaveError': 'Ligden ayrılamadın',
 
     // Common
     'common.loading': 'Yükleniyor',
