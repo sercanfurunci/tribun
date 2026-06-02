@@ -156,16 +156,19 @@ export async function syncFromSportsDB(req: Request, res: Response): Promise<voi
   }
 }
 
-/** DELETE /api/sync/fixtures — clear all matches for a league+season */
+/** DELETE /api/sync/fixtures — clear matches by league+season OR by id list */
 export async function clearFixtures(req: Request, res: Response): Promise<void> {
-  const { leagueId, season } = req.body;
-  if (!leagueId || !season) {
-    res.status(400).json({ error: 'leagueId and season are required' });
-    return;
-  }
+  const { leagueId, season, ids } = req.body;
   try {
-    const result = await syncService.clearFixtures(String(leagueId), String(season));
-    res.json({ message: 'Fixtures cleared', ...result });
+    if (Array.isArray(ids) && ids.length > 0) {
+      const result = await syncService.clearFixturesByIds(ids);
+      res.json({ message: 'Fixtures cleared', ...result });
+    } else if (leagueId && season) {
+      const result = await syncService.clearFixtures(String(leagueId), String(season));
+      res.json({ message: 'Fixtures cleared', ...result });
+    } else {
+      res.status(400).json({ error: 'Provide leagueId+season or ids array' });
+    }
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : 'Clear failed' });
   }

@@ -239,6 +239,15 @@ export class SyncService {
     );
     return { deleted: res.rowCount ?? 0 };
   }
+
+  /** Delete matches by internal UUID list */
+  async clearFixturesByIds(ids: string[]): Promise<{ deleted: number }> {
+    const res = await pool.query(
+      'DELETE FROM matches WHERE id = ANY($1::uuid[])',
+      [ids]
+    );
+    return { deleted: res.rowCount ?? 0 };
+  }
 }
 
 export const syncService = new SyncService();
