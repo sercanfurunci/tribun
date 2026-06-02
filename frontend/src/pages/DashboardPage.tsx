@@ -20,7 +20,7 @@ interface StatCardProps {
 function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
   return (
     <div
-      className="rounded-2xl p-5 flex flex-col gap-4"
+      className="rounded-2xl p-4 sm:p-5 flex flex-col gap-3 sm:gap-4 min-w-0"
       style={{
         background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
         border: '1px solid rgba(255,255,255,0.1)',
@@ -28,13 +28,13 @@ function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
         backdropFilter: 'blur(20px)',
       }}
     >
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{label}</span>
-        <span className="text-xl leading-none">{icon}</span>
+      <div className="flex items-center justify-between gap-2 min-w-0">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-heading truncate">{label}</span>
+        <span className="text-base sm:text-lg leading-none shrink-0">{icon}</span>
       </div>
       <div>
-        <span className={`font-score text-5xl leading-none ${accent}`}>{value}</span>
-        {sublabel && <p className="text-xs text-slate-600 mt-1.5">{sublabel}</p>}
+        <span className={`font-score text-4xl sm:text-5xl leading-none ${accent}`}>{value}</span>
+        {sublabel && <p className="text-[11px] sm:text-xs text-slate-600 mt-1.5 truncate">{sublabel}</p>}
       </div>
     </div>
   );

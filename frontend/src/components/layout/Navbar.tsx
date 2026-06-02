@@ -33,7 +33,7 @@ export function Navbar() {
         }}
       >
         <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
-          <div className="flex h-16 items-center justify-between gap-4">
+          <div className="flex h-16 items-center justify-between gap-3">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
               <div
@@ -71,12 +71,12 @@ export function Navbar() {
             )}
 
             {/* Right */}
-            <div className="flex items-center gap-2 shrink-0">
-              {/* Lang toggle */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Lang toggle — compact on mobile */}
               <button
                 onClick={toggle}
                 aria-label="Toggle language"
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold font-heading uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold font-heading uppercase tracking-wider text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
                 style={{ border: '1px solid rgba(255,255,255,0.08)' }}
               >
                 <span className={lang === 'tr' ? 'text-green-400' : ''}>TR</span>
@@ -88,7 +88,7 @@ export function Navbar() {
                 <>
                   <Link
                     to="/profile"
-                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-white/5 transition-all"
+                    className="flex items-center gap-2 px-2 sm:px-2.5 py-1.5 rounded-xl hover:bg-white/5 transition-all"
                   >
                     <div
                       className="size-7 rounded-lg flex items-center justify-center text-xs font-bold text-white font-heading shrink-0"
@@ -96,7 +96,7 @@ export function Navbar() {
                     >
                       {user?.username?.[0]?.toUpperCase()}
                     </div>
-                    <span className="text-sm text-slate-300 hidden sm:block font-medium truncate max-w-[100px]">
+                    <span className="text-sm text-slate-300 hidden lg:block font-medium truncate max-w-[100px]">
                       {user?.username}
                     </span>
                   </Link>
@@ -132,48 +132,51 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav — FLOATING PILL with margin from edges */}
       {isAuthenticated && (
-        <nav
-          className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center"
-          style={{
-            background: 'rgba(6,13,26,0.97)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
-            paddingBottom: 'env(safe-area-inset-bottom)',
-          }}
+        <div
+          className="md:hidden fixed bottom-0 left-0 right-0 z-50 pointer-events-none"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)' }}
         >
-          {NAV_LINKS.map(({ to, label, icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-1 py-3 text-center transition-all duration-200 relative ${
-                  isActive ? 'text-green-400' : 'text-slate-500 hover:text-slate-300'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <span
-                    className="text-xl leading-none"
-                    style={isActive ? { filter: 'drop-shadow(0 0 6px rgba(74,222,128,0.6))' } : undefined}
-                  >
-                    {icon}
-                  </span>
-                  <span className="text-[10px] font-semibold font-heading tracking-wide leading-none">{label}</span>
-                  {isActive && (
+          <nav
+            className="pointer-events-auto mx-4 flex items-center rounded-2xl px-1 py-1"
+            style={{
+              background: 'rgba(8, 16, 32, 0.92)',
+              backdropFilter: 'blur(28px)',
+              WebkitBackdropFilter: 'blur(28px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              boxShadow: '0 16px 48px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset',
+            }}
+          >
+            {NAV_LINKS.map(({ to, label, icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl transition-all duration-200 ${
+                    isActive
+                      ? 'text-green-400 bg-green-600/12'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
                     <span
-                      className="absolute bottom-0 w-8 h-0.5 rounded-t-full"
-                      style={{ background: '#16a34a' }}
-                    />
-                  )}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
+                      className="text-[20px] leading-none"
+                      style={isActive ? { filter: 'drop-shadow(0 0 6px rgba(74,222,128,0.55))' } : undefined}
+                    >
+                      {icon}
+                    </span>
+                    <span className="text-[9.5px] font-bold font-heading tracking-wide leading-none uppercase">
+                      {label}
+                    </span>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       )}
     </>
   );
