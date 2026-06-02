@@ -6,10 +6,42 @@ import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
 import { footballApi, FixtureEvent } from '../services/football';
 import { PredictionForm } from '../components/features/PredictionForm';
-import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
 import { useAuthStore } from '../store/auth';
+
+const STATUS_CONFIG = {
+  scheduled: { label: 'Upcoming', variant: 'blue' as const },
+  live: { label: 'LIVE', variant: 'live' as const },
+  finished: { label: 'FT', variant: 'slate' as const },
+  postponed: { label: 'Postponed', variant: 'yellow' as const },
+};
+
+const EVENT_ICONS: Record<string, string> = {
+  Goal: '⚽', subst: '🔄', Var: '📺',
+};
+
+function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string }) {
+  const isHome = event.team.name === homeName;
+  const icon = event.type === 'Card'
+    ? (event.detail.includes('Red') ? '🟥' : '🟨')
+    : EVENT_ICONS[event.type] || '•';
+
+  return (
+    <div
+      className={`flex items-center gap-3 px-5 py-3 ${isHome ? 'flex-row' : 'flex-row-reverse'}`}
+      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+    >
+      <span className="text-xs text-slate-600 w-8 text-center shrink-0 font-score">{event.time.elapsed}'</span>
+      <span className="text-base shrink-0">{icon}</span>
+      <div className={`flex-1 min-w-0 ${isHome ? 'text-left' : 'text-right'}`}>
+        <span className="text-sm text-white">{event.player.name}</span>
+        {event.assist.name && <span className="text-xs text-slate-500 ml-1">({event.assist.name})</span>}
+        <span className="text-xs text-slate-600 ml-1">{event.detail}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function MatchDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -56,89 +88,153 @@ export default function MatchDetailPage() {
     enabled: !!externalId && match?.status === 'scheduled',
   });
 
-  if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>;
-  if (!match) return <div className="text-center text-slate-400 py-16">Match not found</div>;
+  if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
+  if (!match) return <div className="text-center text-slate-400 py-20 text-sm">Match not found</div>;
 
   const myPrediction = myPredictionsData?.data.predictions.find((p) => p.match_id === id);
   const events = eventsData?.data.events ?? [];
   const apiPrediction = apiPredictionData?.data.prediction?.predictions;
-
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
   const predictions = predictionsData?.data.predictions ?? [];
-
-  const statusConfig = {
-    scheduled: { label: 'Upcoming', variant: 'blue' as const },
-    live: { label: 'LIVE', variant: 'red' as const },
-    finished: { label: 'Finished', variant: 'slate' as const },
-    postponed: { label: 'Postponed', variant: 'yellow' as const },
-  };
-  const { label, variant } = statusConfig[match.status];
+  const { label, variant } = STATUS_CONFIG[match.status];
+  const isLive = match.status === 'live';
+  const showScore = match.status === 'finished' || isLive;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <Card variant="elevated">
-        <CardBody className="py-8">
-          <div className="flex items-center justify-between mb-6">
-            <Badge variant={variant}>{label}</Badge>
-            <div className="text-right">
-              {match.tournament && <p className="text-xs text-slate-500">{match.tournament}</p>}
-              <p className="text-sm text-slate-400">
-                {format(new Date(match.kickoff_time), 'EEEE, d MMMM yyyy • HH:mm')}
-              </p>
-            </div>
+    <div className="space-y-5 animate-fade-up">
+
+      {/* Match hero card */}
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{
+          background: isLive
+            ? 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(12,22,40,0.95) 60%)'
+            : 'linear-gradient(135deg, rgba(22,163,74,0.1) 0%, rgba(12,22,40,0.95) 60%)',
+          border: isLive ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        {/* Top meta */}
+        <div
+          className="flex items-center justify-between px-6 py-4"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <Badge variant={variant}>{label}</Badge>
+          <div className="text-right">
+            {match.tournament && (
+              <p className="text-xs text-slate-600 uppercase tracking-wide">{match.tournament}</p>
+            )}
+            <p className="text-sm text-slate-400 mt-0.5">
+              {format(new Date(match.kickoff_time), 'EEEE, d MMMM yyyy · HH:mm')}
+            </p>
           </div>
+        </div>
 
-          <div className="flex items-center justify-between gap-6">
-            <div className="flex flex-col items-center gap-3 flex-1">
-              <div className="size-16 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
-                {match.home_team_logo ? (
-                  <img src={match.home_team_logo} alt={match.home_team} className="size-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-bold text-slate-300">{match.home_team[0]}</span>
-                )}
+        {/* Teams & score */}
+        <div className="px-6 py-8">
+          <div className="flex items-center gap-4 sm:gap-8">
+
+            {/* Home team */}
+            <div className="flex-1 flex flex-col items-center gap-3">
+              <div
+                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {match.home_team_logo
+                  ? <img src={match.home_team_logo} alt={match.home_team} className="size-12 sm:size-16 object-contain" />
+                  : <span className="text-2xl font-bold text-slate-300">{match.home_team[0]}</span>
+                }
               </div>
-              <span className="text-base font-bold text-white text-center">{match.home_team}</span>
+              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
+                {match.home_team}
+              </span>
             </div>
 
-            <div className="flex flex-col items-center gap-2">
-              {match.status === 'finished' || match.status === 'live' ? (
-                <div className="text-center">
-                  <div className="flex items-center gap-3">
-                    <span className="text-5xl font-black text-white">{match.home_score ?? 0}</span>
-                    <span className="text-3xl text-slate-600">–</span>
-                    <span className="text-5xl font-black text-white">{match.away_score ?? 0}</span>
+            {/* Score / VS */}
+            <div className="flex flex-col items-center gap-2 shrink-0">
+              {showScore ? (
+                <>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span
+                      className="font-score text-5xl sm:text-6xl leading-none text-white"
+                      style={isLive ? { textShadow: '0 0 20px rgba(239,68,68,0.7)' } : undefined}
+                    >
+                      {match.home_score ?? 0}
+                    </span>
+                    <span className="font-score text-3xl text-slate-600 leading-none">:</span>
+                    <span
+                      className="font-score text-5xl sm:text-6xl leading-none text-white"
+                      style={isLive ? { textShadow: '0 0 20px rgba(239,68,68,0.7)' } : undefined}
+                    >
+                      {match.away_score ?? 0}
+                    </span>
                   </div>
-                  {match.status === 'live' && (
-                    <Badge variant="red" size="md" className="mt-2">LIVE</Badge>
+                  {isLive && (
+                    <span className="text-xs font-bold text-red-400 live-indicator uppercase tracking-widest">● Live</span>
                   )}
-                </div>
+                </>
               ) : (
-                <span className="text-3xl text-slate-600 font-bold">vs</span>
+                <div className="flex flex-col items-center gap-2">
+                  <span className="font-score text-3xl text-slate-600 leading-none">VS</span>
+                  <span
+                    className="text-sm font-bold tabular-nums px-3 py-1.5 rounded-xl font-score"
+                    style={{ background: 'rgba(22,163,74,0.12)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.2)' }}
+                  >
+                    {format(new Date(match.kickoff_time), 'HH:mm')}
+                  </span>
+                </div>
               )}
             </div>
 
-            <div className="flex flex-col items-center gap-3 flex-1">
-              <div className="size-16 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
-                {match.away_team_logo ? (
-                  <img src={match.away_team_logo} alt={match.away_team} className="size-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-bold text-slate-300">{match.away_team[0]}</span>
-                )}
+            {/* Away team */}
+            <div className="flex-1 flex flex-col items-center gap-3">
+              <div
+                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {match.away_team_logo
+                  ? <img src={match.away_team_logo} alt={match.away_team} className="size-12 sm:size-16 object-contain" />
+                  : <span className="text-2xl font-bold text-slate-300">{match.away_team[0]}</span>
+                }
               </div>
-              <span className="text-base font-bold text-white text-center">{match.away_team}</span>
+              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
+                {match.away_team}
+              </span>
             </div>
           </div>
-        </CardBody>
-      </Card>
 
-      {leagues.length > 0 && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-white">Your Prediction</h2>
-          </CardHeader>
-          <CardBody>
-            {leagueId ? (
+          {/* Match meta */}
+          {(match.venue || match.match_day) && (
+            <div className="flex items-center justify-center gap-4 mt-6 flex-wrap">
+              {match.match_day && (
+                <span className="text-xs text-slate-600 uppercase tracking-widest font-heading">{match.match_day}</span>
+              )}
+              {match.venue && (
+                <span className="text-xs text-slate-600">📍 {match.venue}</span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Live bar */}
+        {isLive && <div className="h-0.5 bg-red-500/20"><div className="h-full bg-red-500 live-indicator w-3/5" /></div>}
+      </div>
+
+      {/* Main content: 2 columns on large screens */}
+      <div className="grid gap-5 lg:grid-cols-2">
+
+        {/* Prediction section */}
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <h2 className="text-sm font-bold text-white font-heading">Your Prediction</h2>
+          </div>
+          <div className="p-5">
+            {leagues.length === 0 ? (
+              <p className="text-sm text-slate-500">Join a league to make predictions</p>
+            ) : leagueId ? (
               <PredictionForm
                 matchId={match.id}
                 leagueId={leagueId}
@@ -149,14 +245,15 @@ export default function MatchDetailPage() {
                 awayName={match.away_team}
               />
             ) : (
-              <div className="text-sm text-slate-400">
-                Select a league to make your prediction:
-                <div className="mt-3 flex flex-wrap gap-2">
+              <div>
+                <p className="text-sm text-slate-400 mb-3">Select a league to predict:</p>
+                <div className="flex flex-wrap gap-2">
                   {leagues.map((league) => (
                     <a
                       key={league.id}
                       href={`?leagueId=${league.id}`}
-                      className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm text-white transition-colors"
+                      className="px-3 py-2 rounded-xl text-sm font-medium text-white transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                     >
                       {league.name}
                     </a>
@@ -164,124 +261,103 @@ export default function MatchDetailPage() {
                 </div>
               </div>
             )}
-          </CardBody>
-        </Card>
-      )}
+          </div>
+        </div>
 
-      {apiPrediction && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-white">AI Match Prediction</h2>
-          </CardHeader>
-          <CardBody className="space-y-4">
-            {apiPrediction.advice && (
-              <p className="text-sm text-slate-300 italic">"{apiPrediction.advice}"</p>
-            )}
-            <div className="grid grid-cols-3 gap-3 text-center">
-              {[
-                { label: match.home_team, value: apiPrediction.percent.home, color: 'text-blue-400' },
-                { label: 'Draw', value: apiPrediction.percent.draw, color: 'text-slate-400' },
-                { label: match.away_team, value: apiPrediction.percent.away, color: 'text-green-400' },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex flex-col gap-1">
-                  <span className={`text-xl font-bold ${color}`}>{value}</span>
-                  <span className="text-xs text-slate-500 truncate">{label}</span>
-                  <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${color.replace('text-', 'bg-')}`}
-                      style={{ width: value }}
-                    />
+        {/* AI prediction / League predictions */}
+        {apiPrediction ? (
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <h2 className="text-sm font-bold text-white font-heading">AI Match Prediction</h2>
+            </div>
+            <div className="p-5 space-y-4">
+              {apiPrediction.advice && (
+                <p className="text-sm text-slate-300 italic">"{apiPrediction.advice}"</p>
+              )}
+              <div className="grid grid-cols-3 gap-3 text-center">
+                {[
+                  { label: match.home_team, value: apiPrediction.percent.home, color: 'text-blue-400' },
+                  { label: 'Draw', value: apiPrediction.percent.draw, color: 'text-slate-400' },
+                  { label: match.away_team, value: apiPrediction.percent.away, color: 'text-green-400' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="flex flex-col gap-2">
+                    <span className={`font-score text-2xl leading-none ${color}`}>{value}</span>
+                    <span className="text-xs text-slate-500 truncate">{label}</span>
+                    <div className="h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                      <div className={`h-full rounded-full ${color.replace('text-', 'bg-')}`} style={{ width: value }} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              {apiPrediction.winner?.name && (
+                <p className="text-xs text-slate-600 text-center">
+                  Predicted winner: <span className="text-slate-300 font-medium">{apiPrediction.winner.name}</span>
+                </p>
+              )}
             </div>
-            {apiPrediction.winner && (
-              <p className="text-xs text-slate-500 text-center">
-                Predicted winner: <span className="text-white font-medium">{apiPrediction.winner.name}</span>
-                {apiPrediction.winner.comment && ` — ${apiPrediction.winner.comment}`}
-              </p>
-            )}
-          </CardBody>
-        </Card>
-      )}
-
-      {events.length > 0 && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-white">Match Events</h2>
-          </CardHeader>
-          <CardBody className="p-0">
-            <div className="divide-y divide-slate-800/50">
-              {events.map((event: FixtureEvent, i: number) => (
-                <MatchEvent key={i} event={event} homeName={match.home_team} />
-              ))}
+          </div>
+        ) : leagueId && predictions.length > 0 && match.status === 'finished' ? (
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+              <h2 className="text-sm font-bold text-white font-heading">League Predictions</h2>
             </div>
-          </CardBody>
-        </Card>
-      )}
-
-      {leagueId && predictions.length > 0 && match.status === 'finished' && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-white">League Predictions</h2>
-          </CardHeader>
-          <CardBody className="p-0">
-            <div className="divide-y divide-slate-800">
+            <div>
               {predictions.map((pred) => (
-                <div key={pred.id} className={`flex items-center justify-between px-5 py-3 ${pred.user_id === user?.id ? 'bg-green-500/5' : ''}`}>
+                <div
+                  key={pred.id}
+                  className="flex items-center justify-between px-5 py-3"
+                  style={{
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    background: pred.user_id === user?.id ? 'rgba(22,163,74,0.05)' : 'transparent',
+                  }}
+                >
                   <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold">
+                    <div
+                      className="size-7 rounded-lg flex items-center justify-center text-xs font-bold text-white font-heading"
+                      style={{ background: 'rgba(255,255,255,0.1)' }}
+                    >
                       {pred.username?.[0]?.toUpperCase()}
                     </div>
-                    <span className="text-sm text-white">{pred.username}</span>
+                    <span className="text-sm text-slate-300">{pred.username}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-slate-300">
+                    <span className="text-sm font-bold text-white font-score">
                       {pred.predicted_home_score} – {pred.predicted_away_score}
                     </span>
-                    <span className={`text-sm font-bold w-12 text-right ${
+                    <span className={`text-sm font-bold w-10 text-right font-score ${
                       pred.points_awarded === 3 ? 'text-amber-400' :
                       pred.points_awarded >= 1 ? 'text-green-400' : 'text-slate-600'
-                    }`}>
-                      +{pred.points_awarded}
-                    </span>
+                    }`}>+{pred.points_awarded}</span>
                   </div>
                 </div>
               ))}
             </div>
-          </CardBody>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-const EVENT_ICONS: Record<string, string> = {
-  Goal: '⚽',
-  Card: '🟨',
-  subst: '🔄',
-  Var: '📺',
-};
-
-function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string }) {
-  const isHome = event.team.name === homeName;
-  const icon = event.type === 'Card'
-    ? (event.detail.includes('Red') ? '🟥' : '🟨')
-    : EVENT_ICONS[event.type] || '•';
-
-  return (
-    <div className={`flex items-center gap-3 px-5 py-2.5 ${isHome ? 'flex-row' : 'flex-row-reverse'}`}>
-      <span className="text-xs text-slate-500 w-8 text-center flex-shrink-0">
-        {event.time.elapsed}'
-      </span>
-      <span className="text-base flex-shrink-0">{icon}</span>
-      <div className={`flex-1 ${isHome ? 'text-left' : 'text-right'}`}>
-        <span className="text-sm text-white">{event.player.name}</span>
-        {event.assist.name && (
-          <span className="text-xs text-slate-500 ml-1">({event.assist.name})</span>
-        )}
-        <span className="text-xs text-slate-600 ml-1">{event.detail}</span>
+          </div>
+        ) : null}
       </div>
+
+      {/* Match events */}
+      {events.length > 0 && (
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <h2 className="text-sm font-bold text-white font-heading">Match Events</h2>
+          </div>
+          <div>
+            {events.map((event: FixtureEvent, i: number) => (
+              <MatchEvent key={i} event={event} homeName={match.home_team} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -7,25 +7,6 @@ import { LeagueCard } from '../components/features/LeagueCard';
 import { Spinner } from '../components/ui/Spinner';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
-interface StatRowProps {
-  label: string;
-  value: number | string;
-  accent: string;
-  icon: string;
-}
-
-function StatRow({ label, value, accent, icon }: StatRowProps) {
-  return (
-    <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-      <div className="flex items-center gap-2.5">
-        <span className="text-base">{icon}</span>
-        <span className="text-sm text-slate-400">{label}</span>
-      </div>
-      <span className={`font-score text-2xl leading-none ${accent}`}>{value}</span>
-    </div>
-  );
-}
-
 export default function ProfilePage() {
   const { user } = useAuthStore();
 
@@ -49,35 +30,35 @@ export default function ProfilePage() {
   const chartData = [{ value: accuracy, fill: '#16a34a' }];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-up">
+    <div className="space-y-6 animate-fade-up">
 
-      {/* Profile hero card */}
+      {/* Profile hero */}
       <div
-        className="relative rounded-2xl overflow-hidden"
+        className="relative rounded-2xl overflow-hidden px-6 py-8"
         style={{
           background: 'linear-gradient(135deg, rgba(22,163,74,0.15) 0%, rgba(12,22,40,0.95) 60%)',
           border: '1px solid rgba(22,163,74,0.2)',
         }}
       >
         <div
-          className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-10 pointer-events-none"
+          className="absolute -top-12 -right-12 w-56 h-56 rounded-full opacity-10 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
         />
-        <div className="px-6 py-6 flex items-center gap-5">
+        <div className="flex items-center gap-5">
           <div
-            className="size-16 rounded-2xl flex items-center justify-center text-2xl font-bold text-white font-heading shrink-0"
+            className="size-16 sm:size-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-white font-heading shrink-0"
             style={{
               background: 'linear-gradient(135deg, #16a34a, #15803d)',
-              boxShadow: '0 0 24px rgba(22,163,74,0.4)',
+              boxShadow: '0 0 28px rgba(22,163,74,0.4)',
             }}
           >
             {user?.username?.[0]?.toUpperCase()}
           </div>
           <div className="min-w-0">
-            <h1 className="font-heading font-bold text-xl text-white truncate">{user?.username}</h1>
-            <p className="text-sm text-slate-500 truncate">{user?.email}</p>
+            <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white truncate">{user?.username}</h1>
+            <p className="text-slate-500 truncate mt-0.5">{user?.email}</p>
             {user?.created_at && (
-              <p className="text-xs text-slate-600 mt-1 font-heading">
+              <p className="text-xs text-slate-600 mt-1.5 font-heading uppercase tracking-widest">
                 Member since {format(new Date(user.created_at), 'MMMM yyyy')}
               </p>
             )}
@@ -85,57 +66,59 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats grid */}
       {loadingStats ? (
-        <div className="flex justify-center py-12"><Spinner /></div>
+        <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : stats ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Stat rows */}
-          <div
-            className="rounded-2xl px-5 py-2"
-            style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest font-heading pt-3 pb-1">Prediction Stats</p>
-            <StatRow label="Total Points" value={stats.total_points} accent="text-green-400" icon="⚡" />
-            <StatRow label="Predictions Made" value={stats.total_predictions} accent="text-white" icon="🎯" />
-            <StatRow label="Exact Scores" value={stats.exact_scores} accent="text-amber-400" icon="🥇" />
-            <div className="flex items-center justify-between py-3">
-              <div className="flex items-center gap-2.5">
-                <span className="text-base">✓</span>
-                <span className="text-sm text-slate-400">Correct Outcomes</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          {/* Stat cards */}
+          {[
+            { label: 'Total Points', value: stats.total_points, accent: 'text-green-400', icon: '⚡', sub: 'earned' },
+            { label: 'Predictions', value: stats.total_predictions, accent: 'text-white', icon: '🎯', sub: 'submitted' },
+            { label: 'Exact Scores', value: stats.exact_scores, accent: 'text-amber-400', icon: '🥇', sub: '3 pts each' },
+            { label: 'Correct Outcomes', value: stats.correct_outcomes, accent: 'text-blue-400', icon: '✓', sub: '1–2 pts each' },
+          ].map(({ label, value, accent, icon, sub }) => (
+            <div
+              key={label}
+              className="rounded-2xl p-5 flex flex-col gap-3"
+              style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{label}</span>
+                <span className="text-lg">{icon}</span>
               </div>
-              <span className="font-score text-2xl leading-none text-blue-400">{stats.correct_outcomes}</span>
+              <span className={`font-score text-5xl leading-none ${accent}`}>{value}</span>
+              <span className="text-xs text-slate-600">{sub}</span>
             </div>
-          </div>
+          ))}
 
           {/* Accuracy donut */}
           <div
-            className="rounded-2xl px-5 py-5 flex flex-col items-center justify-center gap-3"
+            className="rounded-2xl p-5 flex flex-col gap-3 sm:col-span-2 lg:col-span-1"
             style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
           >
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest font-heading self-start">Accuracy</p>
-            <div className="relative size-32">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart
-                  innerRadius="72%"
-                  outerRadius="100%"
-                  data={chartData}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <RadialBar dataKey="value" cornerRadius={8} background={{ fill: 'rgba(255,255,255,0.04)' }} />
-                </RadialBarChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-score text-4xl leading-none text-white">{accuracy}%</span>
-                <span className="text-[10px] text-slate-600 mt-1 uppercase tracking-widest font-heading">accuracy</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">Accuracy</span>
+            <div className="flex items-center gap-6">
+              <div className="relative size-24 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadialBarChart innerRadius="72%" outerRadius="100%" data={chartData} startAngle={90} endAngle={-270}>
+                    <RadialBar dataKey="value" cornerRadius={6} background={{ fill: 'rgba(255,255,255,0.04)' }} />
+                  </RadialBarChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-score text-3xl leading-none text-white">{accuracy}%</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-400 text-sm">
+                  {stats.total_predictions > 0
+                    ? `${stats.correct_outcomes} of ${stats.total_predictions} correct`
+                    : 'No predictions yet'}
+                </p>
+                <p className="text-xs text-slate-600 mt-1">outcome accuracy</p>
               </div>
             </div>
-            <p className="text-xs text-slate-600 text-center">
-              {stats.total_predictions > 0
-                ? `${stats.correct_outcomes} of ${stats.total_predictions} correct`
-                : 'No predictions yet'}
-            </p>
           </div>
         </div>
       ) : null}
@@ -143,9 +126,7 @@ export default function ProfilePage() {
       {/* Leagues */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-heading">
-            My Leagues
-          </h2>
+          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-heading">My Leagues</h2>
           <span
             className="text-xs font-bold px-2 py-0.5 rounded-full"
             style={{ background: 'rgba(255,255,255,0.06)', color: '#64748b' }}
@@ -157,13 +138,13 @@ export default function ProfilePage() {
           <div className="flex justify-center py-8"><Spinner /></div>
         ) : leagues.length === 0 ? (
           <div
-            className="rounded-2xl p-8 text-center text-slate-600 text-sm"
+            className="rounded-2xl p-10 text-center text-slate-600 text-sm"
             style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
           >
             No leagues joined yet
           </div>
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}
           </div>
         )}
