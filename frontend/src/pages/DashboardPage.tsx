@@ -14,18 +14,16 @@ interface StatCardProps {
   sublabel?: string;
   accent: string;
   icon: string;
-  delay?: string;
 }
 
-function StatCard({ label, value, sublabel, accent, icon, delay = '0ms' }: StatCardProps) {
+function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
   return (
     <div
-      className="rounded-2xl p-5 flex flex-col gap-4 animate-fade-up"
+      className="rounded-2xl p-5 flex flex-col gap-4"
       style={{
         background: 'rgba(12,22,40,0.8)',
         border: '1px solid rgba(255,255,255,0.07)',
         backdropFilter: 'blur(20px)',
-        animationDelay: delay,
       }}
     >
       <div className="flex items-center justify-between">
@@ -113,11 +111,11 @@ export default function DashboardPage() {
       {stats && (
         <section>
           <SectionHeader title="Your Stats" linkTo="/profile" linkLabel="Full profile" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Points" value={stats.total_points} sublabel="total earned" accent="text-green-400" icon="⚡" delay="0ms" />
-            <StatCard label="Predictions" value={stats.total_predictions} sublabel="submitted" accent="text-white" icon="🎯" delay="60ms" />
-            <StatCard label="Exact Scores" value={stats.exact_scores} sublabel="3 pts each" accent="text-amber-400" icon="🥇" delay="120ms" />
-            <StatCard label="Correct" value={stats.correct_outcomes} sublabel="outcomes" accent="text-blue-400" icon="✓" delay="180ms" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger">
+            <StatCard label="Points" value={stats.total_points} sublabel="total earned" accent="text-green-400" icon="⚡" />
+            <StatCard label="Predictions" value={stats.total_predictions} sublabel="submitted" accent="text-white" icon="🎯" />
+            <StatCard label="Exact Scores" value={stats.exact_scores} sublabel="3 pts each" accent="text-amber-400" icon="🥇" />
+            <StatCard label="Correct" value={stats.correct_outcomes} sublabel="outcomes" accent="text-blue-400" icon="✓" />
           </div>
         </section>
       )}

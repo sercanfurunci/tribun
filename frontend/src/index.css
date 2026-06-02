@@ -120,13 +120,57 @@ body::before {
   animation: live-pulse 1.8s ease-in-out infinite;
 }
 
-/* Fade in animation */
+/* Custom easing curves — Emil Kowalski principles */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Fade in — scale from 0.97 not 0 (nothing appears from nothing) */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .animate-fade-up {
-  animation: fadeInUp 0.4s ease forwards;
+  animation: fadeInUp 0.3s var(--ease-out) forwards;
+}
+
+/* Stagger children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+.stagger > * { opacity: 0; animation: fadeInUp 0.3s var(--ease-out) forwards; }
+
+/* Modal entry — from scale(0.95), centered origin (correct for modals) */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-enter {
+  animation: modalIn 0.2s var(--ease-out) forwards;
+  transform-origin: center;
+}
+.backdrop-enter {
+  animation: backdropIn 0.15s ease-out forwards;
+}
+
+/* Reduced motion — keep opacity, remove movement */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .modal-enter,
+  .stagger > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Shimmer for loading */
@@ -141,8 +185,44 @@ body::before {
 }
 
 /* Green glow button effect */
-.btn-glow:hover {
-  box-shadow: var(--glow-green-strong);
+@media (hover: hover) and (pointer: fine) {
+  .btn-glow:hover {
+    box-shadow: var(--glow-green-strong);
+  }
+}
+
+/* Match card — CSS hover (Emil: no JS handlers, specify exact properties) */
+.match-card {
+  background: rgba(12, 22, 40, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  /* Specify exact animated properties — Emil: never transition: all */
+  transition:
+    transform 200ms var(--ease-out),
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+  will-change: transform;
+}
+
+.match-card--live {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Gate hover behind pointer:fine — Emil: touch devices trigger hover on tap */
+@media (hover: hover) and (pointer: fine) {
+  .match-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(22, 163, 74, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 24px rgba(22, 163, 74, 0.1);
+  }
+  .match-card--live:hover {
+    border-color: rgba(239, 68, 68, 0.5);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 24px rgba(239, 68, 68, 0.12);
+  }
+}
+
+/* Press feedback on match card link */
+.match-card-link:active .match-card {
+  transform: scale(0.98);
 }
 
 /* Number counter style */

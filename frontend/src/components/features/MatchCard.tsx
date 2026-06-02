@@ -61,30 +61,10 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
   const showScore = isLive || isFinished;
 
   return (
-    <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`} className="block group">
+    <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`} className="block match-card-link">
       <div
-        className="rounded-2xl overflow-hidden transition-all duration-300"
-        style={{
-          background: 'rgba(12,22,40,0.75)',
-          border: isLive
-            ? '1px solid rgba(239,68,68,0.3)'
-            : '1px solid rgba(255,255,255,0.07)',
-          backdropFilter: 'blur(20px)',
-        }}
-        onMouseEnter={(e) => {
-          const el = e.currentTarget as HTMLElement;
-          el.style.transform = 'translateY(-2px)';
-          el.style.borderColor = isLive ? 'rgba(239,68,68,0.5)' : 'rgba(22,163,74,0.3)';
-          el.style.boxShadow = isLive
-            ? '0 12px 40px rgba(0,0,0,0.4), 0 0 24px rgba(239,68,68,0.12)'
-            : '0 12px 40px rgba(0,0,0,0.4), 0 0 24px rgba(22,163,74,0.1)';
-        }}
-        onMouseLeave={(e) => {
-          const el = e.currentTarget as HTMLElement;
-          el.style.transform = '';
-          el.style.borderColor = isLive ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.07)';
-          el.style.boxShadow = '';
-        }}
+        className={`match-card rounded-2xl overflow-hidden ${isLive ? 'match-card--live' : ''}`}
+        style={{ backdropFilter: 'blur(20px)' }}
       >
         {/* Header bar */}
         <div

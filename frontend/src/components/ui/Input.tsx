@@ -10,7 +10,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, ...props }, ref) => (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+        <label htmlFor={id} className="text-xs font-bold text-slate-400 uppercase tracking-widest font-heading">
           {label}
         </label>
       )}
@@ -18,19 +18,24 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         id={id}
         className={clsx(
-          'w-full rounded-xl border bg-white/4 px-4 py-3 text-sm text-slate-100',
-          'placeholder:text-slate-600 transition-all duration-200',
-          'focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 focus:bg-white/6',
+          'w-full rounded-xl px-4 py-3 text-sm text-slate-100',
+          'bg-white/4 border',
+          'placeholder:text-slate-600',
+          // Specify exact properties — Emil: never transition: all
+          'transition-[border-color,background-color,box-shadow] duration-150 ease-out',
+          'focus:outline-none focus:bg-white/6',
           error
-            ? 'border-red-500/60 focus:ring-red-500/40'
-            : 'border-white/8 hover:border-white/15',
+            ? 'border-red-500/50 focus:border-red-400/70 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]'
+            : 'border-white/8 hover:border-white/16 focus:border-green-500/50 focus:shadow-[0_0_0_3px_rgba(22,163,74,0.12)]',
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-red-400 flex items-center gap-1">
-        <span>⚠</span> {error}
-      </p>}
+      {error && (
+        <p className="text-xs text-red-400 flex items-center gap-1">
+          <span aria-hidden>⚠</span> {error}
+        </p>
+      )}
     </div>
   )
 );
