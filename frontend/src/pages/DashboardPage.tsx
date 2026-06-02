@@ -7,16 +7,47 @@ import { predictionsApi } from '../services/predictions';
 import { MatchCard } from '../components/features/MatchCard';
 import { LeagueCard } from '../components/features/LeagueCard';
 import { Spinner } from '../components/ui/Spinner';
-import { Card, CardBody } from '../components/ui/Card';
 
-function StatCard({ label, value, accent }: { label: string; value: string | number; accent?: string }) {
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  color: string;
+  icon: string;
+}
+
+function StatCard({ label, value, color, icon }: StatCardProps) {
   return (
-    <Card>
-      <CardBody className="flex flex-col gap-1">
-        <span className="text-xs text-slate-500 uppercase tracking-wide">{label}</span>
-        <span className={`text-3xl font-bold ${accent || 'text-white'}`}>{value}</span>
-      </CardBody>
-    </Card>
+    <div
+      className="rounded-2xl p-4 flex flex-col gap-3"
+      style={{
+        background: 'rgba(12, 22, 40, 0.7)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(16px)',
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">{label}</span>
+        <span className="text-lg">{icon}</span>
+      </div>
+      <span className={`font-score text-4xl leading-none ${color}`}>{value}</span>
+    </div>
+  );
+}
+
+function SectionHeader({ title, linkTo, linkLabel = 'View all' }: { title: string; linkTo: string; linkLabel?: string }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="font-heading font-semibold text-sm text-slate-400 uppercase tracking-widest">{title}</h2>
+      <Link
+        to={linkTo}
+        className="text-xs text-green-500 hover:text-green-400 font-semibold transition-colors flex items-center gap-1"
+      >
+        {linkLabel}
+        <svg className="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
+    </div>
   );
 }
 
@@ -43,35 +74,51 @@ export default function DashboardPage() {
   const leagues = leaguesData?.data.leagues.slice(0, 3) ?? [];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-white mb-1">
-          Welcome back, {user?.username} 👋
+    <div className="space-y-10 animate-fade-up">
+      {/* Hero greeting */}
+      <div
+        className="rounded-2xl p-6 relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, rgba(22,163,74,0.15) 0%, rgba(12,22,40,0.8) 60%)',
+          border: '1px solid rgba(22,163,74,0.2)',
+        }}
+      >
+        <div
+          className="absolute right-0 top-0 w-48 h-48 opacity-10 rounded-bl-full"
+          style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
+        />
+        <p className="text-xs text-green-500 font-semibold uppercase tracking-widest mb-1 font-heading">Dashboard</p>
+        <h1 className="font-heading font-bold text-2xl text-white">
+          Welcome back, {user?.username}
         </h1>
-        <p className="text-slate-400 text-sm">Here's what's happening in your leagues</p>
+        <p className="text-slate-400 text-sm mt-1">Here's your prediction overview</p>
       </div>
 
+      {/* Stats */}
       {stats && (
         <section>
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">Your Stats</h2>
+          <SectionHeader title="Your Stats" linkTo="/profile" linkLabel="Full profile" />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Total Points" value={stats.total_points} accent="text-green-400" />
-            <StatCard label="Predictions" value={stats.total_predictions} />
-            <StatCard label="Exact Scores" value={stats.exact_scores} accent="text-amber-400" />
-            <StatCard label="Correct Outcomes" value={stats.correct_outcomes} accent="text-blue-400" />
+            <StatCard label="Total Points" value={stats.total_points} color="text-green-400" icon="⚡" />
+            <StatCard label="Predictions" value={stats.total_predictions} color="text-white" icon="🎯" />
+            <StatCard label="Exact Scores" value={stats.exact_scores} color="text-amber-400" icon="🥇" />
+            <StatCard label="Correct" value={stats.correct_outcomes} color="text-blue-400" icon="✓" />
           </div>
         </section>
       )}
 
+      {/* Upcoming matches */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">Upcoming Matches</h2>
-          <Link to="/matches" className="text-sm text-green-400 hover:text-green-300">View all →</Link>
-        </div>
+        <SectionHeader title="Upcoming Matches" linkTo="/matches" />
         {loadingMatches ? (
-          <div className="flex justify-center py-8"><Spinner /></div>
+          <div className="flex justify-center py-12"><Spinner /></div>
         ) : matches.length === 0 ? (
-          <Card><CardBody className="text-center text-slate-500 py-8">No upcoming matches</CardBody></Card>
+          <div
+            className="rounded-2xl p-8 text-center text-slate-600 text-sm"
+            style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+          >
+            No upcoming matches scheduled
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {matches.map((match) => <MatchCard key={match.id} match={match} />)}
@@ -79,22 +126,24 @@ export default function DashboardPage() {
         )}
       </section>
 
+      {/* My leagues */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide">My Leagues</h2>
-          <Link to="/leagues" className="text-sm text-green-400 hover:text-green-300">View all →</Link>
-        </div>
+        <SectionHeader title="My Leagues" linkTo="/leagues" />
         {loadingLeagues ? (
-          <div className="flex justify-center py-8"><Spinner /></div>
+          <div className="flex justify-center py-12"><Spinner /></div>
         ) : leagues.length === 0 ? (
-          <Card>
-            <CardBody className="text-center py-8">
-              <p className="text-slate-500 mb-3">You haven't joined any leagues yet</p>
-              <Link to="/leagues" className="text-green-400 hover:text-green-300 text-sm font-medium">
-                Join or create a league →
-              </Link>
-            </CardBody>
-          </Card>
+          <div
+            className="rounded-2xl p-8 text-center"
+            style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
+          >
+            <p className="text-slate-600 text-sm mb-4">No leagues yet</p>
+            <Link
+              to="/leagues"
+              className="text-sm text-green-400 hover:text-green-300 font-semibold transition-colors"
+            >
+              Create or join a league →
+            </Link>
+          </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}

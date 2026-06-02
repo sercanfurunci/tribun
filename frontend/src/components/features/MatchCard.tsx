@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { Card, CardBody } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Match } from '../../types';
 
@@ -12,89 +11,145 @@ interface MatchCardProps {
 
 const statusConfig = {
   scheduled: { label: 'Upcoming', variant: 'blue' as const },
-  live: { label: 'LIVE', variant: 'red' as const },
-  finished: { label: 'Finished', variant: 'slate' as const },
-  postponed: { label: 'Postponed', variant: 'yellow' as const },
+  live: { label: 'LIVE', variant: 'live' as const },
+  finished: { label: 'FT', variant: 'slate' as const },
+  postponed: { label: 'PST', variant: 'yellow' as const },
 };
 
-function TeamFlag({ logo, name }: { logo?: string; name: string }) {
+function TeamLogo({ logo, name }: { logo?: string; name: string }) {
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="size-12 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
+    <div className="flex flex-col items-center gap-2.5 flex-1 min-w-0">
+      <div
+        className="size-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
+      >
         {logo ? (
-          <img src={logo} alt={name} className="size-full object-cover" />
+          <img src={logo} alt={name} className="size-10 object-contain" />
         ) : (
-          <span className="text-lg font-bold text-slate-300">{name[0]}</span>
+          <span className="font-heading font-bold text-xl text-slate-300">{name[0]}</span>
         )}
       </div>
-      <span className="text-sm font-semibold text-white text-center max-w-[80px] leading-tight">{name}</span>
+      <span className="text-xs font-semibold text-slate-300 text-center leading-tight w-full max-w-[72px] truncate">
+        {name}
+      </span>
     </div>
   );
 }
 
 export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
   const { label, variant } = statusConfig[match.status];
+  const isLive = match.status === 'live';
+  const isFinished = match.status === 'finished';
 
   return (
     <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`}>
-      <Card className="hover:border-slate-600 transition-all duration-200 hover:shadow-lg hover:shadow-black/20 cursor-pointer group">
-        <CardBody>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Badge variant={variant}>{label}</Badge>
-              {match.tournament && (
-                <span className="text-xs text-slate-500 truncate max-w-[120px]">{match.tournament}</span>
-              )}
-            </div>
-            <span className="text-xs text-slate-500">
+      <div
+        className="rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer group"
+        style={{
+          background: 'rgba(12, 22, 40, 0.7)',
+          border: isLive
+            ? '1px solid rgba(239,68,68,0.25)'
+            : '1px solid rgba(255,255,255,0.07)',
+          backdropFilter: 'blur(16px)',
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+          (e.currentTarget as HTMLElement).style.borderColor = isLive
+            ? 'rgba(239,68,68,0.4)'
+            : 'rgba(22,163,74,0.25)';
+          (e.currentTarget as HTMLElement).style.boxShadow = isLive
+            ? '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(239,68,68,0.1)'
+            : '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(22,163,74,0.1)';
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.transform = '';
+          (e.currentTarget as HTMLElement).style.borderColor = isLive
+            ? 'rgba(239,68,68,0.25)'
+            : 'rgba(255,255,255,0.07)';
+          (e.currentTarget as HTMLElement).style.boxShadow = '';
+        }}
+      >
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <Badge variant={variant}>{label}</Badge>
+          <div className="text-right">
+            {match.tournament && (
+              <p className="text-[10px] text-slate-600 uppercase tracking-wide truncate max-w-[120px]">
+                {match.tournament}
+              </p>
+            )}
+            <p className="text-xs text-slate-500">
               {match.status === 'scheduled'
-                ? format(new Date(match.kickoff_time), 'dd MMM, HH:mm')
-                : format(new Date(match.kickoff_time), 'dd MMM')}
-            </span>
+                ? format(new Date(match.kickoff_time), 'dd MMM · HH:mm')
+                : format(new Date(match.kickoff_time), 'dd MMM yyyy')}
+            </p>
           </div>
+        </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <TeamFlag logo={match.home_team_logo} name={match.home_team} />
+        {/* Match row */}
+        <div className="flex items-center px-4 pb-3 gap-3">
+          <TeamLogo logo={match.home_team_logo} name={match.home_team} />
 
-            <div className="flex flex-col items-center gap-1 flex-shrink-0">
-              {match.status === 'finished' ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-3xl font-bold text-white">{match.home_score}</span>
-                  <span className="text-slate-500 text-xl">–</span>
-                  <span className="text-3xl font-bold text-white">{match.away_score}</span>
-                </div>
-              ) : match.status === 'live' ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-3xl font-bold text-white">{match.home_score ?? 0}</span>
-                  <span className="text-red-400 text-xl font-bold animate-pulse">–</span>
-                  <span className="text-3xl font-bold text-white">{match.away_score ?? 0}</span>
-                </div>
-              ) : (
-                <span className="text-slate-500 text-lg font-medium">vs</span>
-              )}
+          {/* Score / VS */}
+          <div className="flex flex-col items-center gap-1 shrink-0 w-20">
+            {isFinished || isLive ? (
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="font-score text-4xl leading-none text-white"
+                  style={{ textShadow: isLive ? '0 0 12px rgba(239,68,68,0.5)' : undefined }}
+                >
+                  {match.home_score ?? 0}
+                </span>
+                <span className="text-slate-600 font-score text-2xl leading-none">:</span>
+                <span
+                  className="font-score text-4xl leading-none text-white"
+                  style={{ textShadow: isLive ? '0 0 12px rgba(239,68,68,0.5)' : undefined }}
+                >
+                  {match.away_score ?? 0}
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="font-score text-2xl text-slate-600 leading-none">VS</span>
+                <span className="text-[10px] text-slate-600 uppercase tracking-widest">
+                  {format(new Date(match.kickoff_time), 'HH:mm')}
+                </span>
+              </div>
+            )}
 
-              {prediction && (
-                <div className="mt-2 px-3 py-1 rounded-lg bg-slate-700/60 border border-slate-600/50">
-                  <span className="text-xs text-slate-400">Your pick: </span>
-                  <span className="text-xs font-bold text-green-400">
-                    {prediction.predicted_home_score} – {prediction.predicted_away_score}
+            {/* Prediction pill */}
+            {prediction && (
+              <div
+                className="px-2.5 py-1 rounded-full text-[10px] font-bold mt-0.5"
+                style={{
+                  background: 'rgba(22,163,74,0.12)',
+                  border: '1px solid rgba(22,163,74,0.25)',
+                  color: '#4ade80',
+                }}
+              >
+                {prediction.predicted_home_score}–{prediction.predicted_away_score}
+                {prediction.points_awarded !== undefined && isFinished && (
+                  <span className={`ml-1.5 ${
+                    prediction.points_awarded === 3 ? 'text-amber-400' :
+                    prediction.points_awarded >= 1 ? 'text-green-400' : 'text-slate-500'
+                  }`}>
+                    +{prediction.points_awarded}
                   </span>
-                  {prediction.points_awarded !== undefined && match.status === 'finished' && (
-                    <span className={`ml-2 text-xs font-bold ${
-                      prediction.points_awarded === 3 ? 'text-amber-400' :
-                      prediction.points_awarded >= 1 ? 'text-green-400' : 'text-slate-500'
-                    }`}>
-                      +{prediction.points_awarded}pts
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <TeamFlag logo={match.away_team_logo} name={match.away_team} />
+                )}
+              </div>
+            )}
           </div>
-        </CardBody>
-      </Card>
+
+          <TeamLogo logo={match.away_team_logo} name={match.away_team} />
+        </div>
+
+        {/* Live progress bar */}
+        {isLive && (
+          <div className="h-0.5 w-full bg-red-500/20">
+            <div className="h-full bg-red-500 live-indicator" style={{ width: '60%' }} />
+          </div>
+        )}
+      </div>
     </Link>
   );
 }

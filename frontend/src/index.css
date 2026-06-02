@@ -1,16 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-pitch: #16a34a;
-  --color-pitch-dark: #15803d;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-heading: 'Syne', sans-serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+
+  --color-green-400: #4ade80;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+
   --color-gold: #f59e0b;
-  --color-silver: #94a3b8;
-  --color-bronze: #b45309;
-  --font-sans: "Inter", system-ui, sans-serif;
+  --color-gold-light: #fbbf24;
+
+  --color-navy-950: #030712;
+  --color-navy-900: #060d1a;
+  --color-navy-800: #0c1628;
+  --color-navy-700: #112038;
+  --color-navy-600: #172a4a;
 }
 
 :root {
   color-scheme: dark;
+  --surface-1: #0c1628;
+  --surface-2: #112038;
+  --surface-3: #172a4a;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hover: rgba(255, 255, 255, 0.14);
+  --border-green: rgba(22, 163, 74, 0.4);
+  --glow-green: 0 0 24px rgba(22, 163, 74, 0.25);
+  --glow-green-strong: 0 0 40px rgba(22, 163, 74, 0.4);
 }
 
 * {
@@ -19,24 +39,114 @@
   padding: 0;
 }
 
-body {
-  font-family: var(--font-sans);
-  background-color: #0f172a;
-  color: #f8fafc;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+html {
+  scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+body {
+  font-family: var(--font-sans);
+  background-color: #060d1a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(22, 163, 74, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(14, 48, 100, 0.3) 0%, transparent 50%);
+  background-attachment: fixed;
 }
-::-webkit-scrollbar-track {
-  background: #1e293b;
+
+/* Pitch stripe texture overlay on the body */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -60deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,0.008) 40px,
+    rgba(255,255,255,0.008) 80px
+  );
+  pointer-events: none;
+  z-index: 0;
 }
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
+
+#root {
+  position: relative;
+  z-index: 1;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #060d1a; }
+::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #16a34a; }
+
+/* Score display font */
+.font-score {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Glass card effect */
+.glass {
+  background: rgba(12, 22, 40, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+.glass-hover {
+  transition: all 0.25s ease;
+}
+.glass-hover:hover {
+  background: rgba(17, 32, 56, 0.85);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), var(--glow-green);
+}
+
+/* Live pulse */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+.live-indicator {
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Shimmer for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, var(--surface-1) 25%, var(--surface-2) 50%, var(--surface-1) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Green glow button effect */
+.btn-glow:hover {
+  box-shadow: var(--glow-green-strong);
+}
+
+/* Number counter style */
+.stat-number {
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
 }
