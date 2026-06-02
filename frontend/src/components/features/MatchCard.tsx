@@ -118,17 +118,15 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
               <TeamBlock logo={match.away_team_logo} name={match.away_team} />
             </div>
           ) : (
-            /* Scheduled: teams with VS + kickoff pill */
+            /* Scheduled: teams flanking a quiet VS divider */
             <div className="flex items-start gap-2">
               <TeamBlock logo={match.home_team_logo} name={match.home_team} />
-              <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-16 pt-3">
-                <span className="font-score text-2xl text-slate-600 leading-none">{t('match.vs')}</span>
-                <span
-                  className="text-[11px] font-bold tabular-nums px-2.5 py-1.5 rounded-lg whitespace-nowrap"
-                  style={{ background: 'rgba(22,163,74,0.12)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.22)' }}
-                >
-                  {format(new Date(match.kickoff_time), 'HH:mm')}
+              <div className="flex flex-col items-center justify-center shrink-0 w-12 pt-3 gap-2">
+                <span className="h-px w-6 bg-white/10" />
+                <span className="font-heading text-[10px] font-bold tracking-[0.25em] text-slate-600 uppercase">
+                  {t('match.vs')}
                 </span>
+                <span className="h-px w-6 bg-white/10" />
               </div>
               <TeamBlock logo={match.away_team_logo} name={match.away_team} />
             </div>

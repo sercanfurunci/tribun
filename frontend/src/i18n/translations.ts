@@ -24,6 +24,8 @@ export const translations = {
     'dashboard.noUpcoming': 'No upcoming matches scheduled',
     'dashboard.noLeagues': 'No leagues yet',
     'dashboard.createOrJoin': 'Create or join a league',
+    'dashboard.nextUp': 'Next up',
+    'dashboard.kickoffIn': 'Kicks off',
 
     // Stats
     'stats.points': 'Points',
@@ -185,6 +187,8 @@ export const translations = {
     'dashboard.noUpcoming': 'Yaklaşan maç yok',
     'dashboard.noLeagues': 'Henüz lig yok',
     'dashboard.createOrJoin': 'Lig oluştur veya katıl',
+    'dashboard.nextUp': 'Sırada',
+    'dashboard.kickoffIn': 'Başlangıç',
 
     // Stats
     'stats.points': 'Puan',

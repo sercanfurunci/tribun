@@ -33,7 +33,7 @@ export function Navbar() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
-        <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12">
+        <div className="mx-auto w-full max-w-[1440px] xl:max-w-[1600px] px-5 sm:px-8 lg:px-12 xl:px-16">
           <div className="flex h-16 items-center justify-between gap-3">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 shrink-0 group">

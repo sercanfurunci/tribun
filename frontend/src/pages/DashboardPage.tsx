@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
+import { enUS, tr as trLocale } from 'date-fns/locale';
 import { useAuthStore } from '../store/auth';
-import { useT } from '../store/language';
+import { useLanguageStore, useT } from '../store/language';
 import { matchesApi } from '../services/matches';
 import { leaguesApi } from '../services/leagues';
 import { predictionsApi } from '../services/predictions';
@@ -58,6 +60,8 @@ function SectionHeader({ title, linkTo, linkLabel }: { title: string; linkTo: st
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const t = useT();
+  const lang = useLanguageStore((s) => s.lang);
+  const dateLocale = lang === 'tr' ? trLocale : enUS;
 
   const { data: upcomingData, isLoading: loadingMatches } = useQuery({
     queryKey: ['matches', 'upcoming'],
@@ -75,15 +79,17 @@ export default function DashboardPage() {
   });
 
   const stats = statsData?.data.stats;
-  const matches = upcomingData?.data.matches.slice(0, 6) ?? [];
+  const allUpcoming = upcomingData?.data.matches ?? [];
+  const featuredMatch = allUpcoming[0];
+  const matches = allUpcoming.slice(0, 6);
   const leagues = leaguesData?.data.leagues.slice(0, 6) ?? [];
 
   return (
     <div className="space-y-10 animate-fade-up">
 
-      {/* Hero */}
+      {/* Hero — 2-column on lg+: greeting + featured next match */}
       <div
-        className="relative rounded-2xl overflow-hidden px-6 sm:px-8 py-7 sm:py-9"
+        className="relative rounded-2xl overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, rgba(22,163,74,0.2) 0%, rgba(12,22,40,0.95) 55%)',
           border: '1px solid rgba(22,163,74,0.2)',
@@ -91,16 +97,76 @@ export default function DashboardPage() {
         }}
       >
         <div
-          className="absolute -top-10 -right-10 w-56 h-56 rounded-full opacity-15 pointer-events-none"
+          aria-hidden
+          className="absolute -top-10 -right-10 w-72 h-72 rounded-full opacity-15 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
         />
-        <p className="text-[11px] font-bold text-green-500 uppercase tracking-[0.2em] mb-2 font-heading">
-          {t('dashboard.eyebrow')}
-        </p>
-        <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white leading-tight">
-          {t('dashboard.welcome')} <span className="text-green-400">{user?.username}</span>
-        </h1>
-        <p className="text-slate-400 text-sm mt-2 max-w-md">{t('dashboard.subtitle')}</p>
+        <div
+          aria-hidden
+          className="absolute inset-y-0 left-1/2 hidden lg:block w-px"
+          style={{ background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.08), transparent)' }}
+        />
+        <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-10 items-center px-6 sm:px-8 lg:px-10 py-7 sm:py-9">
+          {/* Greeting */}
+          <div>
+            <p className="text-[11px] font-bold text-green-500 uppercase tracking-[0.2em] mb-2 font-heading">
+              {t('dashboard.eyebrow')}
+            </p>
+            <h1 className="font-heading font-bold text-2xl sm:text-3xl lg:text-4xl text-white leading-tight">
+              {t('dashboard.welcome')} <span className="text-green-400">{user?.username}</span>
+            </h1>
+            <p className="text-slate-400 text-sm sm:text-[15px] mt-2 max-w-md">{t('dashboard.subtitle')}</p>
+          </div>
+
+          {/* Featured next match (lg+) */}
+          {featuredMatch && (
+            <Link
+              to={`/matches/${featuredMatch.id}`}
+              className="hidden lg:flex flex-col gap-3 rounded-xl p-4 transition-colors hover:bg-white/[0.02]"
+              style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(8,16,32,0.4)' }}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-green-500 uppercase tracking-[0.2em] font-heading">
+                  {t('dashboard.nextUp')}
+                </span>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-heading tabular-nums">
+                  {format(new Date(featuredMatch.kickoff_time), 'dd MMM · HH:mm', { locale: dateLocale })}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                  <div
+                    className="size-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  >
+                    {featuredMatch.home_team_logo ? (
+                      <img src={featuredMatch.home_team_logo} alt={featuredMatch.home_team} className="size-7 object-contain" />
+                    ) : (
+                      <span className="text-xs font-bold text-slate-300 font-heading">{featuredMatch.home_team[0]}</span>
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold text-slate-100 truncate">{featuredMatch.home_team}</span>
+                </div>
+                <span className="font-heading text-[10px] font-bold tracking-[0.25em] text-slate-600 uppercase shrink-0">
+                  {t('match.vs')}
+                </span>
+                <div className="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
+                  <span className="text-sm font-semibold text-slate-100 truncate text-right">{featuredMatch.away_team}</span>
+                  <div
+                    className="size-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+                  >
+                    {featuredMatch.away_team_logo ? (
+                      <img src={featuredMatch.away_team_logo} alt={featuredMatch.away_team} className="size-7 object-contain" />
+                    ) : (
+                      <span className="text-xs font-bold text-slate-300 font-heading">{featuredMatch.away_team[0]}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Stats */}
