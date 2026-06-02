@@ -42,11 +42,11 @@ export default function LoginPage() {
         />
       </div>
 
-      <div className="w-full max-w-sm relative">
+      <div className="w-full max-w-sm relative animate-fade-up">
         {/* Logo */}
         <div className="text-center mb-10">
           <div
-            className="size-16 rounded-2xl flex items-center justify-center mx-auto mb-5 font-heading font-bold text-2xl text-white"
+            className="size-14 rounded-2xl flex items-center justify-center mx-auto mb-5 font-heading font-bold text-2xl text-white"
             style={{
               background: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)',
               boxShadow: '0 0 40px rgba(22,163,74,0.5), 0 0 80px rgba(22,163,74,0.15)',
