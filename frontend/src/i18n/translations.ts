@@ -136,6 +136,11 @@ export const translations = {
     'matchDetail.predictedWinner': 'Predicted winner:',
     'matchDetail.leaguePredictions': 'League Predictions',
     'matchDetail.matchEvents': 'Match Events',
+    'matchDetail.injuries': 'Injuries & Suspensions',
+    'matchDetail.noInjuries': 'No reported injuries or suspensions',
+    'matchDetail.injuryType.injured': 'Injured',
+    'matchDetail.injuryType.suspended': 'Suspended',
+    'matchDetail.injuryType.missing': 'Unavailable',
 
     // League detail
     'leagueDetail.notFound': 'League not found',
@@ -292,6 +297,11 @@ export const translations = {
     'matchDetail.predictedWinner': 'Tahmini kazanan:',
     'matchDetail.leaguePredictions': 'Lig Tahminleri',
     'matchDetail.matchEvents': 'Maç Olayları',
+    'matchDetail.injuries': 'Sakatlık ve Cezalılar',
+    'matchDetail.noInjuries': 'Bildirilen sakatlık veya cezalı yok',
+    'matchDetail.injuryType.injured': 'Sakat',
+    'matchDetail.injuryType.suspended': 'Cezalı',
+    'matchDetail.injuryType.missing': 'Yok',
 
     // League detail
     'leagueDetail.notFound': 'Lig bulunamadı',

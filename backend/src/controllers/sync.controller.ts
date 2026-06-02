@@ -126,6 +126,32 @@ export async function getApiPrediction(req: Request, res: Response): Promise<voi
   }
 }
 
+/** GET /api/sync/injuries/:fixtureId — get injuries/suspensions for a fixture */
+export async function getFixtureInjuries(req: Request, res: Response): Promise<void> {
+  const { fixtureId } = req.params;
+  try {
+    const injuries = await footballApiService.getInjuries({ fixture: Number(fixtureId) });
+    res.json({ injuries });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch injuries' });
+  }
+}
+
+/** GET /api/sync/h2h?teams=ID1-ID2&last=N — head-to-head between two teams */
+export async function getHeadToHead(req: Request, res: Response): Promise<void> {
+  const { teams, last } = req.query;
+  if (!teams || typeof teams !== 'string') {
+    res.status(400).json({ error: 'teams query (e.g. 33-34) is required' });
+    return;
+  }
+  try {
+    const h2h = await footballApiService.getHeadToHead(teams, last ? Number(last) : 5);
+    res.json({ h2h });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch h2h' });
+  }
+}
+
 /** GET /api/sync/topscorers — get top scorers */
 export async function getTopScorers(req: Request, res: Response): Promise<void> {
   const { leagueId, season } = req.query;

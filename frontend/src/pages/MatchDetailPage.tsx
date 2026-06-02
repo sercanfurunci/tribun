@@ -5,7 +5,7 @@ import { enUS, tr as trLocale } from 'date-fns/locale';
 import { matchesApi } from '../services/matches';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
-import { footballApi, FixtureEvent } from '../services/football';
+import { footballApi, FixtureEvent, InjuryEntry } from '../services/football';
 import { PredictionForm } from '../components/features/PredictionForm';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
@@ -94,11 +94,19 @@ export default function MatchDetailPage() {
     enabled: !!externalId && match?.status === 'scheduled',
   });
 
+  const { data: injuriesData } = useQuery({
+    queryKey: ['fixture-injuries', externalId],
+    queryFn: () => footballApi.getFixtureInjuries(externalId!),
+    enabled: !!externalId,
+    staleTime: 1000 * 60 * 10,
+  });
+
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   if (!match) return <div className="text-center text-slate-400 py-20 text-sm">{t('matchDetail.notFound')}</div>;
 
   const myPrediction = myPredictionsData?.data.predictions.find((p) => p.match_id === id);
   const events = eventsData?.data.events ?? [];
+  const injuries: InjuryEntry[] = injuriesData?.data.injuries ?? [];
   const apiPrediction = apiPredictionData?.data.prediction?.predictions;
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
@@ -349,6 +357,68 @@ export default function MatchDetailPage() {
           </div>
         ) : null}
       </div>
+
+      {/* Injuries & suspensions — split by team */}
+      {injuries.length > 0 && (
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.injuries')}</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/5">
+            {[match.home_team, match.away_team].map((teamName) => {
+              const list = injuries.filter((i) => i.team.name === teamName);
+              return (
+                <div key={teamName} className="p-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading mb-3">
+                    {teamName}
+                  </p>
+                  {list.length === 0 ? (
+                    <p className="text-xs text-slate-600">{t('matchDetail.noInjuries')}</p>
+                  ) : (
+                    <ul className="space-y-2.5">
+                      {list.map((inj) => {
+                        const type = inj.player.type?.toLowerCase() ?? '';
+                        const isSuspended = type.includes('suspend') || inj.player.reason?.toLowerCase().includes('suspen');
+                        const label = isSuspended
+                          ? t('matchDetail.injuryType.suspended')
+                          : type.includes('injur')
+                            ? t('matchDetail.injuryType.injured')
+                            : t('matchDetail.injuryType.missing');
+                        return (
+                          <li key={`${inj.player.id}-${inj.player.name}`} className="flex items-center gap-3">
+                            <span
+                              className="size-1.5 rounded-full shrink-0"
+                              style={{ background: isSuspended ? '#f59e0b' : '#ef4444' }}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm text-white truncate">{inj.player.name}</p>
+                              {inj.player.reason && (
+                                <p className="text-[11px] text-slate-600 truncate">{inj.player.reason}</p>
+                              )}
+                            </div>
+                            <span
+                              className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0"
+                              style={{
+                                color: isSuspended ? '#fbbf24' : '#fca5a5',
+                                background: isSuspended ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
+                              }}
+                            >
+                              {label}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Match events */}
       {events.length > 0 && (

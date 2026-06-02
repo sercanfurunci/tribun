@@ -9,6 +9,8 @@ import {
   getStandings,
   getFixtureEvents,
   getApiPrediction,
+  getFixtureInjuries,
+  getHeadToHead,
   getTopScorers,
   scoreMatch,
   syncFromSportsDB,
@@ -26,6 +28,8 @@ router.get('/rounds', getRounds);
 router.get('/standings', getStandings);
 router.get('/events/:fixtureId', getFixtureEvents);
 router.get('/predictions/:fixtureId', getApiPrediction);
+router.get('/injuries/:fixtureId', getFixtureInjuries);
+router.get('/h2h', getHeadToHead);
 router.get('/topscorers', getTopScorers);
 
 router.post('/fixtures', syncFixtures);

@@ -20,22 +20,19 @@ interface StatCardProps {
 function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
   return (
     <div
-      className="rounded-2xl p-4 sm:p-5 flex flex-col gap-3 sm:gap-4 min-w-0"
+      className="rounded-2xl p-4 flex flex-col items-center text-center gap-2 min-w-0"
       style={{
         background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 6px 24px -10px rgba(0,0,0,0.45)',
       }}
     >
-      <div className="flex items-center justify-between gap-2 min-w-0">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-heading truncate">{label}</span>
-        <span className="text-base sm:text-lg leading-none shrink-0">{icon}</span>
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm leading-none">{icon}</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading">{label}</span>
       </div>
-      <div>
-        <span className={`font-score text-4xl sm:text-5xl leading-none ${accent}`}>{value}</span>
-        {sublabel && <p className="text-[11px] sm:text-xs text-slate-600 mt-1.5 truncate">{sublabel}</p>}
-      </div>
+      <span className={`font-score text-4xl sm:text-[2.75rem] leading-none ${accent}`}>{value}</span>
+      {sublabel && <p className="text-[10px] sm:text-[11px] text-slate-600 truncate w-full">{sublabel}</p>}
     </div>
   );
 }
@@ -77,40 +74,32 @@ export default function DashboardPage() {
   });
 
   const stats = statsData?.data.stats;
-  const matches = upcomingData?.data.matches.slice(0, 3) ?? [];
-  const leagues = leaguesData?.data.leagues.slice(0, 3) ?? [];
+  const matches = upcomingData?.data.matches.slice(0, 6) ?? [];
+  const leagues = leaguesData?.data.leagues.slice(0, 6) ?? [];
 
   return (
     <div className="space-y-10 animate-fade-up">
 
       {/* Hero */}
       <div
-        className="relative rounded-3xl overflow-hidden px-6 sm:px-10 py-10 sm:py-14"
+        className="relative rounded-2xl overflow-hidden px-6 sm:px-8 py-7 sm:py-9"
         style={{
-          background: 'linear-gradient(135deg, rgba(22,163,74,0.22) 0%, rgba(12,22,40,0.95) 55%)',
-          border: '1px solid rgba(22,163,74,0.22)',
-          boxShadow: '0 12px 48px -16px rgba(0,0,0,0.5)',
+          background: 'linear-gradient(135deg, rgba(22,163,74,0.2) 0%, rgba(12,22,40,0.95) 55%)',
+          border: '1px solid rgba(22,163,74,0.2)',
+          boxShadow: '0 10px 40px -16px rgba(0,0,0,0.5)',
         }}
       >
         <div
-          className="absolute -top-12 -right-12 w-72 h-72 rounded-full opacity-15 pointer-events-none"
+          className="absolute -top-10 -right-10 w-56 h-56 rounded-full opacity-15 pointer-events-none"
           style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
         />
-        <div
-          className="absolute bottom-0 right-0 w-40 h-40 opacity-[0.06] pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.5) 0, rgba(255,255,255,0.5) 1px, transparent 0, transparent 50%)`,
-            backgroundSize: '8px 8px',
-          }}
-        />
-        <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-3 font-heading">
+        <p className="text-[11px] font-bold text-green-500 uppercase tracking-[0.2em] mb-2 font-heading">
           {t('dashboard.eyebrow')}
         </p>
-        <h1 className="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight">
-          {t('dashboard.welcome')}<br />
-          <span className="text-green-400">{user?.username}</span>
+        <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white leading-tight">
+          {t('dashboard.welcome')} <span className="text-green-400">{user?.username}</span>
         </h1>
-        <p className="text-slate-400 text-sm sm:text-base mt-4 max-w-xl">{t('dashboard.subtitle')}</p>
+        <p className="text-slate-400 text-sm mt-2 max-w-md">{t('dashboard.subtitle')}</p>
       </div>
 
       {/* Stats */}
