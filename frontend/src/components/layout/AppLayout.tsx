@@ -15,7 +15,7 @@ export function AppLayout() {
         }}
       />
       <Navbar />
-      <main className="mx-auto w-full max-w-[1500px] px-6 py-8 sm:py-12 pb-32 md:pb-16">
+      <main className="mx-auto w-full max-w-[1500px] 2xl:max-w-[1600px] px-6 py-8 sm:py-12 pb-32 md:pb-16">
         <Outlet />
       </main>
     </div>

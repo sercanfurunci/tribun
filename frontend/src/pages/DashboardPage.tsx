@@ -123,7 +123,7 @@ export default function DashboardPage() {
           <div className="flex justify-center py-12"><Spinner size="lg" /></div>
         ) : matches.length === 0 ? (
           <div
-            className="rounded-2xl p-10 text-center text-slate-600 text-sm"
+            className="rounded-2xl p-10 text-center text-slate-600 text-sm flex items-center justify-center min-h-[240px]"
             style={{
               background: 'linear-gradient(180deg, rgba(18,30,52,0.6) 0%, rgba(12,22,40,0.6) 100%)',
               border: '1px solid rgba(255,255,255,0.06)',
@@ -145,7 +145,7 @@ export default function DashboardPage() {
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : leagues.length === 0 ? (
           <div
-            className="rounded-2xl p-10 text-center"
+            className="rounded-2xl p-10 text-center flex flex-col items-center justify-center min-h-[240px]"
             style={{
               background: 'linear-gradient(180deg, rgba(18,30,52,0.6) 0%, rgba(12,22,40,0.6) 100%)',
               border: '1px solid rgba(255,255,255,0.06)',
