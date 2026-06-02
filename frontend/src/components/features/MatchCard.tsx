@@ -25,19 +25,19 @@ function TeamBlock({ logo, name, score, isLive }: {
   isLive?: boolean;
 }) {
   return (
-    <div className="flex-1 flex flex-col items-center gap-2.5 min-w-0">
+    <div className="flex-1 flex flex-col items-center gap-2 min-w-0">
       <div
-        className="size-14 sm:size-16 rounded-2xl flex items-center justify-center overflow-hidden shrink-0"
+        className="size-12 sm:size-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0"
         style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         {logo ? (
-          <img src={logo} alt={name} className="size-10 sm:size-12 object-contain" loading="lazy" />
+          <img src={logo} alt={name} className="size-8 sm:size-10 object-contain" loading="lazy" />
         ) : (
-          <span className="font-heading font-bold text-xl text-slate-300">{name[0]}</span>
+          <span className="font-heading font-bold text-lg text-slate-300">{name[0]}</span>
         )}
       </div>
       <span
-        className="text-[13px] font-semibold text-slate-100 text-center leading-tight w-full px-1 line-clamp-2"
+        className="text-[12px] sm:text-[13px] font-semibold text-slate-100 text-center leading-tight w-full px-1 line-clamp-2"
         style={{ wordBreak: 'break-word', hyphens: 'auto' }}
         title={name}
       >
@@ -45,7 +45,7 @@ function TeamBlock({ logo, name, score, isLive }: {
       </span>
       {score !== undefined && score !== null && (
         <span
-          className="font-score text-4xl sm:text-5xl leading-none text-white"
+          className="font-score text-3xl sm:text-4xl leading-none text-white"
           style={isLive ? { textShadow: '0 0 16px rgba(239,68,68,0.6)' } : undefined}
         >
           {score}
@@ -66,22 +66,18 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
   return (
     <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`} className="block match-card-link">
       <div
-        className={`match-card rounded-2xl overflow-hidden h-full ${isLive ? 'match-card--live' : ''}`}
+        className={`match-card rounded-[24px] overflow-hidden h-full ${isLive ? 'match-card--live' : ''}`}
         style={{ backdropFilter: 'blur(20px)' }}
       >
-        {/* Header strip */}
-        <div
-          className="flex items-center justify-between px-4 py-2.5 gap-3"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-        >
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-4 pb-3">
           <Badge variant={variant}>{label}</Badge>
-          <div className="text-right min-w-0 flex-1">
+          <div className="text-right min-w-0">
             {match.match_day && (
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider truncate font-heading">
+              <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] truncate font-heading">
                 {match.match_day}
               </p>
             )}
-            <p className="text-xs text-slate-400 tabular-nums">
+            <p className="text-[11px] text-slate-400 tabular-nums sm:text-xs">
               {showScore
                 ? format(new Date(match.kickoff_time), 'dd MMM yyyy')
                 : format(new Date(match.kickoff_time), 'dd MMM · HH:mm')}
@@ -89,23 +85,21 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
           </div>
         </div>
 
-        {/* Teams + score body */}
-        <div className="px-3 sm:px-4 py-5">
+        <div className="px-4 pb-5 sm:px-5 sm:pb-6">
           {showScore ? (
-            /* Finished / Live: teams flanking centered score */
-            <div className="flex items-start gap-2">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
               <TeamBlock logo={match.home_team_logo} name={match.home_team} />
-              <div className="flex flex-col items-center justify-center gap-1.5 shrink-0 w-16 pt-2">
+              <div className="flex flex-col items-center justify-center gap-1.5 shrink-0 px-1">
                 <div className="flex items-baseline gap-1">
                   <span
-                    className="font-score text-4xl sm:text-5xl leading-none text-white"
+                    className="font-score text-3xl sm:text-4xl leading-none text-white"
                     style={isLive ? { textShadow: '0 0 16px rgba(239,68,68,0.6)' } : undefined}
                   >
                     {match.home_score ?? 0}
                   </span>
                   <span className="font-score text-2xl text-slate-600 leading-none">:</span>
                   <span
-                    className="font-score text-4xl sm:text-5xl leading-none text-white"
+                    className="font-score text-3xl sm:text-4xl leading-none text-white"
                     style={isLive ? { textShadow: '0 0 16px rgba(239,68,68,0.6)' } : undefined}
                   >
                     {match.away_score ?? 0}
@@ -118,15 +112,17 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
               <TeamBlock logo={match.away_team_logo} name={match.away_team} />
             </div>
           ) : (
-            /* Scheduled: teams flanking a quiet VS divider */
-            <div className="flex items-start gap-2">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
               <TeamBlock logo={match.home_team_logo} name={match.home_team} />
-              <div className="flex flex-col items-center justify-center shrink-0 w-12 pt-3 gap-2">
+              <div className="flex flex-col items-center justify-center shrink-0 px-1 gap-1">
                 <span className="h-px w-6 bg-white/10" />
                 <span className="font-heading text-[10px] font-bold tracking-[0.25em] text-slate-600 uppercase">
                   {t('match.vs')}
                 </span>
                 <span className="h-px w-6 bg-white/10" />
+                <span className="text-[10px] tabular-nums text-green-400">
+                  {format(new Date(match.kickoff_time), 'HH:mm')}
+                </span>
               </div>
               <TeamBlock logo={match.away_team_logo} name={match.away_team} />
             </div>

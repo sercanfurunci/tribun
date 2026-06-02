@@ -1,4 +1,4 @@
-import type { SVGProps } from 'react';
+import type { ReactNode, SVGProps } from 'react';
 
 export type IconName =
   | 'zap'
@@ -23,7 +23,7 @@ interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'name'> {
   size?: number | string;
 }
 
-const PATHS: Record<IconName, JSX.Element> = {
+const PATHS: Record<IconName, ReactNode> = {
   zap: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" />,
   ball: (
     <>
