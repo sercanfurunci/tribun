@@ -7,6 +7,7 @@ import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
 import { LeagueCard } from '../components/features/LeagueCard';
 import { Spinner } from '../components/ui/Spinner';
+import { Icon, type IconName } from '../components/ui/Icon';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
 export default function ProfilePage() {
@@ -78,12 +79,12 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
           {/* Stat cards */}
-          {[
-            { label: t('stats.totalPoints'), value: stats.total_points, accent: 'text-green-400', icon: '⚡', sub: t('stats.earned') },
-            { label: t('stats.predictions'), value: stats.total_predictions, accent: 'text-white', icon: '🎯', sub: t('stats.submitted') },
-            { label: t('stats.exactScores'), value: stats.exact_scores, accent: 'text-amber-400', icon: '🥇', sub: t('stats.exactSub') },
-            { label: t('stats.correctOutcomes'), value: stats.correct_outcomes, accent: 'text-blue-400', icon: '✓', sub: t('stats.correctSub') },
-          ].map(({ label, value, accent, icon, sub }) => (
+          {([
+            { label: t('stats.totalPoints'), value: stats.total_points, accent: 'text-green-400', icon: 'zap' as IconName, sub: t('stats.earned') },
+            { label: t('stats.predictions'), value: stats.total_predictions, accent: 'text-white', icon: 'target' as IconName, sub: t('stats.submitted') },
+            { label: t('stats.exactScores'), value: stats.exact_scores, accent: 'text-amber-400', icon: 'award' as IconName, sub: t('stats.exactSub') },
+            { label: t('stats.correctOutcomes'), value: stats.correct_outcomes, accent: 'text-blue-400', icon: 'check' as IconName, sub: t('stats.correctSub') },
+          ]).map(({ label, value, accent, icon, sub }) => (
             <div
               key={label}
               className="rounded-2xl p-5 flex flex-col gap-3"
@@ -95,7 +96,7 @@ export default function ProfilePage() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{label}</span>
-                <span className="text-lg">{icon}</span>
+                <span className={accent}><Icon name={icon} size={16} /></span>
               </div>
               <span className={`font-score text-5xl leading-none ${accent}`}>{value}</span>
               <span className="text-xs text-slate-600">{sub}</span>

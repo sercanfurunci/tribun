@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth';
 import { useLanguageStore, useT } from '../../store/language';
+import { Icon, type IconName } from '../ui/Icon';
 
 export function Navbar() {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
@@ -8,11 +9,11 @@ export function Navbar() {
   const t = useT();
   const navigate = useNavigate();
 
-  const NAV_LINKS = [
-    { to: '/dashboard', label: t('nav.dashboard'), icon: '⚡' },
-    { to: '/matches', label: t('nav.matches'), icon: '⚽' },
-    { to: '/standings', label: t('nav.standings'), icon: '🏆' },
-    { to: '/leagues', label: t('nav.leagues'), icon: '🏅' },
+  const NAV_LINKS: { to: string; label: string; icon: IconName }[] = [
+    { to: '/dashboard', label: t('nav.dashboard'), icon: 'zap' },
+    { to: '/matches', label: t('nav.matches'), icon: 'ball' },
+    { to: '/standings', label: t('nav.standings'), icon: 'trophy' },
+    { to: '/leagues', label: t('nav.leagues'), icon: 'medal' },
   ];
 
   function handleLogout() {
@@ -63,7 +64,7 @@ export function Navbar() {
                       }`
                     }
                   >
-                    <span className="text-sm">{icon}</span>
+                    <Icon name={icon} size={16} />
                     {label}
                   </NavLink>
                 ))}
@@ -162,12 +163,11 @@ export function Navbar() {
               >
                 {({ isActive }) => (
                   <>
-                    <span
-                      className="text-[20px] leading-none"
+                    <Icon
+                      name={icon}
+                      size={20}
                       style={isActive ? { filter: 'drop-shadow(0 0 6px rgba(74,222,128,0.55))' } : undefined}
-                    >
-                      {icon}
-                    </span>
+                    />
                     <span className="text-[9.5px] font-bold font-heading tracking-wide leading-none uppercase">
                       {label}
                     </span>

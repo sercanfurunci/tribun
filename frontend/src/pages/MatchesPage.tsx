@@ -4,14 +4,15 @@ import { matchesApi } from '../services/matches';
 import { MatchCard } from '../components/features/MatchCard';
 import { Spinner } from '../components/ui/Spinner';
 import { useT } from '../store/language';
+import { Icon, type IconName } from '../components/ui/Icon';
 import type { TranslationKey } from '../i18n/translations';
 
 type Tab = 'upcoming' | 'live' | 'finished';
 
-const TABS: { id: Tab; labelKey: TranslationKey; icon: string }[] = [
-  { id: 'upcoming', labelKey: 'matches.upcoming', icon: '📅' },
-  { id: 'live', labelKey: 'matches.live', icon: '🔴' },
-  { id: 'finished', labelKey: 'matches.finished', icon: '✓' },
+const TABS: { id: Tab; labelKey: TranslationKey; icon: IconName }[] = [
+  { id: 'upcoming', labelKey: 'matches.upcoming', icon: 'ball' },
+  { id: 'live', labelKey: 'matches.live', icon: 'video' },
+  { id: 'finished', labelKey: 'matches.finished', icon: 'check' },
 ];
 
 export default function MatchesPage() {
@@ -86,7 +87,7 @@ export default function MatchesPage() {
               border: tab === id ? '1px solid rgba(22,163,74,0.25)' : '1px solid transparent',
             }}
           >
-            <span className="text-sm">{icon}</span>
+            <Icon name={icon} size={14} />
             {t(labelKey)}
             {id === 'live' && liveCount > 0 && (
               <span
@@ -108,7 +109,9 @@ export default function MatchesPage() {
           className="rounded-2xl p-14 text-center"
           style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
         >
-          <p className="text-4xl mb-4">{tab === 'live' ? '📡' : tab === 'upcoming' ? '📅' : '✓'}</p>
+          <div className="mb-4 flex justify-center text-slate-600">
+            <Icon name={tab === 'live' ? 'video' : tab === 'upcoming' ? 'ball' : 'check'} size={36} />
+          </div>
           <p className="text-slate-500 text-sm">{emptyMessages[tab]}</p>
         </div>
       ) : (

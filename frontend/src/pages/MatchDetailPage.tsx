@@ -11,6 +11,7 @@ import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
 import { useAuthStore } from '../store/auth';
 import { useLanguageStore, useT } from '../store/language';
+import { Icon, type IconName } from '../components/ui/Icon';
 import type { TranslationKey } from '../i18n/translations';
 
 const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'blue' | 'live' | 'slate' | 'yellow' }> = {
@@ -20,15 +21,17 @@ const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'blue' 
   postponed: { labelKey: 'matchDetail.postponed', variant: 'yellow' },
 };
 
-const EVENT_ICONS: Record<string, string> = {
-  Goal: '⚽', subst: '🔄', Var: '📺',
+const EVENT_ICONS: Record<string, IconName> = {
+  Goal: 'ball',
+  subst: 'refresh',
+  Var: 'video',
 };
 
 function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string }) {
   const isHome = event.team.name === homeName;
-  const icon = event.type === 'Card'
-    ? (event.detail.includes('Red') ? '🟥' : '🟨')
-    : EVENT_ICONS[event.type] || '•';
+  const iconName: IconName = event.type === 'Card'
+    ? (event.detail.includes('Red') ? 'card-red' : 'card-yellow')
+    : EVENT_ICONS[event.type] ?? 'check';
 
   return (
     <div
@@ -36,7 +39,7 @@ function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string
       style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
     >
       <span className="text-xs text-slate-600 w-8 text-center shrink-0 font-score">{event.time.elapsed}'</span>
-      <span className="text-base shrink-0">{icon}</span>
+      <span className="shrink-0 text-slate-300"><Icon name={iconName} size={16} /></span>
       <div className={`flex-1 min-w-0 ${isHome ? 'text-left' : 'text-right'}`}>
         <span className="text-sm text-white">{event.player.name}</span>
         {event.assist.name && <span className="text-xs text-slate-500 ml-1">({event.assist.name})</span>}
@@ -226,7 +229,9 @@ export default function MatchDetailPage() {
                 <span className="text-xs text-slate-600 uppercase tracking-widest font-heading">{match.match_day}</span>
               )}
               {match.venue && (
-                <span className="text-xs text-slate-600">📍 {match.venue}</span>
+                <span className="inline-flex items-center gap-1 text-xs text-slate-600">
+                  <Icon name="pin" size={12} /> {match.venue}
+                </span>
               )}
             </div>
           )}

@@ -8,13 +8,14 @@ import { predictionsApi } from '../services/predictions';
 import { MatchCard } from '../components/features/MatchCard';
 import { LeagueCard } from '../components/features/LeagueCard';
 import { Spinner } from '../components/ui/Spinner';
+import { Icon, type IconName } from '../components/ui/Icon';
 
 interface StatCardProps {
   label: string;
   value: string | number;
   sublabel?: string;
   accent: string;
-  icon: string;
+  icon: IconName;
 }
 
 function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
@@ -27,8 +28,8 @@ function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
         boxShadow: '0 6px 24px -10px rgba(0,0,0,0.45)',
       }}
     >
-      <div className="flex items-center gap-1.5">
-        <span className="text-sm leading-none">{icon}</span>
+      <div className={`flex items-center gap-1.5 ${accent}`}>
+        <Icon name={icon} size={14} />
         <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading">{label}</span>
       </div>
       <span className={`font-score text-4xl sm:text-[2.75rem] leading-none ${accent}`}>{value}</span>
@@ -107,10 +108,10 @@ export default function DashboardPage() {
         <section>
           <SectionHeader title={t('dashboard.yourStats')} linkTo="/profile" linkLabel={t('dashboard.fullProfile')} />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 stagger">
-            <StatCard label={t('stats.points')} value={stats.total_points} sublabel={t('stats.totalEarned')} accent="text-green-400" icon="⚡" />
-            <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="🎯" />
-            <StatCard label={t('stats.exactScores')} value={stats.exact_scores} sublabel={t('stats.exactSub')} accent="text-amber-400" icon="🥇" />
-            <StatCard label={t('stats.correct')} value={stats.correct_outcomes} sublabel={t('stats.outcomes')} accent="text-blue-400" icon="✓" />
+            <StatCard label={t('stats.points')} value={stats.total_points} sublabel={t('stats.totalEarned')} accent="text-green-400" icon="zap" />
+            <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="target" />
+            <StatCard label={t('stats.exactScores')} value={stats.exact_scores} sublabel={t('stats.exactSub')} accent="text-amber-400" icon="award" />
+            <StatCard label={t('stats.correct')} value={stats.correct_outcomes} sublabel={t('stats.outcomes')} accent="text-blue-400" icon="check" />
           </div>
         </section>
       )}

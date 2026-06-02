@@ -7,6 +7,7 @@ import { Spinner } from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
+import { Icon } from '../components/ui/Icon';
 import { useT } from '../store/language';
 
 export default function LeaguesPage() {
@@ -75,10 +76,10 @@ export default function LeaguesPage() {
           style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
         >
           <div
-            className="size-16 rounded-2xl flex items-center justify-center text-3xl"
+            className="size-16 rounded-2xl flex items-center justify-center text-slate-400"
             style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
           >
-            🏅
+            <Icon name="medal" size={28} />
           </div>
           <div>
             <p className="font-heading font-bold text-white mb-1">{t('leagues.empty.title')}</p>
