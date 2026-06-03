@@ -16,6 +16,11 @@ import {
   scoreMatch,
   syncFromSportsDB,
   clearFixtures,
+  searchTeam,
+  getTeamById,
+  getTeamPlayers,
+  getTeamNextEvents,
+  getTeamLastEvents,
 } from '../controllers/sync.controller';
 import { requireApiSecret } from '../middleware/apiSecret';
 
@@ -32,6 +37,11 @@ router.get('/predictions/:fixtureId', getApiPrediction);
 router.get('/injuries/:fixtureId', getFixtureInjuries);
 router.get('/h2h', getHeadToHead);
 router.get('/statistics/:fixtureId', getFixtureStatistics);
+router.get('/team/search', searchTeam);
+router.get('/team/:id/players', getTeamPlayers);
+router.get('/team/:id/next', getTeamNextEvents);
+router.get('/team/:id/last', getTeamLastEvents);
+router.get('/team/:id', getTeamById);
 router.get('/topscorers', getTopScorers);
 
 router.post('/fixtures', syncFixtures);

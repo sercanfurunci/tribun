@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { syncService } from '../services/sync.service';
 import { footballApiService } from '../services/football-api.service';
 import { predictionService } from '../services/prediction.service';
+import { theSportsDBService } from '../services/thesportsdb.service';
 
 /** POST /api/sync/fixtures — trigger a full fixture sync for a league+season */
 export async function syncFixtures(req: Request, res: Response): Promise<void> {
@@ -160,6 +161,65 @@ export async function getFixtureStatistics(req: Request, res: Response): Promise
     res.json({ statistics });
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch statistics' });
+  }
+}
+
+/** GET /api/sync/team/search?name= — search team on TheSportsDB */
+export async function searchTeam(req: Request, res: Response): Promise<void> {
+  const { name } = req.query;
+  if (!name || typeof name !== 'string') {
+    res.status(400).json({ error: 'name query is required' });
+    return;
+  }
+  try {
+    const team = await theSportsDBService.searchTeam(name);
+    res.json({ team });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to search team' });
+  }
+}
+
+/** GET /api/sync/team/:id — get team by TheSportsDB ID */
+export async function getTeamById(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  try {
+    const team = await theSportsDBService.getTeamById(id);
+    res.json({ team });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch team' });
+  }
+}
+
+/** GET /api/sync/team/:id/players — get team squad */
+export async function getTeamPlayers(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  try {
+    const players = await theSportsDBService.getTeamPlayers(id);
+    res.json({ players });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch players' });
+  }
+}
+
+/** GET /api/sync/team/:id/next — next events for a team */
+export async function getTeamNextEvents(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  try {
+    const events = await theSportsDBService.getTeamNextEvents(id);
+    res.json({ events });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch next events' });
+  }
+}
+
+/** GET /api/sync/team/:id/last — last results for a team */
+export async function getTeamLastEvents(req: Request, res: Response): Promise<void> {
+  const { id } = req.params;
+  try {
+    const events = await theSportsDBService.getTeamLastEvents(id);
+    res.json({ events });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch last events' });
   }
 }
 

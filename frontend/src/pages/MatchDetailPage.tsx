@@ -177,9 +177,9 @@ export default function MatchDetailPage() {
           <div className="flex items-center gap-4 sm:gap-8">
 
             {/* Home team */}
-            <div className="flex-1 flex flex-col items-center gap-3">
+            <Link to={`/teams/${encodeURIComponent(match.home_team)}`} className="flex-1 flex flex-col items-center gap-3 group">
               <div
-                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden"
+                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105"
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 {match.home_team_logo
@@ -187,10 +187,10 @@ export default function MatchDetailPage() {
                   : <span className="text-2xl font-bold text-slate-300">{match.home_team[0]}</span>
                 }
               </div>
-              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
+              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base group-hover:text-green-400 transition-colors">
                 {homeTeam}
               </span>
-            </div>
+            </Link>
 
             {/* Score / VS */}
             <div className="flex flex-col items-center gap-2 shrink-0">
@@ -229,9 +229,9 @@ export default function MatchDetailPage() {
             </div>
 
             {/* Away team */}
-            <div className="flex-1 flex flex-col items-center gap-3">
+            <Link to={`/teams/${encodeURIComponent(match.away_team)}`} className="flex-1 flex flex-col items-center gap-3 group">
               <div
-                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden"
+                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105"
                 style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 {match.away_team_logo
@@ -239,10 +239,10 @@ export default function MatchDetailPage() {
                   : <span className="text-2xl font-bold text-slate-300">{match.away_team[0]}</span>
                 }
               </div>
-              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base">
+              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base group-hover:text-green-400 transition-colors">
                 {awayTeam}
               </span>
-            </div>
+            </Link>
           </div>
 
           {/* Match meta */}
