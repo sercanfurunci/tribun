@@ -152,6 +152,17 @@ export async function getHeadToHead(req: Request, res: Response): Promise<void> 
   }
 }
 
+/** GET /api/sync/statistics/:fixtureId — get match statistics (possession, shots, etc.) */
+export async function getFixtureStatistics(req: Request, res: Response): Promise<void> {
+  const { fixtureId } = req.params;
+  try {
+    const statistics = await footballApiService.getFixtureStatistics(Number(fixtureId));
+    res.json({ statistics });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch statistics' });
+  }
+}
+
 /** GET /api/sync/topscorers — get top scorers */
 export async function getTopScorers(req: Request, res: Response): Promise<void> {
   const { leagueId, season } = req.query;

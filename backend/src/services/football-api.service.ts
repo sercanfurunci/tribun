@@ -196,6 +196,16 @@ export class FootballApiService {
     return res.data.response;
   }
 
+  async getFixtureStatistics(fixtureId: number) {
+    const res = await this.client.get('/fixtures/statistics', {
+      params: { fixture: fixtureId },
+    });
+    return res.data.response as Array<{
+      team: { id: number; name: string; logo: string };
+      statistics: Array<{ type: string; value: number | string | null }>;
+    }>;
+  }
+
   async checkStatus() {
     const res = await this.client.get('/status');
     return res.data.response;

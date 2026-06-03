@@ -5,7 +5,7 @@ import { enUS, tr as trLocale } from 'date-fns/locale';
 import { matchesApi } from '../services/matches';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
-import { footballApi, FixtureEvent, InjuryEntry } from '../services/football';
+import { footballApi, FixtureEvent, InjuryEntry, TeamStatistics, H2HFixture } from '../services/football';
 import { PredictionForm } from '../components/features/PredictionForm';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
@@ -105,12 +105,31 @@ export default function MatchDetailPage() {
     staleTime: 1000 * 60 * 10,
   });
 
+  const { data: statisticsData } = useQuery({
+    queryKey: ['fixture-statistics', externalId],
+    queryFn: () => footballApi.getFixtureStatistics(externalId!),
+    enabled: !!externalId && (match?.status === 'live' || match?.status === 'finished'),
+    refetchInterval: match?.status === 'live' ? 60000 : false,
+  });
+
+  const homeTeamExternalId = match?.home_team_external_id;
+  const awayTeamExternalId = match?.away_team_external_id;
+
+  const { data: h2hData } = useQuery({
+    queryKey: ['h2h', homeTeamExternalId, awayTeamExternalId],
+    queryFn: () => footballApi.getH2H(homeTeamExternalId!, awayTeamExternalId!, 5),
+    enabled: !!homeTeamExternalId && !!awayTeamExternalId,
+    staleTime: 1000 * 60 * 60,
+  });
+
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   if (!match) return <div className="text-center text-slate-400 py-20 text-sm">{t('matchDetail.notFound')}</div>;
 
   const myPrediction = myPredictionsData?.data.predictions.find((p) => p.match_id === id);
   const events = eventsData?.data.events ?? [];
   const injuries: InjuryEntry[] = injuriesData?.data.injuries ?? [];
+  const statistics: TeamStatistics[] = statisticsData?.data.statistics ?? [];
+  const h2hFixtures: H2HFixture[] = h2hData?.data.h2h ?? [];
   const apiPrediction = apiPredictionData?.data.prediction?.predictions;
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
@@ -427,6 +446,117 @@ export default function MatchDetailPage() {
                       })}
                     </ul>
                   )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Match Statistics */}
+      {(match.status === 'live' || match.status === 'finished') && (
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.statistics')}</h2>
+          </div>
+          {statistics.length === 0 ? (
+            <p className="px-5 py-8 text-sm text-slate-600 text-center">{t('matchDetail.noStats')}</p>
+          ) : (
+            <div className="p-5 space-y-3">
+              {statistics[0]?.statistics
+                .filter((s) => s.value !== null && s.value !== undefined)
+                .map((stat, i) => {
+                  const homeVal = statistics[0]?.statistics[i]?.value;
+                  const awayVal = statistics[1]?.statistics[i]?.value;
+                  const homeNum = typeof homeVal === 'string' && homeVal.endsWith('%')
+                    ? parseFloat(homeVal) : Number(homeVal ?? 0);
+                  const awayNum = typeof awayVal === 'string' && awayVal.endsWith('%')
+                    ? parseFloat(awayVal) : Number(awayVal ?? 0);
+                  const total = homeNum + awayNum || 1;
+                  const homeWidth = Math.round((homeNum / total) * 100);
+                  const awayWidth = 100 - homeWidth;
+
+                  return (
+                    <div key={stat.type}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-semibold text-white tabular-nums">{homeVal ?? 0}</span>
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-heading text-center flex-1 px-3">
+                          {stat.type}
+                        </span>
+                        <span className="text-sm font-semibold text-white tabular-nums">{awayVal ?? 0}</span>
+                      </div>
+                      <div className="flex rounded-full overflow-hidden h-1.5" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${homeWidth}%`, background: '#22c55e', transition: 'width 0.4s ease' }}
+                        />
+                        <div
+                          className="h-full rounded-full ml-auto"
+                          style={{ width: `${awayWidth}%`, background: '#3b82f6', transition: 'width 0.4s ease' }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              <div className="flex items-center justify-between pt-2">
+                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                  <span className="size-2 rounded-full bg-green-500 inline-block" /> {homeTeam}
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
+                  {awayTeam} <span className="size-2 rounded-full bg-blue-500 inline-block" />
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* H2H */}
+      {h2hFixtures.length > 0 && (
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
+        >
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.h2h')}</h2>
+            <p className="text-xs text-slate-600 mt-0.5">{t('matchDetail.h2hLast')}</p>
+          </div>
+          <div>
+            {h2hFixtures.slice(0, 5).map((fixture) => {
+              const hWin = fixture.teams.home.winner === true;
+              const aWin = fixture.teams.away.winner === true;
+              const isDraw = fixture.teams.home.winner === false && fixture.teams.away.winner === false;
+              return (
+                <div
+                  key={fixture.fixture.id}
+                  className="flex items-center gap-3 px-5 py-3"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
+                >
+                  <span className="text-[11px] text-slate-600 w-20 shrink-0">
+                    {fixture.fixture.date ? format(new Date(fixture.fixture.date), 'dd MMM yy', { locale: dateLocale }) : ''}
+                  </span>
+                  <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <span className={`text-xs truncate text-right flex-1 ${hWin ? 'text-white font-semibold' : 'text-slate-500'}`}>
+                      {fixture.teams.home.name}
+                    </span>
+                    <span
+                      className="font-score text-base text-white shrink-0 px-2 py-0.5 rounded-lg"
+                      style={{
+                        background: isDraw ? 'rgba(255,255,255,0.06)' : hWin ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.10)',
+                      }}
+                    >
+                      {fixture.goals.home ?? 0} – {fixture.goals.away ?? 0}
+                    </span>
+                    <span className={`text-xs truncate flex-1 ${aWin ? 'text-white font-semibold' : 'text-slate-500'}`}>
+                      {fixture.teams.away.name}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-700 shrink-0 w-16 text-right truncate">
+                    {fixture.league.name}
+                  </span>
                 </div>
               );
             })}

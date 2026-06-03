@@ -7,8 +7,8 @@ export const predictionsApi = {
       matchId, leagueId, predictedHomeScore, predictedAwayScore,
     }),
 
-  getMine: (leagueId: string) =>
-    api.get<{ predictions: Prediction[] }>(`/predictions/mine?leagueId=${leagueId}`),
+  getMine: (leagueId?: string) =>
+    api.get<{ predictions: Prediction[] }>(`/predictions/mine${leagueId ? `?leagueId=${leagueId}` : ''}`),
 
   getForMatch: (matchId: string, leagueId: string) =>
     api.get<{ predictions: Prediction[] }>(`/predictions/match/${matchId}?leagueId=${leagueId}`),

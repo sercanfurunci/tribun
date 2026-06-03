@@ -39,15 +39,18 @@ export class PredictionService {
     return result.rows[0];
   }
 
-  async getUserPredictions(userId: string, leagueId: string) {
-    const result = await pool.query(
-      `SELECT p.*, m.home_team, m.away_team, m.kickoff_time, m.status, m.home_score, m.away_score, m.tournament
+  async getUserPredictions(userId: string, leagueId?: string) {
+    let query = `SELECT p.*, m.home_team, m.away_team, m.kickoff_time, m.status, m.home_score, m.away_score, m.tournament
        FROM predictions p
        JOIN matches m ON p.match_id = m.id
-       WHERE p.user_id = $1 AND p.league_id = $2
-       ORDER BY m.kickoff_time DESC`,
-      [userId, leagueId]
-    );
+       WHERE p.user_id = $1`;
+    const params: unknown[] = [userId];
+    if (leagueId) {
+      query += ' AND p.league_id = $2';
+      params.push(leagueId);
+    }
+    query += ' ORDER BY m.kickoff_time DESC';
+    const result = await pool.query(query, params);
     return result.rows;
   }
 

@@ -10,6 +10,7 @@ import LeaguesPage from './pages/LeaguesPage';
 import LeagueDetailPage from './pages/LeagueDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import StandingsPage from './pages/StandingsPage';
+import PredictionsPage from './pages/PredictionsPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,7 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/matches" element={<MatchesPage />} />
+          <Route path="/predictions" element={<PredictionsPage />} />
           <Route path="/matches/:id" element={<MatchDetailPage />} />
           <Route path="/leagues" element={<LeaguesPage />} />
           <Route path="/leagues/:id" element={<LeagueDetailPage />} />

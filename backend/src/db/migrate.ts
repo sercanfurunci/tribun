@@ -73,6 +73,9 @@ const schema = `
   CREATE INDEX IF NOT EXISTS idx_matches_status ON matches(status);
   CREATE INDEX IF NOT EXISTS idx_matches_external_id ON matches(external_id);
   CREATE INDEX IF NOT EXISTS idx_matches_external_league ON matches(external_league_id, external_season);
+
+  ALTER TABLE matches ADD COLUMN IF NOT EXISTS home_team_external_id INTEGER;
+  ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_team_external_id INTEGER;
 `;
 
 async function migrate() {

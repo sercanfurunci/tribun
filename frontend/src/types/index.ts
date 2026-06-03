@@ -34,6 +34,8 @@ export interface Match {
   external_id?: number;
   external_league_id?: number;
   external_season?: number;
+  home_team_external_id?: number;
+  away_team_external_id?: number;
   venue?: string;
   referee?: string;
   created_at: string;

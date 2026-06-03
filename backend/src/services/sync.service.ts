@@ -40,8 +40,9 @@ export class SyncService {
             `INSERT INTO matches
                (external_id, home_team, away_team, home_team_logo, away_team_logo,
                 kickoff_time, status, home_score, away_score, tournament, match_day,
-                external_league_id, external_season, venue, referee)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+                external_league_id, external_season, venue, referee,
+                home_team_external_id, away_team_external_id)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
             [
               f.fixture.id,
               f.teams.home.name,
@@ -58,6 +59,8 @@ export class SyncService {
               f.league.season,
               f.fixture.venue?.name || null,
               f.fixture.referee || null,
+              f.teams.home.id,
+              f.teams.away.id,
             ]
           );
           result.inserted++;

@@ -171,6 +171,24 @@ export const translations = {
     'matchDetail.injuryType.injured': 'Injured',
     'matchDetail.injuryType.suspended': 'Suspended',
     'matchDetail.injuryType.missing': 'Unavailable',
+    'matchDetail.statistics': 'Match Statistics',
+    'matchDetail.h2h': 'Head to Head',
+    'matchDetail.h2hLast': 'Last 5 meetings',
+    'matchDetail.noStats': 'Statistics not available yet',
+
+    // My Predictions
+    'nav.predictions': 'My Picks',
+    'predictions.title': 'My Predictions',
+    'predictions.eyebrow': 'History',
+    'predictions.subtitle': 'All your match predictions across leagues',
+    'predictions.empty': 'No predictions yet. Head to a match and make your pick!',
+    'predictions.goPredict': 'Browse Matches',
+    'predictions.status.pending': 'Pending',
+    'predictions.status.won': 'Won',
+    'predictions.status.lost': 'Lost',
+    'predictions.yourPick': 'Your pick',
+    'predictions.result': 'Result',
+    'predictions.points': 'pts',
 
     // League detail
     'leagueDetail.notFound': 'League not found',
@@ -365,6 +383,24 @@ export const translations = {
     'matchDetail.injuryType.injured': 'Sakat',
     'matchDetail.injuryType.suspended': 'Cezalı',
     'matchDetail.injuryType.missing': 'Yok',
+    'matchDetail.statistics': 'Maç İstatistikleri',
+    'matchDetail.h2h': 'Karşılıklı Durum',
+    'matchDetail.h2hLast': 'Son 5 karşılaşma',
+    'matchDetail.noStats': 'İstatistikler henüz mevcut değil',
+
+    // My Predictions
+    'nav.predictions': 'Tahminlerim',
+    'predictions.title': 'Tahminlerim',
+    'predictions.eyebrow': 'Geçmiş',
+    'predictions.subtitle': 'Tüm liglerdeki tahminlerin',
+    'predictions.empty': 'Henüz tahmin yok. Bir maça git ve tahminini yap!',
+    'predictions.goPredict': 'Maçlara Göz At',
+    'predictions.status.pending': 'Bekliyor',
+    'predictions.status.won': 'Kazandı',
+    'predictions.status.lost': 'Kaybetti',
+    'predictions.yourPick': 'Tahminin',
+    'predictions.result': 'Sonuç',
+    'predictions.points': 'puan',
 
     // League detail
     'leagueDetail.notFound': 'Lig bulunamadı',

@@ -46,6 +46,16 @@ export interface H2HFixture {
   goals: { home: number | null; away: number | null };
 }
 
+export interface FixtureStatEntry {
+  type: string;
+  value: number | string | null;
+}
+
+export interface TeamStatistics {
+  team: { id: number; name: string; logo: string };
+  statistics: FixtureStatEntry[];
+}
+
 export interface TopScorer {
   player: { id: number; name: string; photo: string; nationality: string; age: number };
   statistics: Array<{
@@ -70,6 +80,9 @@ export const footballApi = {
 
   getH2H: (homeTeamId: number, awayTeamId: number, last = 5) =>
     api.get<{ h2h: H2HFixture[] }>(`/sync/h2h?teams=${homeTeamId}-${awayTeamId}&last=${last}`),
+
+  getFixtureStatistics: (fixtureId: number) =>
+    api.get<{ statistics: TeamStatistics[] }>(`/sync/statistics/${fixtureId}`),
 
   getTopScorers: (leagueId: number, season: number) =>
     api.get<{ scorers: TopScorer[] }>(`/sync/topscorers?leagueId=${leagueId}&season=${season}`),

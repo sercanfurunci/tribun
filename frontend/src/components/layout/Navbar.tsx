@@ -15,6 +15,7 @@ export function Navbar() {
   const NAV_LINKS: { to: string; label: string; icon: IconName }[] = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: 'zap' },
     { to: '/matches', label: t('nav.matches'), icon: 'ball' },
+    { to: '/predictions', label: t('nav.predictions'), icon: 'target' },
     { to: '/standings', label: t('nav.standings'), icon: 'trophy' },
     { to: '/leagues', label: t('nav.leagues'), icon: 'medal' },
   ];

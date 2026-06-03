@@ -30,11 +30,7 @@ export async function upsertPrediction(req: AuthenticatedRequest, res: Response)
 export async function getUserPredictions(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { leagueId } = req.query;
-    if (!leagueId) {
-      res.status(400).json({ error: 'leagueId is required' });
-      return;
-    }
-    const predictions = await predictionService.getUserPredictions(req.user!.id, leagueId as string);
+    const predictions = await predictionService.getUserPredictions(req.user!.id, leagueId as string | undefined);
     res.json({ predictions });
   } catch {
     res.status(500).json({ error: 'Failed to fetch predictions' });
