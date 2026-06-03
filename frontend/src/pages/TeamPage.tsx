@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -14,12 +15,40 @@ const STATUS_MAP: Record<string, 'scheduled' | 'live' | 'finished' | 'postponed'
   PST: 'postponed', CANC: 'postponed', LIVE: 'live',
 };
 
+const POSITION_TR: Record<string, string> = {
+  Goalkeeper: 'Kaleci',
+  Defender: 'Defans',
+  Midfielder: 'Orta Saha',
+  Forward: 'Forvet',
+  Striker: 'Santrafor',
+  Winger: 'Kanat',
+  Attacker: 'Hücum',
+  'Centre-Back': 'Stoper',
+  'Centre Back': 'Stoper',
+  'Full-Back': 'Bek',
+  'Left-Back': 'Sol Bek',
+  'Right-Back': 'Sağ Bek',
+  'Left Back': 'Sol Bek',
+  'Right Back': 'Sağ Bek',
+  'Defensive Midfielder': 'Defansif Orta Saha',
+  'Central Midfielder': 'Merkez Orta Saha',
+  'Attacking Midfielder': 'Ofansif Orta Saha',
+  'Left Winger': 'Sol Kanat',
+  'Right Winger': 'Sağ Kanat',
+};
+
+function translatePosition(pos: string | null, lang: string): string | null {
+  if (!pos) return null;
+  if (lang !== 'tr') return pos;
+  return POSITION_TR[pos] ?? pos;
+}
+
 function mapStatus(strStatus: string, strPostponed: string) {
   if (strPostponed === 'yes') return 'postponed';
   return STATUS_MAP[strStatus] ?? 'scheduled';
 }
 
-function EventRow({ event, teamId, dateLocale }: { event: SportsDBTeamEvent; teamId: string; dateLocale: Locale }) {
+function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEvent; teamId: string; dateLocale: Locale; lang: string }) {
   const status = mapStatus(event.strStatus, event.strPostponed);
   const isFinished = status === 'finished';
   const isHome = event.idHomeTeam === teamId;
@@ -30,24 +59,28 @@ function EventRow({ event, teamId, dateLocale }: { event: SportsDBTeamEvent; tea
   const opponent = isHome ? event.strAwayTeam : event.strHomeTeam;
   const opponentBadge = isHome ? event.strAwayTeamBadge : event.strHomeTeamBadge;
 
-
   const resultColor = !isFinished ? '' : won ? 'text-green-400' : drew ? 'text-slate-400' : 'text-red-400';
-  const resultLabel = !isFinished ? '' : won ? 'W' : drew ? 'D' : 'L';
   const resultBg = !isFinished ? '' : won ? 'bg-green-500/10 border-green-500/20' : drew ? 'bg-slate-700/40 border-white/10' : 'bg-red-500/10 border-red-500/20';
+
+  const resultLabel = !isFinished ? '' : lang === 'tr'
+    ? (won ? 'G' : drew ? 'B' : 'M')
+    : (won ? 'W' : drew ? 'D' : 'L');
+
+  const locationLabel = lang === 'tr'
+    ? (isHome ? 'ev' : 'dep')
+    : (isHome ? 'vs' : '@');
 
   return (
     <div
       className="flex items-center gap-3 px-4 sm:px-5 py-3.5"
       style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
     >
-      {/* Result badge */}
       {isFinished && (
         <span className={`text-xs font-black w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${resultColor} ${resultBg}`}>
           {resultLabel}
         </span>
       )}
 
-      {/* Opponent */}
       <Link to={`/teams/${encodeURIComponent(opponent)}`} className="flex items-center gap-2.5 flex-1 min-w-0 group">
         {opponentBadge ? (
           <img src={opponentBadge} alt={opponent} className="size-7 object-contain shrink-0" />
@@ -58,13 +91,12 @@ function EventRow({ event, teamId, dateLocale }: { event: SportsDBTeamEvent; tea
         )}
         <div className="min-w-0">
           <p className="text-sm font-semibold text-slate-100 truncate group-hover:text-white transition-colors">
-            {isHome ? 'vs' : '@'} {opponent}
+            <span className="text-slate-500 mr-1">{locationLabel}</span>{opponent}
           </p>
           <p className="text-[11px] text-slate-600 truncate">{event.strLeague}</p>
         </div>
       </Link>
 
-      {/* Score or date */}
       <div className="text-right shrink-0">
         {isFinished ? (
           <span className="font-score text-lg text-white">
@@ -136,32 +168,47 @@ export default function TeamPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <Icon name="ball" size={40} className="text-slate-700" />
-        <p className="text-slate-500">Team not found: {name}</p>
-        <Link to="/matches" className="text-sm text-green-500 hover:text-green-400">← Back to matches</Link>
+        <p className="text-slate-500">{lang === 'tr' ? 'Takım bulunamadı' : 'Team not found'}: {name}</p>
+        <Link to="/matches" className="text-sm text-green-500 hover:text-green-400">
+          ← {lang === 'tr' ? 'Maçlara dön' : 'Back to matches'}
+        </Link>
       </div>
     );
   }
 
   const primaryColor = team.strColour1 ?? '#16a34a';
-  const description = team.strDescriptionEN ?? '';
+
+  const description = lang === 'tr'
+    ? (team.strDescriptionTR || team.strDescriptionEN || '')
+    : (team.strDescriptionEN || '');
+
   const shortDesc = description.length > 400 ? description.slice(0, 400) + '…' : description;
+
+  const formedLabel = lang === 'tr' ? 'Kur.' : 'Est.';
+  const aboutLabel = lang === 'tr' ? 'Hakkında' : 'About';
+  const squadLabel = lang === 'tr' ? 'Kadro' : 'Squad';
+  const playerLabel = lang === 'tr' ? 'oyuncu' : 'players';
+  const upcomingLabel = lang === 'tr' ? 'Gelecek Maçlar' : 'Upcoming Matches';
+  const noUpcomingLabel = lang === 'tr' ? 'Yaklaşan maç yok' : 'No upcoming matches';
+  const lastResultsLabel = lang === 'tr' ? 'Son Sonuçlar' : 'Last Results';
+  const noResultsLabel = lang === 'tr' ? 'Henüz sonuç yok' : 'No results yet';
+  const readMoreLabel = lang === 'tr' ? 'Devamını oku' : 'Read more';
+  const readLessLabel = lang === 'tr' ? 'Daha az göster' : 'Show less';
 
   return (
     <div className="space-y-6 animate-fade-up">
 
-      {/* Hero — fanart or color gradient */}
+      {/* Hero */}
       <div
         className="relative rounded-[24px] overflow-hidden"
         style={{ minHeight: 200 }}
       >
-        {/* Fanart background */}
         {team.strFanart1 && (
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${team.strFanart1})` }}
           />
         )}
-        {/* Overlay */}
         <div
           className="absolute inset-0"
           style={{
@@ -176,7 +223,6 @@ export default function TeamPage() {
         />
 
         <div className="relative px-6 py-8 sm:px-8 sm:py-10 flex items-center gap-6">
-          {/* Badge */}
           {team.strBadge && (
             <div
               className="size-20 sm:size-24 rounded-2xl flex items-center justify-center shrink-0 p-2"
@@ -187,7 +233,6 @@ export default function TeamPage() {
           )}
 
           <div className="min-w-0">
-            {/* Color pills */}
             <div className="flex items-center gap-1.5 mb-2">
               {[team.strColour1, team.strColour2].filter(Boolean).map((c, i) => (
                 <span key={i} className="size-3 rounded-full border border-white/10 shrink-0" style={{ background: c! }} />
@@ -213,7 +258,7 @@ export default function TeamPage() {
                 </span>
               )}
               {team.intFormedYear && (
-                <span className="text-xs text-slate-600">· Est. {team.intFormedYear}</span>
+                <span className="text-xs text-slate-600">· {formedLabel} {team.intFormedYear}</span>
               )}
             </div>
           </div>
@@ -232,7 +277,7 @@ export default function TeamPage() {
               className="rounded-[20px] p-5 sm:p-6"
               style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
             >
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest mb-3">Hakkında</h2>
+              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest mb-3">{aboutLabel}</h2>
               <p className="text-sm text-slate-300 leading-relaxed">
                 {showFullDesc ? description : shortDesc}
               </p>
@@ -241,7 +286,7 @@ export default function TeamPage() {
                   onClick={() => setShowFullDesc(!showFullDesc)}
                   className="mt-3 text-xs text-green-500 hover:text-green-400 transition-colors font-semibold"
                 >
-                  {showFullDesc ? 'Daha az göster' : 'Devamını oku'}
+                  {showFullDesc ? readLessLabel : readMoreLabel}
                 </button>
               )}
             </div>
@@ -255,7 +300,7 @@ export default function TeamPage() {
             >
               <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">
-                  Kadro · {players.length} oyuncu
+                  {squadLabel} · {players.length} {playerLabel}
                 </h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-0">
@@ -277,7 +322,9 @@ export default function TeamPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-white truncate">{p.strPlayer}</p>
-                      <p className="text-[10px] text-slate-600 truncate">{p.strPosition ?? '—'}</p>
+                      <p className="text-[10px] text-slate-600 truncate">
+                        {translatePosition(p.strPosition, lang) ?? '—'}
+                      </p>
                     </div>
                     {p.strNumber && (
                       <span className="ml-auto font-score text-sm text-slate-600 shrink-0">{p.strNumber}</span>
@@ -298,14 +345,14 @@ export default function TeamPage() {
             style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">Gelecek Maçlar</h2>
+              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">{upcomingLabel}</h2>
             </div>
             {nextEvents.length === 0 ? (
-              <p className="px-5 py-8 text-sm text-slate-600 text-center">Yaklaşan maç yok</p>
+              <p className="px-5 py-8 text-sm text-slate-600 text-center">{noUpcomingLabel}</p>
             ) : (
               <div>
                 {nextEvents.slice(0, 5).map((e) => (
-                  <EventRow key={e.idEvent} event={e} teamId={teamId!} dateLocale={dateLocale} />
+                  <EventRow key={e.idEvent} event={e} teamId={teamId!} dateLocale={dateLocale} lang={lang} />
                 ))}
               </div>
             )}
@@ -317,14 +364,14 @@ export default function TeamPage() {
             style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
           >
             <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">Son Sonuçlar</h2>
+              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">{lastResultsLabel}</h2>
             </div>
             {lastEvents.length === 0 ? (
-              <p className="px-5 py-8 text-sm text-slate-600 text-center">Henüz sonuç yok</p>
+              <p className="px-5 py-8 text-sm text-slate-600 text-center">{noResultsLabel}</p>
             ) : (
               <div>
                 {lastEvents.slice(0, 5).map((e) => (
-                  <EventRow key={e.idEvent} event={e} teamId={teamId!} dateLocale={dateLocale} />
+                  <EventRow key={e.idEvent} event={e} teamId={teamId!} dateLocale={dateLocale} lang={lang} />
                 ))}
               </div>
             )}
@@ -334,6 +381,3 @@ export default function TeamPage() {
     </div>
   );
 }
-
-// Need React import for useState
-import React from 'react';

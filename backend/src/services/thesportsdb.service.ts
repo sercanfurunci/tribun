@@ -31,6 +31,7 @@ export interface SportsDBTeam {
   strColour2: string | null;
   strColour3: string | null;
   strDescriptionEN: string | null;
+  strDescriptionTR: string | null;
   strBadge: string | null;
   strLogo: string | null;
   strFanart1: string | null;
