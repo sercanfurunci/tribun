@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import type { Locale } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
 import { teamApi, SportsDBTeamEvent } from '../services/team';
 import { Spinner } from '../components/ui/Spinner';
@@ -28,7 +29,7 @@ function EventRow({ event, teamId, dateLocale }: { event: SportsDBTeamEvent; tea
   const drew = isFinished && myScore !== null && theirScore !== null && Number(myScore) === Number(theirScore);
   const opponent = isHome ? event.strAwayTeam : event.strHomeTeam;
   const opponentBadge = isHome ? event.strAwayTeamBadge : event.strHomeTeamBadge;
-  const opponentId = isHome ? event.idAwayTeam : event.idHomeTeam;
+
 
   const resultColor = !isFinished ? '' : won ? 'text-green-400' : drew ? 'text-slate-400' : 'text-red-400';
   const resultLabel = !isFinished ? '' : won ? 'W' : drew ? 'D' : 'L';
@@ -188,7 +189,7 @@ export default function TeamPage() {
           <div className="min-w-0">
             {/* Color pills */}
             <div className="flex items-center gap-1.5 mb-2">
-              {[team.strColour1, team.strColour2, team.strColour3].filter(Boolean).map((c, i) => (
+              {[team.strColour1, team.strColour2].filter(Boolean).map((c, i) => (
                 <span key={i} className="size-3 rounded-full border border-white/10 shrink-0" style={{ background: c! }} />
               ))}
               {team.strTeamShort && (

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import type { Locale } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
 import { predictionsApi } from '../services/predictions';
 import { Spinner } from '../components/ui/Spinner';
@@ -77,7 +78,7 @@ function PredictionRow({ pred, dateLocale }: { pred: Prediction; dateLocale: Loc
           </span>
         )}
         {isPending && (
-          <Icon name="chevron-right" size={14} className="text-slate-700" />
+          <Icon name="arrow-right" size={14} className="text-slate-700" />
         )}
       </div>
     </Link>
