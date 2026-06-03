@@ -8,6 +8,8 @@ import { teamApi, SportsDBTeamEvent } from '../services/team';
 import { Spinner } from '../components/ui/Spinner';
 import { Icon } from '../components/ui/Icon';
 import { useLanguageStore } from '../store/language';
+import { formatTeamName } from '../lib/matchDisplay';
+import type { Lang } from '../i18n/translations';
 
 const STATUS_MAP: Record<string, 'scheduled' | 'live' | 'finished' | 'postponed'> = {
   NS: 'scheduled', '1H': 'live', HT: 'live', '2H': 'live', ET: 'live',
@@ -74,7 +76,7 @@ function mapStatus(strStatus: string, strPostponed: string) {
   return STATUS_MAP[strStatus] ?? 'scheduled';
 }
 
-function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEvent; teamId: string; dateLocale: Locale; lang: string }) {
+function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEvent; teamId: string; dateLocale: Locale; lang: Lang }) {
   const status = mapStatus(event.strStatus, event.strPostponed);
   const isFinished = status === 'finished';
   const isHome = event.idHomeTeam === teamId;
@@ -82,7 +84,8 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
   const theirScore = isHome ? event.intAwayScore : event.intHomeScore;
   const won = isFinished && myScore !== null && theirScore !== null && Number(myScore) > Number(theirScore);
   const drew = isFinished && myScore !== null && theirScore !== null && Number(myScore) === Number(theirScore);
-  const opponent = isHome ? event.strAwayTeam : event.strHomeTeam;
+  const opponentRaw = isHome ? event.strAwayTeam : event.strHomeTeam;
+  const opponent = formatTeamName(opponentRaw, lang);
   const opponentBadge = isHome ? event.strAwayTeamBadge : event.strHomeTeamBadge;
 
   const resultColor = !isFinished ? '' : won ? 'text-green-400' : drew ? 'text-slate-400' : 'text-red-400';
@@ -107,7 +110,7 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
         </span>
       )}
 
-      <Link to={`/teams/${encodeURIComponent(opponent)}`} className="flex items-center gap-2.5 flex-1 min-w-0 group">
+      <Link to={`/teams/${encodeURIComponent(opponentRaw)}`} className="flex items-center gap-2.5 flex-1 min-w-0 group">
         {opponentBadge ? (
           <img src={opponentBadge} alt={opponent} className="size-7 object-contain shrink-0" />
         ) : (
