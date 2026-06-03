@@ -16,24 +16,43 @@ interface StatCardProps {
   sublabel?: string;
   accent: string;
   icon: IconName;
+  to?: string;
 }
 
-function StatCard({ label, value, sublabel, accent, icon }: StatCardProps) {
-  return (
-    <div
-      className="rounded-[22px] p-5 sm:p-6 flex flex-col items-center justify-between text-center gap-3 min-w-0 min-h-[150px]"
-      style={{
-        background: '#0F172A',
-        border: '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 6px 24px -10px rgba(0,0,0,0.45)',
-      }}
-    >
+function StatCard({ label, value, sublabel, accent, icon, to }: StatCardProps) {
+  const inner = (
+    <>
       <div className={`flex items-center gap-1.5 ${accent}`}>
         <Icon name={icon} size={16} />
         <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading">{label}</span>
       </div>
       <span className={`font-score text-5xl sm:text-6xl leading-none ${accent}`}>{value}</span>
       {sublabel && <p className="text-xs text-slate-500 truncate w-full">{sublabel}</p>}
+    </>
+  );
+
+  const baseClass = "rounded-[22px] p-5 sm:p-6 flex flex-col items-center justify-between text-center gap-3 min-w-0 min-h-[150px]";
+  const baseStyle = {
+    background: '#0F172A',
+    border: '1px solid rgba(255,255,255,0.08)',
+    boxShadow: '0 6px 24px -10px rgba(0,0,0,0.45)',
+  };
+
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className={`${baseClass} transition-colors hover:border-white/20 hover:bg-[#132033]`}
+        style={baseStyle}
+      >
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <div className={baseClass} style={baseStyle}>
+      {inner}
     </div>
   );
 }
@@ -206,7 +225,7 @@ export default function DashboardPage() {
           <div className="relative px-6 pb-6 sm:px-8 sm:pb-8 lg:px-10 lg:pb-10">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5 stagger">
               <StatCard label={t('stats.points')} value={stats.total_points} sublabel={t('stats.totalEarned')} accent="text-green-400" icon="zap" />
-              <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="target" />
+              <StatCard label={t('stats.predictions')} value={stats.total_predictions} sublabel={t('stats.submitted')} accent="text-white" icon="target" to="/predictions" />
               <StatCard label={t('stats.exactScores')} value={stats.exact_scores} sublabel={t('stats.exactSub')} accent="text-amber-400" icon="award" />
               <StatCard label={t('stats.correct')} value={stats.correct_outcomes} sublabel={t('stats.outcomes')} accent="text-blue-400" icon="check" />
             </div>

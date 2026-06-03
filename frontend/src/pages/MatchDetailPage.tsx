@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
@@ -55,6 +55,7 @@ export default function MatchDetailPage() {
   const [searchParams] = useSearchParams();
   const leagueId = searchParams.get('leagueId') || '';
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const t = useT();
   const lang = useLanguageStore((s) => s.lang);
   const dateLocale = lang === 'tr' ? trLocale : enUS;
@@ -298,14 +299,14 @@ export default function MatchDetailPage() {
                 <p className="text-sm text-slate-400 mb-3">{t('matchDetail.selectLeague')}</p>
                 <div className="flex flex-wrap gap-2">
                   {leagues.map((league) => (
-                    <a
+                    <button
                       key={league.id}
-                      href={`?leagueId=${league.id}`}
+                      onClick={() => navigate(`?leagueId=${league.id}`)}
                       className="px-3 py-2 rounded-xl text-sm font-medium text-white transition-colors"
                       style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                     >
                       {league.name}
-                    </a>
+                    </button>
                   ))}
                 </div>
               </div>
