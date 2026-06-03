@@ -73,14 +73,14 @@ export default function MatchesPage() {
 
       {/* Tab bar */}
       <div
-        className="flex gap-1 p-1 rounded-2xl w-fit"
+        className="flex gap-1 p-1 rounded-2xl w-full sm:w-fit"
         style={{ background: 'rgba(12,22,40,0.9)', border: '1px solid rgba(255,255,255,0.06)' }}
       >
         {TABS.map(({ id, labelKey, icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
-            className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold font-heading transition-all duration-200"
+            className="relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold font-heading transition-all duration-200"
             style={{
               background: tab === id ? 'rgba(22,163,74,0.15)' : 'transparent',
               color: tab === id ? '#4ade80' : '#64748b',
@@ -115,7 +115,7 @@ export default function MatchesPage() {
           <p className="text-slate-500 text-sm">{emptyMessages[tab]}</p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {matches.map((match) => (
             <MatchCard key={match.id} match={match} />
           ))}

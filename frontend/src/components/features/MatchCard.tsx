@@ -73,7 +73,7 @@ export function MatchCard({ match, prediction, leagueId }: MatchCardProps) {
   return (
     <Link to={`/matches/${match.id}${leagueId ? `?leagueId=${leagueId}` : ''}`} className="block match-card-link">
       <div
-        className={`match-card rounded-[24px] overflow-hidden h-full ${isLive ? 'match-card--live' : ''}`}
+        className={`match-card rounded-[20px] sm:rounded-[24px] overflow-hidden h-full ${isLive ? 'match-card--live' : ''}`}
         style={{ backdropFilter: 'blur(20px)' }}
       >
         <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-4 pb-3">

@@ -198,7 +198,11 @@ const TEAM_NAME_OVERRIDES: Record<Lang, Record<string, string>> = {
 const REGION_NAMES = new Map<string, Intl.DisplayNames>();
 
 function normalizeTeamName(name: string) {
-  return name.toLowerCase().replace(/[^a-z]/g, '');
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z]/g, '');
 }
 
 function getRegionNames(lang: Lang) {
