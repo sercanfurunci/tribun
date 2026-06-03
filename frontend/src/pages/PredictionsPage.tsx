@@ -6,12 +6,15 @@ import { enUS, tr as trLocale } from 'date-fns/locale';
 import { predictionsApi } from '../services/predictions';
 import { Spinner } from '../components/ui/Spinner';
 import { Icon } from '../components/ui/Icon';
-import { useT } from '../store/language';
-import { useLanguageStore } from '../store/language';
+import { useT, useLanguageStore } from '../store/language';
 import { Prediction } from '../types';
+import { formatTeamName } from '../lib/matchDisplay';
 
 function PredictionRow({ pred, dateLocale }: { pred: Prediction; dateLocale: Locale }) {
   const t = useT();
+  const lang = useLanguageStore((s) => s.lang);
+  const homeTeam = formatTeamName(pred.home_team, lang);
+  const awayTeam = formatTeamName(pred.away_team, lang);
   const isFinished = pred.status === 'finished';
   const isPending = pred.status === 'scheduled' || pred.status === 'live';
 
@@ -38,9 +41,9 @@ function PredictionRow({ pred, dateLocale }: { pred: Prediction; dateLocale: Loc
       {/* Teams */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-sm font-semibold text-white truncate">{pred.home_team}</span>
+          <span className="text-sm font-semibold text-white truncate">{homeTeam}</span>
           <span className="text-slate-600 text-xs shrink-0">vs</span>
-          <span className="text-sm font-semibold text-white truncate">{pred.away_team}</span>
+          <span className="text-sm font-semibold text-white truncate">{awayTeam}</span>
         </div>
         {pred.kickoff_time && (
           <p className="text-[11px] text-slate-600">
