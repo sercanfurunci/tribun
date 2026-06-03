@@ -19,10 +19,13 @@ const POSITION_TR: Record<string, string> = {
   Goalkeeper: 'Kaleci',
   Defender: 'Defans',
   Midfielder: 'Orta Saha',
+  Midfield: 'Orta Saha',
   Forward: 'Forvet',
   Striker: 'Santrafor',
   Winger: 'Kanat',
   Attacker: 'Hücum',
+  Manager: 'Teknik Direktör',
+  Coach: 'Antrenör',
   'Centre-Back': 'Stoper',
   'Centre Back': 'Stoper',
   'Full-Back': 'Bek',
@@ -31,16 +34,39 @@ const POSITION_TR: Record<string, string> = {
   'Left Back': 'Sol Bek',
   'Right Back': 'Sağ Bek',
   'Defensive Midfielder': 'Defansif Orta Saha',
+  'Defensive Midfield': 'Defansif Orta Saha',
   'Central Midfielder': 'Merkez Orta Saha',
+  'Central Midfield': 'Merkez Orta Saha',
   'Attacking Midfielder': 'Ofansif Orta Saha',
+  'Attacking Midfield': 'Ofansif Orta Saha',
   'Left Winger': 'Sol Kanat',
+  'Left Wing': 'Sol Kanat',
   'Right Winger': 'Sağ Kanat',
+  'Right Wing': 'Sağ Kanat',
+};
+
+const LEAGUE_TR: Record<string, string> = {
+  'International Friendlies': 'Uluslararası Hazırlık',
+  'FIFA World Cup': 'FIFA Dünya Kupası',
+  'UEFA Champions League': 'UEFA Şampiyonlar Ligi',
+  'UEFA Europa League': 'UEFA Avrupa Ligi',
+  'UEFA Conference League': 'UEFA Konferans Ligi',
+  'UEFA Nations League': 'UEFA Uluslar Ligi',
+  'UEFA European Championship': 'UEFA Avrupa Şampiyonası',
+  'Copa America': 'Copa América',
+  'Africa Cup of Nations': 'Afrika Uluslar Kupası',
+  'AFC Asian Cup': 'Asya Kupası',
 };
 
 function translatePosition(pos: string | null, lang: string): string | null {
   if (!pos) return null;
   if (lang !== 'tr') return pos;
   return POSITION_TR[pos] ?? pos;
+}
+
+function translateLeague(league: string, lang: string): string {
+  if (lang !== 'tr') return league;
+  return LEAGUE_TR[league] ?? league;
 }
 
 function mapStatus(strStatus: string, strPostponed: string) {
@@ -93,7 +119,7 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
           <p className="text-sm font-semibold text-slate-100 truncate group-hover:text-white transition-colors">
             <span className="text-slate-500 mr-1">{locationLabel}</span>{opponent}
           </p>
-          <p className="text-[11px] text-slate-600 truncate">{event.strLeague}</p>
+          <p className="text-[11px] text-slate-600 truncate">{translateLeague(event.strLeague, lang)}</p>
         </div>
       </Link>
 
