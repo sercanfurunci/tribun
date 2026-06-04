@@ -1,5 +1,6 @@
 import { LeaderboardEntry } from '../../types';
 import { useAuthStore } from '../../store/auth';
+import { useT } from '../../store/language';
 
 const MEDALS = [
   { bg: 'linear-gradient(135deg, #f59e0b, #d97706)', text: '#fff', shadow: 'rgba(245,158,11,0.4)' },
@@ -13,15 +14,25 @@ interface LeaderboardTableProps {
 
 export function LeaderboardTable({ entries }: LeaderboardTableProps) {
   const { user } = useAuthStore();
+  const t = useT();
+
+  const headers = [
+    t('leaderboard.col.rank'),
+    t('leaderboard.col.player'),
+    t('leaderboard.col.pts'),
+    t('leaderboard.col.exact'),
+    t('leaderboard.col.correct'),
+    t('leaderboard.col.played'),
+  ];
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            {['#', 'Player', 'Pts', 'Exact', 'Correct', 'Played'].map((h, i) => (
+            {headers.map((h, i) => (
               <th
-                key={h}
+                key={i}
                 className={`py-3 px-4 text-[10px] font-semibold uppercase tracking-widest text-slate-600 ${
                   i === 0 ? 'text-left w-10' :
                   i === 1 ? 'text-left' : 'text-right'
@@ -76,7 +87,7 @@ export function LeaderboardTable({ entries }: LeaderboardTableProps) {
                         {entry.username}
                       </span>
                       {isMe && (
-                        <span className="ml-1.5 text-[10px] text-slate-600 font-medium">you</span>
+                        <span className="ml-1.5 text-[10px] text-slate-600 font-medium">{t('leaderboard.you')}</span>
                       )}
                     </div>
                   </div>

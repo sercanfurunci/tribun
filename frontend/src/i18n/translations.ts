@@ -207,6 +207,19 @@ export const translations = {
     'leagueDetail.left': 'Left league',
     'leagueDetail.leaveError': 'Failed to leave league',
 
+    // Leaderboard
+    'leaderboard.col.rank': '#',
+    'leaderboard.col.player': 'Player',
+    'leaderboard.col.pts': 'Pts',
+    'leaderboard.col.exact': 'Exact',
+    'leaderboard.col.correct': 'Correct',
+    'leaderboard.col.played': 'Played',
+    'leaderboard.you': 'you',
+
+    // Predictions page section headers
+    'predictions.section.matches': 'matches',
+    'predictions.section.predictions': 'predictions',
+
     // Common
     'common.loading': 'Loading',
     'common.tagline': 'Predict · Compete · Conquer',
@@ -418,6 +431,19 @@ export const translations = {
     'leagueDetail.confirmLeave': 'Bu ligden ayrılmak istiyor musun?',
     'leagueDetail.left': 'Ligden ayrıldın',
     'leagueDetail.leaveError': 'Ligden ayrılamadın',
+
+    // Leaderboard
+    'leaderboard.col.rank': '#',
+    'leaderboard.col.player': 'Oyuncu',
+    'leaderboard.col.pts': 'Puan',
+    'leaderboard.col.exact': 'Skor',
+    'leaderboard.col.correct': 'Doğru',
+    'leaderboard.col.played': 'Oynandı',
+    'leaderboard.you': 'sen',
+
+    // Predictions page section headers
+    'predictions.section.matches': 'maç',
+    'predictions.section.predictions': 'tahmin',
 
     // Common
     'common.loading': 'Yükleniyor',

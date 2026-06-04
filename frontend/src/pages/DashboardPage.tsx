@@ -345,24 +345,7 @@ export default function DashboardPage() {
                 <p className="mt-2 max-w-sm text-sm text-slate-400">{t('dashboard.inviteSubtitle')}</p>
               </div>
 
-              <div className="mt-7 rounded-2xl border border-white/8 bg-black/20 p-4">
-                <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-slate-500">
-                  {t('leagueDetail.inviteCode')}
-                </p>
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <span className="font-score text-4xl leading-none text-green-400">TRB-7XK3</span>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-green-400 transition-colors hover:bg-white/[0.05]"
-                    style={{ border: '1px solid rgba(34,197,94,0.2)' }}
-                  >
-                    <Icon name="copy" size={16} />
-                    {t('leagueDetail.copy')}
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   to="/leagues"
                   className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"

@@ -103,17 +103,17 @@ export default function StandingsPage() {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {TOURNAMENTS.map((t) => (
+        {TOURNAMENTS.map((tournament) => (
           <button
-            key={t.leagueId}
-            onClick={() => setSelected(t)}
+            key={tournament.leagueId}
+            onClick={() => setSelected(tournament)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              selected.leagueId === t.leagueId
+              selected.leagueId === tournament.leagueId
                 ? 'bg-green-600 text-white'
                 : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
             }`}
           >
-            {t.name}
+            {tournament.name}
           </button>
         ))}
       </div>

@@ -149,9 +149,9 @@ export default function PredictionsPage() {
           {/* Quick stats */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Toplam Puan', value: totalPoints, color: 'text-green-400' },
-              { label: 'Skor Tutturma', value: exactScores, color: 'text-amber-400' },
-              { label: 'Doğru Sonuç', value: correctOutcomes, color: 'text-blue-400' },
+              { label: t('stats.totalPoints'), value: totalPoints, color: 'text-green-400' },
+              { label: t('stats.exactScores'), value: exactScores, color: 'text-amber-400' },
+              { label: t('stats.correctOutcomes'), value: correctOutcomes, color: 'text-blue-400' },
             ].map(({ label, value, color }) => (
               <div
                 key={label}
@@ -172,8 +172,8 @@ export default function PredictionsPage() {
             >
               <div className="px-5 py-3.5 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <span className="size-2 rounded-full bg-red-500 live-indicator" />
-                <h2 className="text-sm font-bold text-white font-heading">Canlı</h2>
-                <span className="text-xs text-slate-500 ml-auto">{live.length} maç</span>
+                <h2 className="text-sm font-bold text-white font-heading">{t('matches.live')}</h2>
+                <span className="text-xs text-slate-500 ml-auto">{live.length} {t('predictions.section.matches')}</span>
               </div>
               <div>
                 {live.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
@@ -188,8 +188,8 @@ export default function PredictionsPage() {
               style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
               <div className="px-5 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <h2 className="text-sm font-bold text-white font-heading">Yaklaşan</h2>
-                <span className="text-xs text-slate-500">{upcoming.length} tahmin</span>
+                <h2 className="text-sm font-bold text-white font-heading">{t('matches.upcoming')}</h2>
+                <span className="text-xs text-slate-500">{upcoming.length} {t('predictions.section.predictions')}</span>
               </div>
               <div>
                 {upcoming.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
@@ -204,8 +204,8 @@ export default function PredictionsPage() {
               style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
             >
               <div className="px-5 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <h2 className="text-sm font-bold text-white font-heading">Biten Maçlar</h2>
-                <span className="text-xs text-slate-500">{finished.length} tahmin</span>
+                <h2 className="text-sm font-bold text-white font-heading">{t('matches.finished')}</h2>
+                <span className="text-xs text-slate-500">{finished.length} {t('predictions.section.predictions')}</span>
               </div>
               <div>
                 {finished.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
