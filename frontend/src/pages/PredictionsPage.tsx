@@ -43,11 +43,18 @@ function PredictionRow({ pred, dateLocale }: { pred: Prediction; dateLocale: Loc
           <span className="text-[#D9D4CC] text-xs shrink-0">vs</span>
           <span className="text-sm font-semibold text-[#111111] truncate">{awayTeam}</span>
         </div>
-        {pred.kickoff_time && (
-          <p className="text-[11px] text-[#999390]">
-            {format(new Date(pred.kickoff_time), 'dd MMM · HH:mm', { locale: dateLocale })}
-          </p>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {pred.kickoff_time && (
+            <span className="text-[11px] text-[#999390]">
+              {format(new Date(pred.kickoff_time), 'dd MMM · HH:mm', { locale: dateLocale })}
+            </span>
+          )}
+          {pred.league_name && (
+            <span className="text-[10px] font-semibold text-[#8B1E1E] bg-[#FEF2F2] border border-[#FECACA] px-1.5 py-px rounded truncate max-w-[120px]">
+              {pred.league_name}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="text-center shrink-0">

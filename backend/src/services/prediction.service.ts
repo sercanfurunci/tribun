@@ -40,9 +40,10 @@ export class PredictionService {
   }
 
   async getUserPredictions(userId: string, leagueId?: string) {
-    let query = `SELECT p.*, m.home_team, m.away_team, m.kickoff_time, m.status, m.home_score, m.away_score, m.tournament
+    let query = `SELECT p.*, m.home_team, m.away_team, m.kickoff_time, m.status, m.home_score, m.away_score, m.tournament, l.name AS league_name
        FROM predictions p
        JOIN matches m ON p.match_id = m.id
+       JOIN leagues l ON p.league_id = l.id
        WHERE p.user_id = $1`;
     const params: unknown[] = [userId];
     if (leagueId) {

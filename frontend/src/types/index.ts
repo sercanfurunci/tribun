@@ -59,6 +59,7 @@ export interface Prediction {
   home_score?: number;
   away_score?: number;
   tournament?: string;
+  league_name?: string;
   username?: string;
   avatar_url?: string;
 }
