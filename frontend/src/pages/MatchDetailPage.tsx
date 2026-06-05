@@ -5,7 +5,7 @@ import { enUS, tr as trLocale } from 'date-fns/locale';
 import { matchesApi } from '../services/matches';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
-import { footballApi, FixtureEvent, InjuryEntry, TeamStatistics, H2HFixture } from '../services/football';
+import { footballApi, FixtureEvent, InjuryEntry, TeamStatistics, H2HFixture, SportsDBTimelineEvent, SportsDBEventStat } from '../services/football';
 import { PredictionForm } from '../components/features/PredictionForm';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
@@ -53,6 +53,100 @@ function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string
         <span className="text-sm text-[#111111]">{event.player.name}</span>
         {event.assist.name && <span className="text-xs text-[#999390] ml-1">({event.assist.name})</span>}
         <span className="text-xs text-[#999390] ml-1">{event.detail}</span>
+      </div>
+    </div>
+  );
+}
+
+const TIMELINE_ICONS: Record<string, IconName> = {
+  Goal: 'ball',
+  Card: 'card-yellow',
+  Subst: 'refresh',
+};
+
+function TimelineRow({ event, homeName, t }: { event: SportsDBTimelineEvent; homeName: string; t: (k: TranslationKey) => string }) {
+  const isHome = event.strHome === 'Yes';
+  const isGoal = event.strTimeline === 'Goal';
+  const isCard = event.strTimeline === 'Card';
+  const isRed = isCard && event.strTimelineDetail.toLowerCase().includes('red');
+  const isSubst = event.strTimeline === 'Subst';
+  const iconName: IconName = isCard
+    ? (isRed ? 'card-red' : 'card-yellow')
+    : TIMELINE_ICONS[event.strTimeline] ?? 'check';
+
+  const detail = isGoal
+    ? (event.strTimelineDetail?.toLowerCase().includes('own') ? t('matchDetail.ownGoal')
+      : event.strTimelineDetail?.toLowerCase().includes('pen') ? t('matchDetail.penalty')
+      : t('matchDetail.goal'))
+    : isCard ? (isRed ? t('matchDetail.redCard') : t('matchDetail.yellowCard'))
+    : isSubst ? t('matchDetail.substitution')
+    : event.strTimelineDetail;
+
+  return (
+    <div className={`flex items-center gap-3 px-5 py-3 border-b border-[#F2EFE9] ${isHome ? 'flex-row' : 'flex-row-reverse'}`}>
+      <span className="text-xs text-[#999390] w-8 text-center shrink-0 font-display">{event.intTime}'</span>
+      <span className={`shrink-0 ${isGoal ? 'text-[#166534]' : isRed ? 'text-[#C1121F]' : 'text-[#666666]'}`}>
+        <Icon name={iconName} size={16} />
+      </span>
+      <div className={`flex-1 min-w-0 ${isHome ? 'text-left' : 'text-right'}`}>
+        <span className="text-sm text-[#111111]">{event.strPlayer}</span>
+        {event.strAssist && <span className="text-xs text-[#999390] ml-1">({event.strAssist})</span>}
+        <span className="text-xs text-[#999390] ml-1">{detail}</span>
+      </div>
+    </div>
+  );
+}
+
+function SportsDBStatsPanel({ stats, homeTeam, awayTeam }: { stats: SportsDBEventStat[]; homeTeam: string; awayTeam: string }) {
+  const STAT_LABEL_MAP: Record<string, string> = {
+    'Ball Possession': 'Top Hakimiyeti',
+    'Shots on Goal': 'İsabetli Şut',
+    'Shots off Goal': 'İsabetsiz Şut',
+    'Total Shots': 'Toplam Şut',
+    'Blocked Shots': 'Bloklanan Şut',
+    'Corner Kicks': 'Korner',
+    'Offsides': 'Ofsayt',
+    'Fouls': 'Faul',
+    'Yellow Cards': 'Sarı Kart',
+    'Red Cards': 'Kırmızı Kart',
+    'Goalkeeper Saves': 'Kurtarış',
+    'Total passes': 'Toplam Pas',
+    'Passes accurate': 'İsabetli Pas',
+    'Passes %': 'Pas İsabeti',
+  };
+
+  return (
+    <div className="p-5 space-y-3">
+      {stats.map((stat) => {
+        const homeNum = parseFloat(stat.intHome) || 0;
+        const awayNum = parseFloat(stat.intAway) || 0;
+        const total = homeNum + awayNum || 1;
+        const homeWidth = Math.round((homeNum / total) * 100);
+        const label = STAT_LABEL_MAP[stat.strStat] ?? stat.strStat;
+        const homeDisplay = stat.strStat.toLowerCase().includes('possession') ? `${stat.intHome}%` : stat.intHome;
+        const awayDisplay = stat.strStat.toLowerCase().includes('possession') ? `${stat.intAway}%` : stat.intAway;
+
+        return (
+          <div key={stat.strStat}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-semibold text-[#111111] tabular-nums">{homeDisplay}</span>
+              <span className="text-[10px] text-[#999390] uppercase tracking-wider font-heading text-center flex-1 px-3">{label}</span>
+              <span className="text-sm font-semibold text-[#111111] tabular-nums">{awayDisplay}</span>
+            </div>
+            <div className="flex rounded-full overflow-hidden h-1.5 bg-[#E8E4DE]">
+              <div className="h-full rounded-full bg-[#8B1E1E]" style={{ width: `${homeWidth}%`, transition: 'width 0.4s ease' }} />
+              <div className="h-full rounded-full bg-[#1D4ED8] ml-auto" style={{ width: `${100 - homeWidth}%`, transition: 'width 0.4s ease' }} />
+            </div>
+          </div>
+        );
+      })}
+      <div className="flex items-center justify-between pt-2">
+        <span className="inline-flex items-center gap-1.5 text-xs text-[#999390]">
+          <span className="size-2 rounded-full bg-[#8B1E1E] inline-block" /> {homeTeam}
+        </span>
+        <span className="inline-flex items-center gap-1.5 text-xs text-[#999390]">
+          {awayTeam} <span className="size-2 rounded-full bg-[#1D4ED8] inline-block" />
+        </span>
       </div>
     </div>
   );
@@ -128,6 +222,21 @@ export default function MatchDetailPage() {
     staleTime: 1000 * 60 * 60,
   });
 
+  // TheSportsDB timeline + stats — used when API-Football data is unavailable
+  const isSportsDBMatch = match?.external_league_id === 4429;
+  const { data: sportsdbTimelineData } = useQuery({
+    queryKey: ['sportsdb-timeline', externalId],
+    queryFn: () => footballApi.getSportsDBTimeline(externalId!),
+    enabled: !!externalId && isSportsDBMatch && match?.status === 'finished',
+    staleTime: 1000 * 60 * 30,
+  });
+  const { data: sportsdbStatsData } = useQuery({
+    queryKey: ['sportsdb-stats', externalId],
+    queryFn: () => footballApi.getSportsDBStats(externalId!),
+    enabled: !!externalId && isSportsDBMatch && match?.status === 'finished',
+    staleTime: 1000 * 60 * 30,
+  });
+
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   if (!match) return <div className="text-center text-[#999390] py-20 text-sm">{t('matchDetail.notFound')}</div>;
 
@@ -136,6 +245,9 @@ export default function MatchDetailPage() {
   const injuries: InjuryEntry[] = injuriesData?.data.injuries ?? [];
   const statistics: TeamStatistics[] = statisticsData?.data.statistics ?? [];
   const h2hFixtures: H2HFixture[] = h2hData?.data.h2h ?? [];
+  const sportsdbTimeline: SportsDBTimelineEvent[] = sportsdbTimelineData?.data.timeline ?? [];
+  const sportsdbStats: SportsDBEventStat[] = sportsdbStatsData?.data.stats ?? [];
+  const showSportsDBSummary = match?.status === 'finished' && isSportsDBMatch && (sportsdbTimeline.length > 0 || sportsdbStats.length > 0);
   const apiPrediction = apiPredictionData?.data.prediction?.predictions;
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
@@ -470,6 +582,24 @@ export default function MatchDetailPage() {
               );
             })}
           </div>
+        </Section>
+      )}
+
+      {/* TheSportsDB Match Summary (timeline + stats for WC matches) */}
+      {showSportsDBSummary && (
+        <Section title={t('matchDetail.matchSummary')}>
+          {sportsdbTimeline.length > 0 && (
+            <div className={sportsdbStats.length > 0 ? 'border-b border-[#E8E4DE]' : ''}>
+              {[...sportsdbTimeline]
+                .sort((a, b) => parseInt(a.intTime) - parseInt(b.intTime))
+                .map((event) => (
+                  <TimelineRow key={event.idTimeline} event={event} homeName={match.home_team} t={t} />
+                ))}
+            </div>
+          )}
+          {sportsdbStats.length > 0 && (
+            <SportsDBStatsPanel stats={sportsdbStats} homeTeam={homeTeam} awayTeam={awayTeam} />
+          )}
         </Section>
       )}
 

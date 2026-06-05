@@ -271,6 +271,28 @@ export async function clearFixtures(req: Request, res: Response): Promise<void> 
   }
 }
 
+/** GET /api/sync/sportsdb/timeline/:eventId */
+export async function getSportsDBTimeline(req: Request, res: Response): Promise<void> {
+  const { eventId } = req.params;
+  try {
+    const timeline = await theSportsDBService.getEventTimeline(eventId);
+    res.json({ timeline });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch timeline' });
+  }
+}
+
+/** GET /api/sync/sportsdb/stats/:eventId */
+export async function getSportsDBStats(req: Request, res: Response): Promise<void> {
+  const { eventId } = req.params;
+  try {
+    const stats = await theSportsDBService.getEventStats(eventId);
+    res.json({ stats });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch stats' });
+  }
+}
+
 /** POST /api/sync/score-match/:id — manually score a specific match */
 export async function scoreMatch(req: Request, res: Response): Promise<void> {
   const { id } = req.params;

@@ -21,6 +21,8 @@ import {
   getTeamPlayers,
   getTeamNextEvents,
   getTeamLastEvents,
+  getSportsDBTimeline,
+  getSportsDBStats,
 } from '../controllers/sync.controller';
 import { requireApiSecret } from '../middleware/apiSecret';
 
@@ -43,6 +45,8 @@ router.get('/team/:id/next', getTeamNextEvents);
 router.get('/team/:id/last', getTeamLastEvents);
 router.get('/team/:id', getTeamById);
 router.get('/topscorers', getTopScorers);
+router.get('/sportsdb/timeline/:eventId', getSportsDBTimeline);
+router.get('/sportsdb/stats/:eventId', getSportsDBStats);
 
 router.post('/fixtures', syncFixtures);
 router.post('/fixtures/sportsdb', syncFromSportsDB);

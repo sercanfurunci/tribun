@@ -95,6 +95,27 @@ const client = axios.create({
   timeout: 15000,
 });
 
+export interface SportsDBTimelineEvent {
+  idTimeline: string;
+  idEvent: string;
+  strTimeline: string;        // "Goal" | "Card" | "Subst"
+  strTimelineDetail: string;  // "Normal Goal" | "Yellow Card" | "Red Card" etc.
+  strHome: string;            // "Yes" | "No"
+  strPlayer: string;
+  strAssist: string | null;
+  intTime: string;
+  strTeam: string;
+  strComment: string | null;
+}
+
+export interface SportsDBEventStat {
+  idStatistic: string;
+  idEvent: string;
+  strStat: string;
+  intHome: string;
+  intAway: string;
+}
+
 export class TheSportsDBService {
   async getSeasonEvents(leagueId: string, season: string): Promise<SportsDBEvent[]> {
     const res = await client.get<{ events: SportsDBEvent[] | null }>(
@@ -136,6 +157,20 @@ export class TheSportsDBService {
       `/eventslast.php?id=${teamId}`
     );
     return res.data.results ?? [];
+  }
+
+  async getEventTimeline(eventId: string): Promise<SportsDBTimelineEvent[]> {
+    const res = await client.get<{ timeline: SportsDBTimelineEvent[] | null }>(
+      `/lookuptimeline.php?id=${eventId}`
+    );
+    return res.data.timeline ?? [];
+  }
+
+  async getEventStats(eventId: string): Promise<SportsDBEventStat[]> {
+    const res = await client.get<{ eventstats: SportsDBEventStat[] | null }>(
+      `/lookupeventstats.php?id=${eventId}`
+    );
+    return res.data.eventstats ?? [];
   }
 
   mapStatus(strStatus: string, strPostponed: string): 'scheduled' | 'live' | 'finished' | 'postponed' {

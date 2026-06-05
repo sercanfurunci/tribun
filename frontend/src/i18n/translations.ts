@@ -175,6 +175,14 @@ export const translations = {
     'matchDetail.h2h': 'Head to Head',
     'matchDetail.h2hLast': 'Last 5 meetings',
     'matchDetail.noStats': 'Statistics not available yet',
+    'matchDetail.matchSummary': 'Match Summary',
+    'matchDetail.noSummary': 'Match summary not available yet',
+    'matchDetail.goal': 'Goal',
+    'matchDetail.ownGoal': 'Own Goal',
+    'matchDetail.penalty': 'Penalty',
+    'matchDetail.yellowCard': 'Yellow Card',
+    'matchDetail.redCard': 'Red Card',
+    'matchDetail.substitution': 'Substitution',
 
     // My Predictions
     'nav.predictions': 'My Picks',
@@ -400,6 +408,14 @@ export const translations = {
     'matchDetail.h2h': 'Karşılıklı Durum',
     'matchDetail.h2hLast': 'Son 5 karşılaşma',
     'matchDetail.noStats': 'İstatistikler henüz mevcut değil',
+    'matchDetail.matchSummary': 'Maç Özeti',
+    'matchDetail.noSummary': 'Maç özeti henüz mevcut değil',
+    'matchDetail.goal': 'Gol',
+    'matchDetail.ownGoal': 'Kendi Kalesine',
+    'matchDetail.penalty': 'Penaltı',
+    'matchDetail.yellowCard': 'Sarı Kart',
+    'matchDetail.redCard': 'Kırmızı Kart',
+    'matchDetail.substitution': 'Değişiklik',
 
     // My Predictions
     'nav.predictions': 'Tahminlerim',

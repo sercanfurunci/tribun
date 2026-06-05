@@ -56,6 +56,24 @@ export interface TeamStatistics {
   statistics: FixtureStatEntry[];
 }
 
+export interface SportsDBTimelineEvent {
+  idTimeline: string;
+  strTimeline: string;
+  strTimelineDetail: string;
+  strHome: string;
+  strPlayer: string;
+  strAssist: string | null;
+  intTime: string;
+  strTeam: string;
+  strComment: string | null;
+}
+
+export interface SportsDBEventStat {
+  strStat: string;
+  intHome: string;
+  intAway: string;
+}
+
 export interface TopScorer {
   player: { id: number; name: string; photo: string; nationality: string; age: number };
   statistics: Array<{
@@ -86,4 +104,10 @@ export const footballApi = {
 
   getTopScorers: (leagueId: number, season: number) =>
     api.get<{ scorers: TopScorer[] }>(`/sync/topscorers?leagueId=${leagueId}&season=${season}`),
+
+  getSportsDBTimeline: (eventId: number) =>
+    api.get<{ timeline: SportsDBTimelineEvent[] }>(`/sync/sportsdb/timeline/${eventId}`),
+
+  getSportsDBStats: (eventId: number) =>
+    api.get<{ stats: SportsDBEventStat[] }>(`/sync/sportsdb/stats/${eventId}`),
 };
