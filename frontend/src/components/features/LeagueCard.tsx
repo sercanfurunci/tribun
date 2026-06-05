@@ -12,7 +12,7 @@ export function LeagueCard({ league }: LeagueCardProps) {
   return (
     <Link to={`/leagues/${league.id}`} className="h-full block">
       <div className="group h-full bg-white border border-[#D9D4CC] rounded-lg p-5 transition-colors duration-150 hover:border-[#B8B2AA] hover:bg-[#FAFAFA] cursor-pointer flex flex-col">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 flex-1">
           <div className="size-10 rounded-lg shrink-0 flex items-center justify-center font-heading font-black text-base text-[#8B1E1E] bg-[#FEF2F2] border border-[#FECACA]">
             {league.name[0].toUpperCase()}
           </div>
