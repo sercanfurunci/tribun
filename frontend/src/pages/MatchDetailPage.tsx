@@ -251,6 +251,7 @@ export default function MatchDetailPage() {
               <p className="text-sm text-[#999390]">{t('matchDetail.joinLeagueFirst')}</p>
             ) : leagueId ? (
               <PredictionForm
+                key={`${match.id}-${leagueId}-${myPrediction?.id ?? 'new'}`}
                 matchId={match.id}
                 leagueId={leagueId}
                 initialHome={myPrediction?.predicted_home_score}

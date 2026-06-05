@@ -30,7 +30,7 @@ export function Navbar() {
             to="/dashboard"
             className="flex items-center mr-8 shrink-0 font-heading font-black text-[15px] tracking-[0.12em] uppercase text-[#111111] hover:text-[#8B1E1E] transition-colors duration-150"
           >
-            TRIBÜN
+            TRİBÜN
           </Link>
 
           <nav className="hidden lg:flex items-stretch flex-1 gap-0">
