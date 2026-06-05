@@ -36,8 +36,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         onClick={onClose}
       />
 
-      {/* Centering wrapper — min-h-full pushes content to center */}
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-6">
+      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6">
         {/* Panel */}
         <div
           className={clsx(
