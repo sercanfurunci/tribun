@@ -64,7 +64,7 @@ const TIMELINE_ICONS: Record<string, IconName> = {
   Subst: 'refresh',
 };
 
-function TimelineRow({ event, homeName, t }: { event: SportsDBTimelineEvent; homeName: string; t: (k: TranslationKey) => string }) {
+function TimelineRow({ event, t }: { event: SportsDBTimelineEvent; t: (k: TranslationKey) => string }) {
   const isHome = event.strHome === 'Yes';
   const isGoal = event.strTimeline === 'Goal';
   const isCard = event.strTimeline === 'Card';
@@ -593,7 +593,7 @@ export default function MatchDetailPage() {
               {[...sportsdbTimeline]
                 .sort((a, b) => parseInt(a.intTime) - parseInt(b.intTime))
                 .map((event) => (
-                  <TimelineRow key={event.idTimeline} event={event} homeName={match.home_team} t={t} />
+                  <TimelineRow key={event.idTimeline} event={event} t={t} />
                 ))}
             </div>
           )}
