@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D0D0D"/>
+      <stop offset="100%" style="stop-color:#1A1A1A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B1E1E"/>
+      <stop offset="100%" style="stop-color:#6B1515"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Left red accent bar -->
+  <rect x="0" y="0" width="6" height="630" fill="#8B1E1E"/>
+
+  <!-- Top label -->
+  <text x="72" y="96" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="13" letter-spacing="6" fill="#8B1E1E" text-anchor="start">TAHMİN LİGİ</text>
+
+  <!-- Main title -->
+  <text x="72" y="240" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="148" letter-spacing="-2" fill="#FFFFFF" text-anchor="start">TRİBÜN</text>
+
+  <!-- Divider line -->
+  <rect x="72" y="272" width="520" height="3" fill="#8B1E1E"/>
+
+  <!-- Subtitle -->
+  <text x="72" y="330" font-family="Arial, sans-serif" font-weight="400" font-size="22" fill="#777777" text-anchor="start">Arkadaşlarınla futbol tahmin ligi kur.</text>
+  <text x="72" y="362" font-family="Arial, sans-serif" font-weight="400" font-size="22" fill="#777777" text-anchor="start">Skor tahmin et, lider tablosunda yüksel.</text>
+
+  <!-- Scoring cards bottom left -->
+  <g transform="translate(72, 440)">
+    <!-- Card 1: 3 pts -->
+    <rect x="0" y="0" width="140" height="100" rx="4" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+    <rect x="0" y="0" width="140" height="3" rx="0" fill="#C9A84C"/>
+    <text x="70" y="58" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" fill="#C9A84C" text-anchor="middle">3</text>
+    <text x="70" y="82" font-family="Arial, sans-serif" font-size="11" letter-spacing="2" fill="#555555" text-anchor="middle">TAM SKOR</text>
+
+    <!-- Card 2: 1 pt -->
+    <rect x="156" y="0" width="140" height="100" rx="4" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+    <rect x="156" y="0" width="140" height="3" rx="0" fill="#7C4A2D"/>
+    <text x="226" y="58" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" fill="#7C4A2D" text-anchor="middle">1</text>
+    <text x="226" y="82" font-family="Arial, sans-serif" font-size="11" letter-spacing="2" fill="#555555" text-anchor="middle">SONUÇ</text>
+
+    <!-- Card 3: 0 pts -->
+    <rect x="312" y="0" width="140" height="100" rx="4" fill="#1A1A1A" stroke="#2A2A2A" stroke-width="1"/>
+    <rect x="312" y="0" width="140" height="3" rx="0" fill="#333333"/>
+    <text x="382" y="58" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="42" fill="#444444" text-anchor="middle">0</text>
+    <text x="382" y="82" font-family="Arial, sans-serif" font-size="11" letter-spacing="2" fill="#555555" text-anchor="middle">YANLIŞ</text>
+  </g>
+
+  <!-- Right side: decorative grid -->
+  <g opacity="0.06">
+    <line x1="820" y1="0" x2="820" y2="630" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="920" y1="0" x2="920" y2="630" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="1020" y1="0" x2="1020" y2="630" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="1120" y1="0" x2="1120" y2="630" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="770" y1="0" x2="770" y2="630" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="80" x2="1200" y2="80" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="180" x2="1200" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="280" x2="1200" y2="280" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="380" x2="1200" y2="380" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="480" x2="1200" y2="480" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="820" y1="580" x2="1200" y2="580" stroke="#FFFFFF" stroke-width="1"/>
+  </g>
+
+  <!-- Big decorative T letter -->
+  <text x="860" y="560" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="520" fill="#FFFFFF" opacity="0.03" text-anchor="middle">T</text>
+
+  <!-- Domain bottom right -->
+  <text x="1140" y="590" font-family="Arial, sans-serif" font-size="14" letter-spacing="3" fill="#333333" text-anchor="end">tribun.furunci.tech</text>
+</svg>
