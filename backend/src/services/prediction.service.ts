@@ -56,12 +56,18 @@ export class PredictionService {
   }
 
   async getMatchPredictions(matchId: string, leagueId: string) {
+    const matchResult = await pool.query(
+      'SELECT status FROM matches WHERE id = $1',
+      [matchId]
+    );
+    if (matchResult.rows[0]?.status !== 'finished') return [];
+
     const result = await pool.query(
       `SELECT p.*, u.username, u.avatar_url
        FROM predictions p
        JOIN users u ON p.user_id = u.id
        WHERE p.match_id = $1 AND p.league_id = $2
-       ORDER BY u.username ASC`,
+       ORDER BY p.points_awarded DESC, u.username ASC`,
       [matchId, leagueId]
     );
     return result.rows;

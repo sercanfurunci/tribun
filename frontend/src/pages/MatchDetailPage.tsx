@@ -1,5 +1,5 @@
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
 import { matchesApi } from '../services/matches';
@@ -173,10 +173,13 @@ export default function MatchDetailPage() {
     queryFn: () => leaguesApi.getAll(),
   });
 
-  const { data: predictionsData } = useQuery({
-    queryKey: ['predictions', 'match', id, leagueId],
-    queryFn: () => predictionsApi.getForMatch(id!, leagueId),
-    enabled: !!id && !!leagueId,
+  const leaguesList = leaguesData?.data.leagues ?? [];
+  const leaguePredResults = useQueries({
+    queries: leaguesList.map((lg) => ({
+      queryKey: ['predictions', 'match', id, lg.id],
+      queryFn: () => predictionsApi.getForMatch(id!, lg.id),
+      enabled: !!id && matchData?.data.match?.status === 'finished',
+    })),
   });
 
   const { data: myPredictionsData } = useQuery({
@@ -250,9 +253,12 @@ export default function MatchDetailPage() {
   const showSportsDBSummary = match?.status === 'finished' && isSportsDBMatch && (sportsdbTimeline.length > 0 || sportsdbStats.length > 0);
   const apiPrediction = apiPredictionData?.data.prediction?.predictions;
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
-  const leagues = leaguesData?.data.leagues ?? [];
-  const predictions = predictionsData?.data.predictions ?? [];
-  const hasRightPanel = !!(apiPrediction || (leagueId && predictions.length > 0 && match.status === 'finished'));
+  const leagues = leaguesList;
+  const leaguePredictions = leaguesList.map((lg, i) => ({
+    league: lg,
+    predictions: leaguePredResults[i]?.data?.data.predictions ?? [],
+  })).filter((lp) => lp.predictions.length > 0);
+  const hasRightPanel = !!(apiPrediction || (match.status === 'finished' && leaguePredictions.length > 0));
   const statusEntry = STATUS_CONFIG[match.status] ?? STATUS_CONFIG.scheduled;
   const label = t(statusEntry.labelKey);
   const variant = statusEntry.variant;
@@ -420,33 +426,40 @@ export default function MatchDetailPage() {
               )}
             </div>
           </Section>
-        ) : leagueId && predictions.length > 0 && match.status === 'finished' ? (
-          <Section title={t('matchDetail.leaguePredictions')}>
-            <div>
-              {predictions.map((pred) => (
-                <div
-                  key={pred.id}
-                  className={`flex items-center justify-between px-5 py-3 border-b border-[#F2EFE9] ${pred.user_id === user?.id ? 'bg-[#FEF2F2]' : ''}`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="size-7 rounded-lg bg-[#8B1E1E] flex items-center justify-center text-xs font-bold text-white font-heading">
-                      {pred.username?.[0]?.toUpperCase()}
+        ) : match.status === 'finished' && leaguePredictions.length > 0 ? (
+          <div className="space-y-4">
+            {leaguePredictions.map(({ league, predictions }) => (
+              <Section key={league.id} title={league.name}>
+                <div>
+                  {predictions.map((pred) => (
+                    <div
+                      key={pred.id}
+                      className={`flex items-center justify-between px-5 py-3 border-b border-[#F2EFE9] last:border-0 ${pred.user_id === user?.id ? 'bg-[#FEF2F2]' : ''}`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="size-7 rounded-lg bg-[#8B1E1E] flex items-center justify-center text-xs font-bold text-white font-heading shrink-0">
+                          {pred.username?.[0]?.toUpperCase()}
+                        </div>
+                        <span className="text-sm text-[#111111]">{pred.username}</span>
+                        {pred.user_id === user?.id && (
+                          <span className="text-[10px] text-[#8B1E1E] font-semibold">{lang === 'tr' ? 'sen' : 'you'}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-[#111111] font-display">
+                          {pred.predicted_home_score} – {pred.predicted_away_score}
+                        </span>
+                        <span className={`text-sm font-bold w-10 text-right font-display ${
+                          pred.points_awarded === 3 ? 'text-[#92400E]' :
+                          pred.points_awarded >= 1 ? 'text-[#166534]' : 'text-[#999390]'
+                        }`}>+{pred.points_awarded}</span>
+                      </div>
                     </div>
-                    <span className="text-sm text-[#111111]">{pred.username}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-[#111111] font-display">
-                      {pred.predicted_home_score} – {pred.predicted_away_score}
-                    </span>
-                    <span className={`text-sm font-bold w-10 text-right font-display ${
-                      pred.points_awarded === 3 ? 'text-[#92400E]' :
-                      pred.points_awarded >= 1 ? 'text-[#166534]' : 'text-[#999390]'
-                    }`}>+{pred.points_awarded}</span>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </Section>
+              </Section>
+            ))}
+          </div>
         ) : null}
       </div>
 
