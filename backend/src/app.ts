@@ -10,6 +10,7 @@ import matchRoutes from './routes/match.routes';
 import predictionRoutes from './routes/prediction.routes';
 import leaderboardRoutes from './routes/leaderboard.routes';
 import syncRoutes from './routes/sync.routes';
+import { startCronJobs } from './cron';
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use((_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Tribün API running on port ${PORT}`);
+  startCronJobs();
 });
 
 export default app;
