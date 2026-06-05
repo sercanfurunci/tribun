@@ -21,15 +21,15 @@ function ScoreInput({ value, onChange, label }: {
   label: string;
 }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-3 bg-[#F7F4EF] border border-[#E8E4DE] rounded-lg px-4 py-4">
-      <label className="w-full truncate text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-[#666666]">
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-2 bg-[#F7F4EF] border border-[#E8E4DE] rounded-lg px-3 py-3 sm:px-4 sm:py-4">
+      <label className="w-full truncate text-center text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] text-[#666666]">
         {label}
       </label>
-      <div className="flex flex-col items-center gap-1.5">
+      <div className="flex flex-col items-center gap-1">
         <button
           type="button"
           onClick={() => onChange(String(Math.min(99, Number(value || 0) + 1)))}
-          className="grid size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95"
+          className="grid size-8 sm:size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95 text-xs"
         >
           ▲
         </button>
@@ -39,14 +39,14 @@ function ScoreInput({ value, onChange, label }: {
           max="99"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-20 h-16 rounded border border-[#D9D4CC] bg-white text-center font-display text-4xl text-[#111111] focus:border-[#8B1E1E] focus:outline-none transition-[border-color] duration-150"
+          className="w-16 h-14 sm:w-20 sm:h-16 rounded border border-[#D9D4CC] bg-white text-center font-display text-3xl sm:text-4xl text-[#111111] focus:border-[#8B1E1E] focus:outline-none transition-[border-color] duration-150"
           placeholder="0"
           required
         />
         <button
           type="button"
           onClick={() => onChange(String(Math.max(0, Number(value || 0) - 1)))}
-          className="grid size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95"
+          className="grid size-8 sm:size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95 text-xs"
         >
           ▼
         </button>
@@ -89,10 +89,10 @@ export function PredictionForm({
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4">
         <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
         <div className="flex items-center justify-center">
-          <div className="flex size-10 items-center justify-center rounded border border-[#D9D4CC] bg-[#F7F4EF] font-heading font-black text-xs text-[#999390]">
+          <div className="flex size-8 sm:size-10 items-center justify-center rounded border border-[#D9D4CC] bg-[#F7F4EF] font-heading font-black text-[10px] sm:text-xs text-[#999390]">
             VS
           </div>
         </div>

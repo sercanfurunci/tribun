@@ -1,17 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
 import { useAuthStore } from '../store/auth';
 import { useLanguageStore, useT } from '../store/language';
+import { Icon, type IconName } from '../components/ui/Icon';
 import { predictionsApi } from '../services/predictions';
 import { leaguesApi } from '../services/leagues';
 import { LeagueCard } from '../components/features/LeagueCard';
 import { Spinner } from '../components/ui/Spinner';
-import { Icon, type IconName } from '../components/ui/Icon';
 import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
 
 export default function ProfilePage() {
-  const { user } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
+  const navigate = useNavigate();
   const t = useT();
   const lang = useLanguageStore((s) => s.lang);
   const dateLocale = lang === 'tr' ? trLocale : enUS;
@@ -43,7 +45,7 @@ export default function ProfilePage() {
           <div className="size-16 sm:size-20 rounded-lg bg-[#8B1E1E] flex items-center justify-center text-2xl sm:text-3xl font-black text-white font-heading shrink-0">
             {user?.username?.[0]?.toUpperCase()}
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="font-heading font-black text-2xl sm:text-3xl text-[#111111] truncate">{user?.username}</h1>
             <p className="text-[#666666] truncate mt-0.5">{user?.email}</p>
             {user?.created_at && (
@@ -52,6 +54,12 @@ export default function ProfilePage() {
               </p>
             )}
           </div>
+          <button
+            onClick={() => { clearAuth(); navigate('/login'); }}
+            className="sm:hidden flex items-center gap-1.5 px-3 py-2 rounded text-sm font-medium text-[#666666] hover:text-[#C1121F] hover:bg-[#FEF2F2] border border-[#D9D4CC] transition-colors duration-150 shrink-0"
+          >
+            <Icon name="log-out" size={15} />
+          </button>
         </div>
       </div>
 
