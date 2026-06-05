@@ -12,6 +12,6 @@ export const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
+  // Log but don't crash — pg will reconnect on next query
+  console.error('[db] idle client error:', err.message);
 });

@@ -11,6 +11,7 @@ import predictionRoutes from './routes/prediction.routes';
 import leaderboardRoutes from './routes/leaderboard.routes';
 import syncRoutes from './routes/sync.routes';
 import { startCronJobs } from './cron';
+import { pool } from './db/pool';
 
 dotenv.config();
 
@@ -47,9 +48,29 @@ app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
+// Global error handler — catches unhandled errors in route handlers
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[error]', err.message);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+// Catch unhandled promise rejections so the process doesn't silently die
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason);
+});
+
+const server = app.listen(PORT, () => {
   console.log(`🚀 Tribün API running on port ${PORT}`);
   startCronJobs();
 });
+
+// Graceful shutdown — close DB pool and stop accepting new connections
+function shutdown() {
+  server.close(() => {
+    pool.end().then(() => process.exit(0)).catch(() => process.exit(1));
+  });
+}
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
 
 export default app;
