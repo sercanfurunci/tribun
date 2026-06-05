@@ -131,7 +131,7 @@ input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; marg
 
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: none; }
 }
 .animate-fade-up {
   animation: fadeInUp 0.25s var(--ease-out) forwards;
