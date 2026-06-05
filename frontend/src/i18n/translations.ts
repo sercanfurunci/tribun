@@ -127,9 +127,9 @@ export const translations = {
     'auth.registerFailed': 'Registration failed. Try a different username or email.',
 
     // Scoring
-    'scoring.exact': 'Exact',
-    'scoring.goalDiff': 'Goal diff',
-    'scoring.outcome': 'Outcome',
+    'scoring.exact': 'Exact score',
+    'scoring.outcome': 'Correct result',
+    'scoring.wrong': 'Wrong',
 
     // Standings
     'standings.title': 'Standings',
@@ -352,9 +352,9 @@ export const translations = {
     'auth.registerFailed': 'Kayıt başarısız. Farklı kullanıcı adı veya e-posta dene.',
 
     // Scoring
-    'scoring.exact': 'Skor',
-    'scoring.goalDiff': 'Fark',
-    'scoring.outcome': 'Sonuç',
+    'scoring.exact': 'Tam skor',
+    'scoring.outcome': 'Doğru sonuç',
+    'scoring.wrong': 'Yanlış',
 
     // Standings
     'standings.title': 'Sıralama',

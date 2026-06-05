@@ -1,8 +1,7 @@
 /**
  * Scoring system:
  * - Exact score: 3 points
- * - Correct outcome + correct goal difference: 2 points
- * - Correct outcome only: 1 point
+ * - Correct outcome (win/draw/loss): 1 point
  * - Wrong: 0 points
  */
 export function calculatePoints(
@@ -18,12 +17,7 @@ export function calculatePoints(
   const predictedOutcome = Math.sign(predictedHome - predictedAway);
   const actualOutcome = Math.sign(actualHome - actualAway);
 
-  if (predictedOutcome !== actualOutcome) return 0;
+  if (predictedOutcome === actualOutcome) return 1;
 
-  const predictedDiff = predictedHome - predictedAway;
-  const actualDiff = actualHome - actualAway;
-
-  if (predictedDiff === actualDiff) return 2;
-
-  return 1;
+  return 0;
 }

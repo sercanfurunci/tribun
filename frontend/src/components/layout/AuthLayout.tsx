@@ -60,16 +60,17 @@ export function AuthLayout({
           </p>
           <div className="flex gap-3">
             {[
-              { pts: '3', label: t('scoring.exact') },
-              { pts: '2', label: t('scoring.goalDiff') },
-              { pts: '1', label: t('scoring.outcome') },
-            ].map(({ pts, label }) => (
+              { pts: '3', label: t('scoring.exact'), color: '#C9A84C' },
+              { pts: '1', label: t('scoring.outcome'), color: '#7C4A2D' },
+              { pts: '0', label: t('scoring.wrong'), color: '#333333' },
+            ].map(({ pts, label, color }) => (
               <div
                 key={pts}
-                className="flex-1 border border-[#222222] px-4 py-5 text-center"
+                className="flex-1 border border-[#2A2A2A] px-3 py-4 text-center rounded"
+                style={{ borderTopColor: color, borderTopWidth: 2 }}
               >
-                <p className="font-display text-4xl leading-none text-[#F7F4EF]">{pts}</p>
-                <p className="mt-2.5 text-[9px] uppercase tracking-[0.2em] text-[#555555] leading-tight">
+                <p className="font-display text-4xl leading-none" style={{ color }}>{pts}</p>
+                <p className="mt-2 text-[9px] uppercase tracking-[0.15em] text-[#555555] leading-tight">
                   {label}
                 </p>
               </div>
