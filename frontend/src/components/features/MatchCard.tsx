@@ -36,8 +36,7 @@ function TeamBlock({ logo, name, score, isLive }: {
         )}
       </div>
       <span
-        className="text-[12px] sm:text-[13px] font-semibold text-[#111111] text-center leading-tight w-full px-1 line-clamp-2"
-        style={{ wordBreak: 'break-word', hyphens: 'auto' }}
+        className="text-[12px] sm:text-[13px] font-semibold text-[#111111] text-center leading-tight w-full px-1 line-clamp-1"
         title={name}
       >
         {name}

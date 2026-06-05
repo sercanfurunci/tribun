@@ -5,7 +5,7 @@ export const translations = {
     // Navbar
     'nav.dashboard': 'Dashboard',
     'nav.matches': 'Matches',
-    'nav.standings': 'Standings',
+    'nav.standings': 'Groups',
     'nav.leagues': 'Leagues',
     'nav.signIn': 'Sign In',
     'nav.signUp': 'Sign Up',
@@ -132,8 +132,8 @@ export const translations = {
     'scoring.wrong': 'Wrong',
 
     // Standings
-    'standings.title': 'Standings',
-    'standings.subtitle': 'Live tournament standings',
+    'standings.title': 'Group Tables',
+    'standings.subtitle': 'FIFA World Cup 2026 group stage',
     'standings.col.team': 'Team',
     'standings.col.played': 'P',
     'standings.col.wins': 'W',
@@ -230,7 +230,7 @@ export const translations = {
     // Navbar
     'nav.dashboard': 'Panel',
     'nav.matches': 'Maçlar',
-    'nav.standings': 'Sıralama',
+    'nav.standings': 'Gruplar',
     'nav.leagues': 'Ligler',
     'nav.signIn': 'Giriş Yap',
     'nav.signUp': 'Kayıt Ol',
@@ -357,8 +357,8 @@ export const translations = {
     'scoring.wrong': 'Yanlış',
 
     // Standings
-    'standings.title': 'Sıralama',
-    'standings.subtitle': 'Canlı turnuva sıralaması',
+    'standings.title': 'Grup Tabloları',
+    'standings.subtitle': 'FIFA World Cup 2026 grup aşaması',
     'standings.col.team': 'Takım',
     'standings.col.played': 'O',
     'standings.col.wins': 'G',

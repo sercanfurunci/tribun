@@ -21,14 +21,20 @@ const POSITION_TR: Record<string, string> = {
   Goalkeeper: 'Kaleci', Defender: 'Defans', Midfielder: 'Orta Saha',
   Midfield: 'Orta Saha', Forward: 'Forvet', Striker: 'Santrafor',
   Winger: 'Kanat', Attacker: 'Hücum', Manager: 'Teknik Direktör',
-  Coach: 'Antrenör', 'Centre-Back': 'Stoper', 'Centre Back': 'Stoper',
+  Coach: 'Antrenör',
+  'Centre-Back': 'Stoper', 'Centre Back': 'Stoper', 'Center Back': 'Stoper',
+  'Centre-Forward': 'Santrafor', 'Center-Forward': 'Santrafor', 'Centre Forward': 'Santrafor',
   'Full-Back': 'Bek', 'Left-Back': 'Sol Bek', 'Right-Back': 'Sağ Bek',
   'Left Back': 'Sol Bek', 'Right Back': 'Sağ Bek',
+  'Left Midfielder': 'Sol Orta Saha', 'Left Midfield': 'Sol Orta Saha',
+  'Right Midfielder': 'Sağ Orta Saha', 'Right Midfield': 'Sağ Orta Saha',
   'Defensive Midfielder': 'Defansif Orta Saha', 'Defensive Midfield': 'Defansif Orta Saha',
   'Central Midfielder': 'Merkez Orta Saha', 'Central Midfield': 'Merkez Orta Saha',
   'Attacking Midfielder': 'Ofansif Orta Saha', 'Attacking Midfield': 'Ofansif Orta Saha',
   'Left Winger': 'Sol Kanat', 'Left Wing': 'Sol Kanat',
   'Right Winger': 'Sağ Kanat', 'Right Wing': 'Sağ Kanat',
+  'Wing-Back': 'Kanat Bek', 'Left Wing-Back': 'Sol Kanat Bek', 'Right Wing-Back': 'Sağ Kanat Bek',
+  'Sweeper': 'Libero', 'Utility': 'Çok Yönlü',
 };
 
 const LEAGUE_TR: Record<string, string> = {
@@ -244,12 +250,12 @@ export default function TeamPage() {
               )}
             </div>
             <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-[#111111] leading-tight">
-              {team.strTeam}
+              {formatTeamName(team.strTeam, lang)}
             </h1>
             <div className="flex flex-wrap items-center gap-3 mt-1.5">
               {team.strCountry && (
                 <span className="flex items-center gap-1 text-xs text-[#666666]">
-                  <Icon name="pin" size={11} /> {team.strCountry}
+                  <Icon name="pin" size={11} /> {formatTeamName(team.strCountry, lang)}
                 </span>
               )}
               {team.strStadium && (

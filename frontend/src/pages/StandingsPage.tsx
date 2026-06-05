@@ -7,13 +7,6 @@ import type { TranslationKey } from '../i18n/translations';
 
 const TOURNAMENTS = [
   { name: 'FIFA World Cup 2026', leagueId: 1, season: 2026 },
-  { name: 'UEFA Euro 2024', leagueId: 4, season: 2024 },
-  { name: 'UEFA Champions League', leagueId: 2, season: 2024 },
-  { name: 'Premier League', leagueId: 39, season: 2024 },
-  { name: 'La Liga', leagueId: 140, season: 2024 },
-  { name: 'Bundesliga', leagueId: 78, season: 2024 },
-  { name: 'Serie A', leagueId: 135, season: 2024 },
-  { name: 'Ligue 1', leagueId: 61, season: 2024 },
 ];
 
 function FormBadge({ result }: { result: string }) {
@@ -101,7 +94,7 @@ export default function StandingsPage() {
         <p className="text-[#666666] text-sm">{t('standings.subtitle')}</p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      {TOURNAMENTS.length > 1 && <div className="flex flex-wrap gap-2">
         {TOURNAMENTS.map((tournament) => (
           <button
             key={tournament.leagueId}
@@ -115,7 +108,7 @@ export default function StandingsPage() {
             {tournament.name}
           </button>
         ))}
-      </div>
+      </div>}
 
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>

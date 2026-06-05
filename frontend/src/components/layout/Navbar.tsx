@@ -39,7 +39,7 @@ export function Navbar() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center px-3 text-[13px] font-medium border-b-2 transition-colors duration-150 ${
+                  `flex items-center px-3 text-[13px] font-medium border-b-2 transition-colors duration-150 whitespace-nowrap ${
                     isActive
                       ? 'text-[#8B1E1E] border-[#8B1E1E]'
                       : 'text-[#666666] border-transparent hover:text-[#111111]'

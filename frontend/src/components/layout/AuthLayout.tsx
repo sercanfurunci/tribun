@@ -35,7 +35,7 @@ export function AuthLayout({
       <section className="relative hidden lg:flex flex-col justify-between bg-[#111111] px-10 py-10 overflow-hidden">
         <div className="flex items-center justify-between relative">
           <p className="font-heading font-black text-[13px] tracking-[0.18em] uppercase text-white">
-            TRIBÜN
+            TRİBÜN
           </p>
           <p className="text-[10px] uppercase tracking-[0.25em] text-[#444444]">
             {t('auth.brandSeason')}
@@ -92,7 +92,7 @@ export function AuthLayout({
 
         <div className="lg:hidden mb-8 text-center">
           <p className="font-heading font-black text-[15px] tracking-[0.15em] uppercase text-[#111111]">
-            TRIBÜN
+            TRİBÜN
           </p>
         </div>
 

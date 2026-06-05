@@ -24,7 +24,7 @@ function StatCard({ label, value, sublabel, icon, to, highlight }: StatCardProps
     <>
       <div className="flex items-center gap-1.5 text-[#999390]">
         <Icon name={icon} size={14} />
-        <span className="text-[10px] font-bold uppercase tracking-[0.18em] font-heading">{label}</span>
+        <span className="text-[10px] font-bold uppercase tracking-[0.18em] font-heading truncate max-w-full">{label}</span>
       </div>
       <span className={`font-display text-5xl sm:text-6xl leading-none ${highlight ? 'text-[#8B1E1E]' : 'text-[#111111]'}`}>
         {value}
