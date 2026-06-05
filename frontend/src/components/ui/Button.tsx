@@ -2,32 +2,22 @@ import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { clsx } from 'clsx';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'gold';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
 }
 
 const variants = {
-  primary: 'bg-green-600 text-white btn-glow border border-green-500/30',
-  secondary: 'bg-white/5 text-slate-200 border border-white/10',
-  ghost: 'text-slate-400 border border-transparent',
-  danger: 'bg-red-600/90 text-white border border-red-500/30',
-  gold: 'bg-amber-500/90 text-black font-semibold border border-amber-400/30',
-};
-
-// Hover variants separated — gated behind hover media query in className
-const hoverVariants = {
-  primary: 'hover:bg-green-500',
-  secondary: 'hover:bg-white/10 hover:border-white/20',
-  ghost: 'hover:bg-white/6 hover:text-white',
-  danger: 'hover:bg-red-500',
-  gold: 'hover:bg-amber-400',
+  primary:   'bg-[#8B1E1E] text-white border border-[#8B1E1E] hover:bg-[#6F1717] hover:border-[#6F1717]',
+  secondary: 'bg-white text-[#111111] border border-[#D9D4CC] hover:bg-[#F2EFE9] hover:border-[#B8B2AA]',
+  ghost:     'bg-transparent text-[#666666] border border-transparent hover:text-[#111111] hover:bg-[#F2EFE9]',
+  danger:    'bg-[#C1121F] text-white border border-[#C1121F] hover:bg-[#A00F1A] hover:border-[#A00F1A]',
 };
 
 const sizes = {
-  sm: 'px-3.5 py-2 text-sm rounded-lg',
-  md: 'px-4 py-2.5 text-sm rounded-xl',
-  lg: 'px-6 py-3.5 text-[15px] rounded-2xl',
+  sm: 'px-4 py-2 text-xs rounded',
+  md: 'px-5 py-2.5 text-sm rounded',
+  lg: 'px-6 py-3 text-sm rounded',
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -36,21 +26,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       disabled={disabled || loading}
       className={clsx(
-        'inline-flex items-center justify-center gap-2 font-medium font-heading',
-        // Specify exact properties — never transition: all (Emil principle)
-        'transition-[transform,background-color,border-color,box-shadow,opacity] duration-150',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500/60 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent',
+        'inline-flex items-center justify-center gap-2 font-semibold',
+        'font-sans tracking-[0.01em]',
+        'transition-[background-color,border-color,color,opacity] duration-150',
+        'focus:outline-none',
         'disabled:opacity-40 disabled:cursor-not-allowed',
-        // scale(0.97) on active — instant feedback (Emil principle: 100-160ms)
-        'active:scale-[0.97]',
-        // Hover gated behind pointer:fine to avoid false positives on touch
         '[&:not(:disabled)]:cursor-pointer',
         variants[variant],
-        hoverVariants[variant],
         sizes[size],
         className
       )}
-      style={{ willChange: 'transform' }}
       {...props}
     >
       {loading && (

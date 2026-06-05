@@ -5,9 +5,14 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+const SYNC_SECRET = import.meta.env.VITE_SYNC_SECRET as string | undefined;
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('tribun_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (SYNC_SECRET && config.url?.includes('/sync')) {
+    config.headers['x-sync-secret'] = SYNC_SECRET;
+  }
   return config;
 });
 

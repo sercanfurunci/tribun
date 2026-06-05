@@ -2,32 +2,37 @@ import { clsx } from 'clsx';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'green' | 'blue' | 'red' | 'yellow' | 'slate' | 'gold' | 'live';
+  variant?: 'default' | 'correct-exact' | 'correct-result' | 'wrong' | 'live' | 'pending' | 'red' | 'green' | 'blue' | 'gold';
   size?: 'sm' | 'md';
   className?: string;
 }
 
 const variants = {
-  green: 'bg-green-500/15 text-green-400 border border-green-500/25',
-  blue: 'bg-blue-500/15 text-blue-300 border border-blue-500/25',
-  red: 'bg-red-500/15 text-red-400 border border-red-500/25',
-  yellow: 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/25',
-  slate: 'bg-white/6 text-slate-400 border border-white/10',
-  gold: 'bg-amber-500/15 text-amber-400 border border-amber-500/25',
-  live: 'bg-red-500/20 text-red-300 border border-red-400/30 live-indicator',
+  'default':        'bg-[#F2EFE9] text-[#666666] border border-[#D9D4CC]',
+  'correct-exact':  'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC]',
+  'correct-result': 'bg-[#F7F4EF] text-[#166534] border border-[#D9D4CC]',
+  'wrong':          'bg-[#F7F4EF] text-[#666666] border border-[#D9D4CC]',
+  'live':           'bg-[#FEF2F2] text-[#C1121F] border border-[#FECACA]',
+  'pending':        'bg-[#F7F4EF] text-[#666666] border border-[#D9D4CC]',
+  /* legacy variants kept for backward-compat during migration */
+  'red':            'bg-[#FEF2F2] text-[#C1121F] border border-[#FECACA]',
+  'green':          'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC]',
+  'blue':           'bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]',
+  'gold':           'bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]',
 };
 
-export function Badge({ children, variant = 'slate', size = 'sm', className }: BadgeProps) {
+export function Badge({ children, variant = 'default', size = 'sm', className }: BadgeProps) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1 rounded-full font-medium tracking-wide',
-        size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm',
+        'inline-flex items-center gap-1 rounded-sm font-semibold tracking-[0.04em] uppercase',
+        'font-sans',
+        size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-3 py-1 text-xs',
         variants[variant],
         className
       )}
     >
-      {variant === 'live' && <span className="size-1.5 rounded-full bg-red-400 shrink-0" />}
+      {variant === 'live' && <span className="live-dot" />}
       {children}
     </span>
   );

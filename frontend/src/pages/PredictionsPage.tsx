@@ -19,69 +19,64 @@ function PredictionRow({ pred, dateLocale }: { pred: Prediction; dateLocale: Loc
   const isPending = pred.status === 'scheduled' || pred.status === 'live';
 
   const pointsColor =
-    !isFinished ? 'text-slate-500' :
-    pred.points_awarded === 3 ? 'text-amber-400' :
-    pred.points_awarded >= 1 ? 'text-green-400' : 'text-slate-600';
+    !isFinished ? 'text-[#999390]' :
+    pred.points_awarded === 3 ? 'text-[#92400E]' :
+    pred.points_awarded >= 1 ? 'text-[#166534]' : 'text-[#999390]';
 
   const statusLabel =
     !isFinished ? t('predictions.status.pending') :
     pred.points_awarded >= 1 ? t('predictions.status.won') : t('predictions.status.lost');
 
-  const statusColor =
-    !isFinished ? 'bg-slate-700/50 text-slate-400' :
-    pred.points_awarded >= 1 ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-    'bg-red-500/10 text-red-400 border border-red-500/20';
+  const statusCls =
+    !isFinished ? 'bg-[#F7F4EF] text-[#666666] border border-[#D9D4CC]' :
+    pred.points_awarded >= 1 ? 'bg-[#DCFCE7] text-[#166534] border border-[#86EFAC]' :
+    'bg-[#FEF2F2] text-[#C1121F] border border-[#FECACA]';
 
   return (
     <Link
       to={`/matches/${pred.match_id}`}
-      className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+      className="flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 border-b border-[#F2EFE9] transition-colors hover:bg-[#F7F4EF]"
     >
-      {/* Teams */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-sm font-semibold text-white truncate">{homeTeam}</span>
-          <span className="text-slate-600 text-xs shrink-0">vs</span>
-          <span className="text-sm font-semibold text-white truncate">{awayTeam}</span>
+          <span className="text-sm font-semibold text-[#111111] truncate">{homeTeam}</span>
+          <span className="text-[#D9D4CC] text-xs shrink-0">vs</span>
+          <span className="text-sm font-semibold text-[#111111] truncate">{awayTeam}</span>
         </div>
         {pred.kickoff_time && (
-          <p className="text-[11px] text-slate-600">
+          <p className="text-[11px] text-[#999390]">
             {format(new Date(pred.kickoff_time), 'dd MMM · HH:mm', { locale: dateLocale })}
           </p>
         )}
       </div>
 
-      {/* Your pick */}
       <div className="text-center shrink-0">
-        <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-0.5">{t('predictions.yourPick')}</p>
-        <span className="font-score text-xl text-white">
+        <p className="text-[10px] text-[#999390] uppercase tracking-wider mb-0.5">{t('predictions.yourPick')}</p>
+        <span className="font-display text-xl text-[#111111]">
           {pred.predicted_home_score} – {pred.predicted_away_score}
         </span>
       </div>
 
-      {/* Result (if finished) */}
       {isFinished && pred.home_score !== undefined && pred.away_score !== undefined && (
         <div className="text-center shrink-0">
-          <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-0.5">{t('predictions.result')}</p>
-          <span className="font-score text-xl text-slate-300">
+          <p className="text-[10px] text-[#999390] uppercase tracking-wider mb-0.5">{t('predictions.result')}</p>
+          <span className="font-display text-xl text-[#666666]">
             {pred.home_score} – {pred.away_score}
           </span>
         </div>
       )}
 
-      {/* Points / Status */}
       <div className="flex flex-col items-end gap-1.5 shrink-0">
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${statusColor}`}>
+        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${statusCls}`}>
           {statusLabel}
         </span>
         {isFinished && (
-          <span className={`font-score text-lg leading-none ${pointsColor}`}>
+          <span className={`font-display text-lg leading-none ${pointsColor}`}>
             +{pred.points_awarded} {t('predictions.points')}
           </span>
         )}
         {isPending && (
-          <Icon name="arrow-right" size={14} className="text-slate-700" />
+          <Icon name="arrow-right" size={14} className="text-[#D9D4CC]" />
         )}
       </div>
     </Link>
@@ -99,7 +94,6 @@ export default function PredictionsPage() {
   });
 
   const predictions = data?.data.predictions ?? [];
-
   const upcoming = predictions.filter((p) => p.status === 'scheduled');
   const live = predictions.filter((p) => p.status === 'live');
   const finished = predictions.filter((p) => p.status === 'finished');
@@ -110,106 +104,72 @@ export default function PredictionsPage() {
 
   return (
     <div className="space-y-6 animate-fade-up">
-
-      {/* Header */}
       <div>
-        <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">
+        <p className="text-[11px] font-bold text-[#999390] uppercase tracking-[0.28em] mb-1 font-heading">
           {t('predictions.eyebrow')}
         </p>
-        <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white">{t('predictions.title')}</h1>
-        <p className="text-slate-500 text-sm mt-1">{t('predictions.subtitle')}</p>
+        <h1 className="font-heading font-black text-3xl sm:text-4xl text-[#111111]">{t('predictions.title')}</h1>
+        <p className="text-[#666666] text-sm mt-1">{t('predictions.subtitle')}</p>
       </div>
 
       {isLoading ? (
         <div className="flex justify-center py-20"><Spinner size="lg" /></div>
       ) : predictions.length === 0 ? (
-        <div
-          className="rounded-[24px] flex flex-col items-center gap-5 py-16 text-center"
-          style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <div
-            className="size-16 rounded-2xl flex items-center justify-center text-slate-500"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            <Icon name="target" size={28} />
+        <div className="bg-white border border-[#D9D4CC] rounded-lg flex flex-col items-center gap-5 py-16 text-center">
+          <div className="size-14 rounded-lg bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center text-[#999390]">
+            <Icon name="target" size={26} />
           </div>
-          <div>
-            <p className="font-heading font-bold text-white mb-1">{t('predictions.empty')}</p>
-          </div>
+          <p className="font-heading font-black text-[#111111]">{t('predictions.empty')}</p>
           <Link
             to="/matches"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white btn-glow"
-            style={{ background: 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)' }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded text-sm font-semibold text-white bg-[#8B1E1E] hover:bg-[#6F1717] border border-[#8B1E1E] transition-colors duration-150"
           >
             {t('predictions.goPredict')}
           </Link>
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Quick stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             {[
-              { label: t('stats.totalPoints'), value: totalPoints, color: 'text-green-400' },
-              { label: t('stats.exactScores'), value: exactScores, color: 'text-amber-400' },
-              { label: t('stats.correctOutcomes'), value: correctOutcomes, color: 'text-blue-400' },
+              { label: t('stats.totalPoints'), value: totalPoints, color: 'text-[#8B1E1E]' },
+              { label: t('stats.exactScores'), value: exactScores, color: 'text-[#92400E]' },
+              { label: t('stats.correctOutcomes'), value: correctOutcomes, color: 'text-[#166534]' },
             ].map(({ label, value, color }) => (
-              <div
-                key={label}
-                className="rounded-[20px] p-4 text-center"
-                style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
-              >
-                <span className={`font-score text-4xl leading-none block ${color}`}>{value}</span>
-                <p className="text-[10px] text-slate-600 uppercase tracking-widest mt-1.5 font-heading">{label}</p>
+              <div key={label} className="bg-white border border-[#D9D4CC] rounded-lg p-4 text-center">
+                <span className={`font-display text-4xl leading-none block ${color}`}>{value}</span>
+                <p className="text-[10px] text-[#999390] uppercase tracking-widest mt-1.5 font-heading">{label}</p>
               </div>
             ))}
           </div>
 
-          {/* Live predictions */}
           {live.length > 0 && (
-            <div
-              className="rounded-[24px] overflow-hidden"
-              style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.2)' }}
-            >
-              <div className="px-5 py-3.5 flex items-center gap-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <span className="size-2 rounded-full bg-red-500 live-indicator" />
-                <h2 className="text-sm font-bold text-white font-heading">{t('matches.live')}</h2>
-                <span className="text-xs text-slate-500 ml-auto">{live.length} {t('predictions.section.matches')}</span>
+            <div className="bg-white border border-[#FECACA] rounded-lg overflow-hidden">
+              <div className="px-5 py-3.5 flex items-center gap-2 border-b border-[#E8E4DE]">
+                <span className="live-dot" />
+                <h2 className="text-sm font-bold text-[#111111] font-heading">{t('matches.live')}</h2>
+                <span className="text-xs text-[#999390] ml-auto">{live.length} {t('predictions.section.matches')}</span>
               </div>
-              <div>
-                {live.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
-              </div>
+              {live.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
             </div>
           )}
 
-          {/* Upcoming predictions */}
           {upcoming.length > 0 && (
-            <div
-              className="rounded-[24px] overflow-hidden"
-              style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-            >
-              <div className="px-5 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <h2 className="text-sm font-bold text-white font-heading">{t('matches.upcoming')}</h2>
-                <span className="text-xs text-slate-500">{upcoming.length} {t('predictions.section.predictions')}</span>
+            <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
+              <div className="px-5 py-3.5 flex items-center justify-between border-b border-[#E8E4DE]">
+                <h2 className="text-sm font-bold text-[#111111] font-heading">{t('matches.upcoming')}</h2>
+                <span className="text-xs text-[#999390]">{upcoming.length} {t('predictions.section.predictions')}</span>
               </div>
-              <div>
-                {upcoming.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
-              </div>
+              {upcoming.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
             </div>
           )}
 
-          {/* Finished predictions */}
           {finished.length > 0 && (
-            <div
-              className="rounded-[24px] overflow-hidden"
-              style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-            >
-              <div className="px-5 py-3.5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <h2 className="text-sm font-bold text-white font-heading">{t('matches.finished')}</h2>
-                <span className="text-xs text-slate-500">{finished.length} {t('predictions.section.predictions')}</span>
+            <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
+              <div className="px-5 py-3.5 flex items-center justify-between border-b border-[#E8E4DE]">
+                <h2 className="text-sm font-bold text-[#111111] font-heading">{t('matches.finished')}</h2>
+                <span className="text-xs text-[#999390]">{finished.length} {t('predictions.section.predictions')}</span>
               </div>
-              <div>
-                {finished.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
-              </div>
+              {finished.map((p) => <PredictionRow key={p.id} pred={p} dateLocale={dateLocale} />)}
             </div>
           )}
         </div>

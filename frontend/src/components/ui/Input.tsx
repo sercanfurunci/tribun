@@ -8,9 +8,12 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, id, ...props }, ref) => (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] font-heading">
+        <label
+          htmlFor={id}
+          className="text-[11px] font-semibold text-[#666666] uppercase tracking-[0.08em] font-sans"
+        >
           {label}
         </label>
       )}
@@ -18,20 +21,19 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         id={id}
         className={clsx(
-          'w-full rounded-2xl px-4 py-3.5 text-[15px] text-slate-100',
-          'bg-white/[0.04] border',
-          'placeholder:text-slate-600',
-          'transition-[border-color,background-color,box-shadow] duration-150 ease-out',
-          'focus:outline-none focus:bg-white/[0.07]',
+          'w-full rounded px-4 py-3 text-sm text-[#111111] bg-white',
+          'border transition-[border-color] duration-150',
+          'placeholder:text-[#999390]',
+          'focus:outline-none',
           error
-            ? 'border-red-500/50 focus:border-red-400/70 focus:shadow-[0_0_0_4px_rgba(239,68,68,0.12)]'
-            : 'border-white/[0.08] hover:border-white/[0.16] focus:border-green-500/50 focus:shadow-[0_0_0_4px_rgba(22,163,74,0.12)]',
+            ? 'border-[#C1121F] focus:border-[#C1121F]'
+            : 'border-[#D9D4CC] hover:border-[#B8B2AA] focus:border-[#111111]',
           className
         )}
         {...props}
       />
       {error && (
-        <p className="text-xs text-red-400 flex items-center gap-1.5">
+        <p className="text-xs text-[#C1121F] flex items-center gap-1.5 font-sans">
           <svg aria-hidden width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />

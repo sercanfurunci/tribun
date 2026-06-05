@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { authApi } from '../services/auth';
@@ -37,72 +37,51 @@ export default function RegisterPage() {
       formSubtitle={t('auth.register.subtitle')}
       highlights={['auth.register.highlight.1', 'auth.register.highlight.2', 'auth.register.highlight.3']}
       footerLink={{ to: '/login', label: t('auth.signInInstead') }}
-      primaryAction={
-        <Link
-          to="/login"
-          className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-sm font-semibold text-white transition-transform duration-200 hover:scale-[1.02] btn-glow"
-        >
-          {t('auth.signInInstead')}
-        </Link>
-      }
-      secondaryAction={
-        <Link
-          to="/matches"
-          className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/[0.07]"
-        >
-          {t('nav.matches')}
-        </Link>
-      }
     >
-      <div
-        className="rounded-[28px] border border-white/8 bg-black/20 p-6"
-        style={{ boxShadow: '0 10px 30px -18px rgba(0,0,0,0.55)' }}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          mutation.mutate();
+        }}
+        className="flex flex-col gap-4"
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            mutation.mutate();
-          }}
-          className="flex flex-col gap-4"
-        >
-          <Input
-            id="username"
-            label={t('auth.field.username')}
-            placeholder="coolpredictor"
-            value={form.username}
-            onChange={update('username')}
-            required
-            minLength={3}
-            maxLength={50}
-            pattern="[a-zA-Z0-9_]+"
-            autoComplete="username"
-          />
-          <Input
-            id="email"
-            type="email"
-            label={t('auth.field.email')}
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={update('email')}
-            required
-            autoComplete="email"
-          />
-          <Input
-            id="password"
-            type="password"
-            label={t('auth.field.password')}
-            placeholder="Min. 8"
-            value={form.password}
-            onChange={update('password')}
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
-          <Button type="submit" loading={mutation.isPending} size="lg" className="w-full mt-1">
-            {t('auth.createButton')}
-          </Button>
-        </form>
-      </div>
+        <Input
+          id="username"
+          label={t('auth.field.username')}
+          placeholder="coolpredictor"
+          value={form.username}
+          onChange={update('username')}
+          required
+          minLength={3}
+          maxLength={50}
+          pattern="[a-zA-Z0-9_]+"
+          autoComplete="username"
+        />
+        <Input
+          id="email"
+          type="email"
+          label={t('auth.field.email')}
+          placeholder="you@example.com"
+          value={form.email}
+          onChange={update('email')}
+          required
+          autoComplete="email"
+        />
+        <Input
+          id="password"
+          type="password"
+          label={t('auth.field.password')}
+          placeholder="Min. 8"
+          value={form.password}
+          onChange={update('password')}
+          required
+          minLength={8}
+          autoComplete="new-password"
+        />
+        <Button type="submit" loading={mutation.isPending} size="lg" className="w-full mt-1">
+          {t('auth.createButton')}
+        </Button>
+      </form>
     </AuthLayout>
   );
 }

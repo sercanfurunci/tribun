@@ -12,7 +12,7 @@ export function Spinner({ size = 'md', className }: SpinnerProps) {
     <div
       className={clsx(
         'rounded-full animate-spin',
-        'border-2 border-white/10 border-t-green-500',
+        'border-2 border-[#E8E4DE] border-t-[#8B1E1E]',
         sizes[size],
         className
       )}
@@ -22,13 +22,10 @@ export function Spinner({ size = 'md', className }: SpinnerProps) {
 
 export function FullPageSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EF]">
       <div className="flex flex-col items-center gap-4">
-        <div className="relative">
-          <div className="size-16 rounded-full border-2 border-white/5 border-t-green-500 animate-spin" />
-          <div className="absolute inset-2 rounded-full border-2 border-white/5 border-b-green-400/50 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
-        </div>
-        <p className="text-slate-500 text-sm tracking-widest uppercase font-heading">Loading</p>
+        <div className="size-10 rounded-full border-2 border-[#E8E4DE] border-t-[#8B1E1E] animate-spin" />
+        <p className="text-[#999390] text-xs tracking-[0.12em] uppercase font-sans">Yükleniyor</p>
       </div>
     </div>
   );

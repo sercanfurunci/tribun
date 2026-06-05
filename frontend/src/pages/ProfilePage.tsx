@@ -33,38 +33,21 @@ export default function ProfilePage() {
     ? Math.round((stats.correct_outcomes / stats.total_predictions) * 100)
     : 0;
 
-  const chartData = [{ value: accuracy, fill: '#16a34a' }];
+  const chartData = [{ value: accuracy, fill: '#8B1E1E' }];
 
   return (
     <div className="space-y-6 animate-fade-up">
-
       {/* Profile hero */}
-      <div
-        className="relative rounded-2xl overflow-hidden px-6 py-8"
-        style={{
-          background: 'linear-gradient(135deg, rgba(22,163,74,0.15) 0%, rgba(12,22,40,0.95) 60%)',
-          border: '1px solid rgba(22,163,74,0.2)',
-        }}
-      >
-        <div
-          className="absolute -top-12 -right-12 w-56 h-56 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #16a34a 0%, transparent 70%)' }}
-        />
+      <div className="bg-white border border-[#D9D4CC] rounded-lg px-6 py-7">
         <div className="flex items-center gap-5">
-          <div
-            className="size-16 sm:size-20 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl font-bold text-white font-heading shrink-0"
-            style={{
-              background: 'linear-gradient(135deg, #16a34a, #15803d)',
-              boxShadow: '0 0 28px rgba(22,163,74,0.4)',
-            }}
-          >
+          <div className="size-16 sm:size-20 rounded-lg bg-[#8B1E1E] flex items-center justify-center text-2xl sm:text-3xl font-black text-white font-heading shrink-0">
             {user?.username?.[0]?.toUpperCase()}
           </div>
           <div className="min-w-0">
-            <h1 className="font-heading font-bold text-2xl sm:text-3xl text-white truncate">{user?.username}</h1>
-            <p className="text-slate-500 truncate mt-0.5">{user?.email}</p>
+            <h1 className="font-heading font-black text-2xl sm:text-3xl text-[#111111] truncate">{user?.username}</h1>
+            <p className="text-[#666666] truncate mt-0.5">{user?.email}</p>
             {user?.created_at && (
-              <p className="text-xs text-slate-600 mt-1.5 font-heading uppercase tracking-widest">
+              <p className="text-xs text-[#999390] mt-1.5 font-heading uppercase tracking-widest">
                 {t('profile.memberSince')} {format(new Date(user.created_at), 'MMMM yyyy', { locale: dateLocale })}
               </p>
             )}
@@ -72,65 +55,50 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats grid */}
+      {/* Stats */}
       {loadingStats ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : stats ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-          {/* Stat cards */}
           {([
-            { label: t('stats.totalPoints'), value: stats.total_points, accent: 'text-green-400', icon: 'zap' as IconName, sub: t('stats.earned') },
-            { label: t('stats.predictions'), value: stats.total_predictions, accent: 'text-white', icon: 'target' as IconName, sub: t('stats.submitted') },
-            { label: t('stats.exactScores'), value: stats.exact_scores, accent: 'text-amber-400', icon: 'award' as IconName, sub: t('stats.exactSub') },
-            { label: t('stats.correctOutcomes'), value: stats.correct_outcomes, accent: 'text-blue-400', icon: 'check' as IconName, sub: t('stats.correctSub') },
-          ]).map(({ label, value, accent, icon, sub }) => (
-            <div
-              key={label}
-              className="rounded-2xl p-5 flex flex-col gap-3"
-              style={{
-                background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4)',
-              }}
-            >
+            { label: t('stats.totalPoints'), value: stats.total_points, icon: 'zap' as IconName, sub: t('stats.earned'), highlight: true },
+            { label: t('stats.predictions'), value: stats.total_predictions, icon: 'target' as IconName, sub: t('stats.submitted') },
+            { label: t('stats.exactScores'), value: stats.exact_scores, icon: 'award' as IconName, sub: t('stats.exactSub') },
+            { label: t('stats.correctOutcomes'), value: stats.correct_outcomes, icon: 'check' as IconName, sub: t('stats.correctSub') },
+          ]).map(({ label, value, icon, sub, highlight }) => (
+            <div key={label} className="bg-white border border-[#D9D4CC] rounded-lg p-5 flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{label}</span>
-                <span className={accent}><Icon name={icon} size={16} /></span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#999390] font-heading">{label}</span>
+                <span className={highlight ? 'text-[#8B1E1E]' : 'text-[#999390]'}>
+                  <Icon name={icon} size={16} />
+                </span>
               </div>
-              <span className={`font-score text-5xl leading-none ${accent}`}>{value}</span>
-              <span className="text-xs text-slate-600">{sub}</span>
+              <span className={`font-display text-5xl leading-none ${highlight ? 'text-[#8B1E1E]' : 'text-[#111111]'}`}>{value}</span>
+              <span className="text-xs text-[#999390]">{sub}</span>
             </div>
           ))}
 
           {/* Accuracy donut */}
-          <div
-            className="rounded-2xl p-5 flex flex-col gap-3 sm:col-span-2 lg:col-span-1"
-            style={{
-              background: 'linear-gradient(180deg, rgba(18,30,52,0.95) 0%, rgba(12,22,40,0.92) 100%)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 8px 32px -8px rgba(0,0,0,0.4)',
-            }}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 font-heading">{t('stats.accuracy')}</span>
+          <div className="bg-white border border-[#D9D4CC] rounded-lg p-5 flex flex-col gap-3 sm:col-span-2 lg:col-span-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#999390] font-heading">{t('stats.accuracy')}</span>
             <div className="flex items-center gap-6">
               <div className="relative size-24 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadialBarChart innerRadius="72%" outerRadius="100%" data={chartData} startAngle={90} endAngle={-270}>
-                    <RadialBar dataKey="value" cornerRadius={6} background={{ fill: 'rgba(255,255,255,0.04)' }} />
+                    <RadialBar dataKey="value" cornerRadius={6} background={{ fill: '#F2EFE9' }} />
                   </RadialBarChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-score text-3xl leading-none text-white">{accuracy}%</span>
+                  <span className="font-display text-3xl leading-none text-[#111111]">{accuracy}%</span>
                 </div>
               </div>
               <div>
-                <p className="text-slate-400 text-sm">
+                <p className="text-[#666666] text-sm">
                   {stats.total_predictions > 0
                     ? `${stats.correct_outcomes} ${t('stats.ofCorrect', { total: stats.total_predictions })}`
                     : t('stats.noPredictions')}
                 </p>
-                <p className="text-xs text-slate-600 mt-1">{t('stats.outcomeAccuracy')}</p>
+                <p className="text-xs text-[#999390] mt-1">{t('stats.outcomeAccuracy')}</p>
               </div>
             </div>
           </div>
@@ -140,25 +108,19 @@ export default function ProfilePage() {
       {/* Leagues */}
       <section>
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-heading">{t('profile.myLeagues')}</h2>
-          <span
-            className="text-xs font-bold px-2 py-0.5 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.06)', color: '#64748b' }}
-          >
+          <h2 className="text-[11px] font-bold text-[#999390] uppercase tracking-[0.28em] font-heading">{t('profile.myLeagues')}</h2>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#F2EFE9] border border-[#E8E4DE] text-[#666666]">
             {leagues.length}
           </span>
         </div>
         {loadingLeagues ? (
           <div className="flex justify-center py-8"><Spinner /></div>
         ) : leagues.length === 0 ? (
-          <div
-            className="rounded-2xl p-10 text-center text-slate-600 text-sm"
-            style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
-          >
+          <div className="bg-white border border-[#D9D4CC] rounded-lg p-10 text-center text-[#999390] text-sm">
             {t('profile.noLeagues')}
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}
           </div>
         )}

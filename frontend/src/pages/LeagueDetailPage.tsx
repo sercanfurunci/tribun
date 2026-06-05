@@ -8,7 +8,6 @@ import { matchesApi } from '../services/matches';
 import { predictionsApi } from '../services/predictions';
 import { LeaderboardTable } from '../components/features/LeaderboardTable';
 import { MatchCard } from '../components/features/MatchCard';
-import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { Spinner } from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
@@ -69,7 +68,7 @@ export default function LeagueDetailPage() {
   if (isLoading) return <div className="flex justify-center py-16"><Spinner size="lg" /></div>;
 
   const league = leagueData?.data.league;
-  if (!league) return <div className="text-center text-slate-400 py-16">{t('leagueDetail.notFound')}</div>;
+  if (!league) return <div className="text-center text-[#999390] py-16">{t('leagueDetail.notFound')}</div>;
 
   const myPosition = leaderboardData?.data.leaderboard.find((e) => e.user_id === user?.id);
   const matches = matchesData?.data.matches ?? [];
@@ -83,26 +82,26 @@ export default function LeagueDetailPage() {
 
   const tabs: { id: Tab; label: string }[] = [
     { id: 'leaderboard', label: t('leagueDetail.tab.leaderboard') },
-    { id: 'matches', label: t('leagueDetail.tab.matches') },
-    { id: 'members', label: t('leagueDetail.tab.members') },
+    { id: 'matches',     label: t('leagueDetail.tab.matches')     },
+    { id: 'members',     label: t('leagueDetail.tab.members')     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-white">{league.name}</h1>
+            <h1 className="font-heading font-black text-2xl sm:text-3xl text-[#111111]">{league.name}</h1>
             {league.is_owner && <Badge variant="gold">{t('leagueDetail.owner')}</Badge>}
           </div>
-          {league.description && <p className="text-slate-400 text-sm">{league.description}</p>}
-          <p className="text-xs text-slate-600 mt-1">{league.member_count} {t('leagueDetail.members').toLowerCase()}</p>
+          {league.description && <p className="text-[#666666] text-sm">{league.description}</p>}
+          <p className="text-xs text-[#999390] mt-1">{league.member_count} {t('leagueDetail.members').toLowerCase()}</p>
         </div>
 
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={copyInviteCode}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-sm text-slate-300 border border-slate-700"
+            className="flex items-center gap-2 px-3 py-2 rounded text-sm font-medium text-[#666666] bg-white border border-[#D9D4CC] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 font-mono tracking-widest"
           >
             <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -126,27 +125,27 @@ export default function LeagueDetailPage() {
       {myPosition && (
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: `#`, value: `#${myPosition.position}` },
+            { label: t('leaderboard.col.rank'), value: `#${myPosition.position}` },
             { label: t('stats.totalPoints'), value: myPosition.total_points },
             { label: t('stats.exactScores'), value: myPosition.exact_scores },
           ].map(({ label, value }) => (
-            <Card key={label}>
-              <CardBody className="text-center py-3">
-                <div className="text-xl font-bold text-white">{value}</div>
-                <div className="text-xs text-slate-500 mt-0.5">{label}</div>
-              </CardBody>
-            </Card>
+            <div key={label} className="bg-white border border-[#D9D4CC] rounded-lg px-4 py-3 text-center">
+              <div className="font-display text-2xl text-[#111111]">{value}</div>
+              <div className="text-[10px] text-[#999390] uppercase tracking-widest mt-0.5 font-heading">{label}</div>
+            </div>
           ))}
         </div>
       )}
 
-      <div className="flex gap-1 p-1 bg-slate-800/60 rounded-xl w-fit">
+      <div className="flex gap-0 bg-white border border-[#D9D4CC] rounded-lg overflow-hidden w-fit">
         {tabs.map(({ id: tabId, label }) => (
           <button
             key={tabId}
             onClick={() => setTab(tabId)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              tab === tabId ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`px-5 py-2.5 text-sm font-semibold font-heading transition-colors duration-150 border-b-2 ${
+              tab === tabId
+                ? 'text-[#8B1E1E] border-[#8B1E1E] bg-[#FEF2F2]'
+                : 'text-[#666666] border-transparent hover:text-[#111111] hover:bg-[#F7F4EF]'
             }`}
           >
             {label}
@@ -155,63 +154,60 @@ export default function LeagueDetailPage() {
       </div>
 
       {tab === 'leaderboard' && (
-        <Card>
+        <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
           {leaderboardData ? (
             <LeaderboardTable entries={leaderboardData.data.leaderboard} />
           ) : (
-            <CardBody className="flex justify-center py-8"><Spinner /></CardBody>
+            <div className="flex justify-center py-8"><Spinner /></div>
           )}
-        </Card>
+        </div>
       )}
 
       {tab === 'matches' && (
         <div className="space-y-3">
           {matches.length === 0 ? (
-            <Card><CardBody className="text-center text-slate-500 py-8">{t('leagueDetail.noUpcoming')}</CardBody></Card>
+            <div className="bg-white border border-[#D9D4CC] rounded-lg px-6 py-8 text-center text-[#999390] text-sm">
+              {t('leagueDetail.noUpcoming')}
+            </div>
           ) : (
-            matches.map((match) => {
-              const pred = myPredictions.find((p) => p.match_id === match.id);
-              return (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  prediction={pred}
-                  leagueId={id}
-                />
-              );
-            })
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {matches.map((match) => {
+                const pred = myPredictions.find((p) => p.match_id === match.id);
+                return <MatchCard key={match.id} match={match} prediction={pred} leagueId={id} />;
+              })}
+            </div>
           )}
         </div>
       )}
 
       {tab === 'members' && (
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-white">{league.member_count} {t('leagueDetail.members')}</h2>
-          </CardHeader>
+        <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[#E8E4DE]">
+            <h2 className="font-heading font-black text-sm text-[#111111]">
+              {league.member_count} {t('leagueDetail.members')}
+            </h2>
+          </div>
           {membersData ? (
-            <CardBody className="p-0">
-              <div className="divide-y divide-slate-800">
-                {membersData.data.members.map((member) => (
-                  <div key={member.id} className={`flex items-center gap-3 px-5 py-3 ${member.id === user?.id ? 'bg-green-500/5' : ''}`}>
-                    <div className="size-9 rounded-full bg-slate-700 flex items-center justify-center text-sm font-bold text-slate-300">
-                      {member.username[0].toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">
-                        {member.username}
-                        {member.id === user?.id && <span className="text-xs text-slate-500 ml-1">{t('leagueDetail.you')}</span>}
-                        {league.owner_id === member.id && <Badge variant="gold" className="ml-2">{t('leagueDetail.owner')}</Badge>}
-                      </p>
-                    </div>
+            <div className="divide-y divide-[#F2EFE9]">
+              {membersData.data.members.map((member) => (
+                <div key={member.id} className={`flex items-center gap-3 px-5 py-3 ${member.id === user?.id ? 'bg-[#FEF2F2]' : ''}`}>
+                  <div className="size-9 rounded-full bg-[#8B1E1E] flex items-center justify-center text-sm font-bold text-white font-heading">
+                    {member.username[0].toUpperCase()}
                   </div>
-                ))}
-              </div>
-            </CardBody>
+                  <div>
+                    <p className="text-sm font-semibold text-[#111111]">
+                      {member.username}
+                      {member.id === user?.id && <span className="text-xs text-[#999390] ml-1">{t('leagueDetail.you')}</span>}
+                      {league.owner_id === member.id && <Badge variant="gold" className="ml-2">{t('leagueDetail.owner')}</Badge>}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <CardBody className="flex justify-center py-8"><Spinner /></CardBody>
+            <div className="flex justify-center py-8"><Spinner /></div>
           )}
-        </Card>
+        </div>
       )}
     </div>
   );

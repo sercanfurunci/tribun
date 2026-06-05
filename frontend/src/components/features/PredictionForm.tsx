@@ -15,25 +15,21 @@ interface PredictionFormProps {
   awayName: string;
 }
 
-function ScoreInput({
-  value,
-  onChange,
-  label,
-}: {
+function ScoreInput({ value, onChange, label }: {
   value: string | number;
   onChange: (v: string) => void;
   label: string;
 }) {
   return (
-    <div className="flex min-w-0 flex-1 flex-col items-center gap-3 rounded-[24px] border border-white/8 bg-[#0F172A] px-4 py-4 shadow-[0_10px_28px_-20px_rgba(0,0,0,0.75)]">
-      <label className="w-full truncate text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-3 bg-[#F7F4EF] border border-[#E8E4DE] rounded-lg px-4 py-4">
+      <label className="w-full truncate text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-[#666666]">
         {label}
       </label>
       <div className="flex flex-col items-center gap-1.5">
         <button
           type="button"
           onClick={() => onChange(String(Math.min(99, Number(value || 0) + 1)))}
-          className="grid size-9 place-items-center rounded-xl border border-white/8 bg-white/[0.04] text-slate-400 transition-[background-color,color,transform,border-color] duration-150 hover:border-white/12 hover:bg-white/[0.08] hover:text-white active:scale-95"
+          className="grid size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95"
         >
           ▲
         </button>
@@ -43,14 +39,14 @@ function ScoreInput({
           max="99"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-20 h-16 rounded-[18px] border border-white/10 bg-[#0B1220] text-center font-score text-4xl text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] transition-[background-color,border-color,box-shadow] duration-150 focus:border-green-500/45 focus:bg-[#0E1728] focus:outline-none focus:ring-2 focus:ring-green-500/35"
+          className="w-20 h-16 rounded border border-[#D9D4CC] bg-white text-center font-display text-4xl text-[#111111] focus:border-[#8B1E1E] focus:outline-none transition-[border-color] duration-150"
           placeholder="0"
           required
         />
         <button
           type="button"
           onClick={() => onChange(String(Math.max(0, Number(value || 0) - 1)))}
-          className="grid size-9 place-items-center rounded-xl border border-white/8 bg-white/[0.04] text-slate-400 transition-[background-color,color,transform,border-color] duration-150 hover:border-white/12 hover:bg-white/[0.08] hover:text-white active:scale-95"
+          className="grid size-9 place-items-center rounded border border-[#D9D4CC] bg-white text-[#666666] hover:border-[#B8B2AA] hover:text-[#111111] transition-colors duration-150 active:scale-95"
         >
           ▼
         </button>
@@ -82,10 +78,8 @@ export function PredictionForm({
 
   if (isLocked) {
     return (
-      <div
-        className="flex items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3 text-sm text-slate-500"
-      >
-        <svg className="size-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex items-center gap-2 bg-[#F7F4EF] border border-[#E8E4DE] rounded px-4 py-3 text-sm text-[#999390]">
+        <svg className="size-4 text-[#D9D4CC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
         {t('matchDetail.predictionLocked')}
@@ -95,27 +89,16 @@ export function PredictionForm({
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(); }} className="space-y-5">
-      <div className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#12213A] via-[#0F172A] to-[#0B1220] px-4 py-5 shadow-[0_18px_50px_-30px_rgba(0,0,0,0.8)] sm:px-5">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80">{t('matchDetail.predictionEyebrow')}</p>
-          <p className="text-xs text-slate-500">{t('matchDetail.predictionSubheading')}</p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
-          <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
-          <div className="flex items-center justify-center">
-            <div className="flex size-12 items-center justify-center rounded-2xl border border-white/8 bg-white/[0.04] font-score text-lg text-slate-500 shadow-[0_10px_24px_-18px_rgba(0,0,0,0.7)]">
-              VS
-            </div>
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center">
+        <ScoreInput value={homeScore} onChange={setHomeScore} label={homeName} />
+        <div className="flex items-center justify-center">
+          <div className="flex size-10 items-center justify-center rounded border border-[#D9D4CC] bg-[#F7F4EF] font-heading font-black text-xs text-[#999390]">
+            VS
           </div>
-          <ScoreInput value={awayScore} onChange={setAwayScore} label={awayName} />
         </div>
+        <ScoreInput value={awayScore} onChange={setAwayScore} label={awayName} />
       </div>
-      <Button
-        type="submit"
-        loading={mutation.isPending}
-        className="w-full shadow-[0_14px_32px_-18px_rgba(34,197,94,0.9)]"
-        size="lg"
-      >
+      <Button type="submit" loading={mutation.isPending} className="w-full" size="lg">
         {initialHome !== undefined ? t('matchDetail.predictionUpdate') : t('matchDetail.predictionSave')}
       </Button>
     </form>

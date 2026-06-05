@@ -18,33 +18,17 @@ const STATUS_MAP: Record<string, 'scheduled' | 'live' | 'finished' | 'postponed'
 };
 
 const POSITION_TR: Record<string, string> = {
-  Goalkeeper: 'Kaleci',
-  Defender: 'Defans',
-  Midfielder: 'Orta Saha',
-  Midfield: 'Orta Saha',
-  Forward: 'Forvet',
-  Striker: 'Santrafor',
-  Winger: 'Kanat',
-  Attacker: 'Hücum',
-  Manager: 'Teknik Direktör',
-  Coach: 'Antrenör',
-  'Centre-Back': 'Stoper',
-  'Centre Back': 'Stoper',
-  'Full-Back': 'Bek',
-  'Left-Back': 'Sol Bek',
-  'Right-Back': 'Sağ Bek',
-  'Left Back': 'Sol Bek',
-  'Right Back': 'Sağ Bek',
-  'Defensive Midfielder': 'Defansif Orta Saha',
-  'Defensive Midfield': 'Defansif Orta Saha',
-  'Central Midfielder': 'Merkez Orta Saha',
-  'Central Midfield': 'Merkez Orta Saha',
-  'Attacking Midfielder': 'Ofansif Orta Saha',
-  'Attacking Midfield': 'Ofansif Orta Saha',
-  'Left Winger': 'Sol Kanat',
-  'Left Wing': 'Sol Kanat',
-  'Right Winger': 'Sağ Kanat',
-  'Right Wing': 'Sağ Kanat',
+  Goalkeeper: 'Kaleci', Defender: 'Defans', Midfielder: 'Orta Saha',
+  Midfield: 'Orta Saha', Forward: 'Forvet', Striker: 'Santrafor',
+  Winger: 'Kanat', Attacker: 'Hücum', Manager: 'Teknik Direktör',
+  Coach: 'Antrenör', 'Centre-Back': 'Stoper', 'Centre Back': 'Stoper',
+  'Full-Back': 'Bek', 'Left-Back': 'Sol Bek', 'Right-Back': 'Sağ Bek',
+  'Left Back': 'Sol Bek', 'Right Back': 'Sağ Bek',
+  'Defensive Midfielder': 'Defansif Orta Saha', 'Defensive Midfield': 'Defansif Orta Saha',
+  'Central Midfielder': 'Merkez Orta Saha', 'Central Midfield': 'Merkez Orta Saha',
+  'Attacking Midfielder': 'Ofansif Orta Saha', 'Attacking Midfield': 'Ofansif Orta Saha',
+  'Left Winger': 'Sol Kanat', 'Left Wing': 'Sol Kanat',
+  'Right Winger': 'Sağ Kanat', 'Right Wing': 'Sağ Kanat',
 };
 
 const LEAGUE_TR: Record<string, string> = {
@@ -76,7 +60,9 @@ function mapStatus(strStatus: string, strPostponed: string) {
   return STATUS_MAP[strStatus] ?? 'scheduled';
 }
 
-function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEvent; teamId: string; dateLocale: Locale; lang: Lang }) {
+function EventRow({ event, teamId, dateLocale, lang }: {
+  event: SportsDBTeamEvent; teamId: string; dateLocale: Locale; lang: Lang;
+}) {
   const status = mapStatus(event.strStatus, event.strPostponed);
   const isFinished = status === 'finished';
   const isHome = event.idHomeTeam === teamId;
@@ -88,8 +74,10 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
   const opponent = formatTeamName(opponentRaw, lang);
   const opponentBadge = isHome ? event.strAwayTeamBadge : event.strHomeTeamBadge;
 
-  const resultColor = !isFinished ? '' : won ? 'text-green-400' : drew ? 'text-slate-400' : 'text-red-400';
-  const resultBg = !isFinished ? '' : won ? 'bg-green-500/10 border-green-500/20' : drew ? 'bg-slate-700/40 border-white/10' : 'bg-red-500/10 border-red-500/20';
+  const resultCls = !isFinished ? '' :
+    won  ? 'bg-[#DCFCE7] border-[#86EFAC] text-[#166534]' :
+    drew ? 'bg-[#F7F4EF] border-[#E8E4DE] text-[#666666]' :
+           'bg-[#FEF2F2] border-[#FECACA] text-[#C1121F]';
 
   const resultLabel = !isFinished ? '' : lang === 'tr'
     ? (won ? 'G' : drew ? 'B' : 'M')
@@ -100,12 +88,9 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
     : (isHome ? 'vs' : '@');
 
   return (
-    <div
-      className="flex items-center gap-3 px-4 sm:px-5 py-3.5"
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-    >
+    <div className="flex items-center gap-3 px-4 sm:px-5 py-3.5 border-b border-[#F2EFE9]">
       {isFinished && (
-        <span className={`text-xs font-black w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${resultColor} ${resultBg}`}>
+        <span className={`text-xs font-black w-7 h-7 rounded flex items-center justify-center shrink-0 border ${resultCls}`}>
           {resultLabel}
         </span>
       )}
@@ -114,38 +99,47 @@ function EventRow({ event, teamId, dateLocale, lang }: { event: SportsDBTeamEven
         {opponentBadge ? (
           <img src={opponentBadge} alt={opponent} className="size-7 object-contain shrink-0" />
         ) : (
-          <div className="size-7 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-bold text-slate-300">
+          <div className="size-7 rounded-full bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center shrink-0 text-xs font-bold text-[#666666]">
             {opponent[0]}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-100 truncate group-hover:text-white transition-colors">
-            <span className="text-slate-500 mr-1">{locationLabel}</span>{opponent}
+          <p className="text-sm font-semibold text-[#111111] truncate group-hover:text-[#8B1E1E] transition-colors">
+            <span className="text-[#999390] mr-1">{locationLabel}</span>{opponent}
           </p>
-          <p className="text-[11px] text-slate-600 truncate">{translateLeague(event.strLeague, lang)}</p>
+          <p className="text-[11px] text-[#999390] truncate">{translateLeague(event.strLeague, lang)}</p>
         </div>
       </Link>
 
       <div className="text-right shrink-0">
         {isFinished ? (
-          <span className="font-score text-lg text-white">
+          <span className="font-display text-lg text-[#111111]">
             {isHome ? event.intHomeScore : event.intAwayScore} – {isHome ? event.intAwayScore : event.intHomeScore}
           </span>
         ) : (
           <div>
-            <p className="text-xs text-slate-300 font-semibold">
+            <p className="text-xs text-[#666666] font-semibold">
               {event.dateEvent
                 ? format(new Date(event.strTimestamp || event.dateEvent), 'dd MMM', { locale: dateLocale })
                 : '—'}
             </p>
-            <p className="text-[10px] text-slate-600">
-              {event.strTimestamp
-                ? format(new Date(event.strTimestamp), 'HH:mm', { locale: dateLocale })
-                : ''}
+            <p className="text-[10px] text-[#999390]">
+              {event.strTimestamp ? format(new Date(event.strTimestamp), 'HH:mm', { locale: dateLocale }) : ''}
             </p>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-[#E8E4DE]">
+        <h2 className="font-heading font-black text-xs text-[#999390] uppercase tracking-widest">{title}</h2>
+      </div>
+      {children}
     </div>
   );
 }
@@ -196,16 +190,14 @@ export default function TeamPage() {
   if (!team) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <Icon name="ball" size={40} className="text-slate-700" />
-        <p className="text-slate-500">{lang === 'tr' ? 'Takım bulunamadı' : 'Team not found'}: {name}</p>
-        <Link to="/matches" className="text-sm text-green-500 hover:text-green-400">
+        <Icon name="ball" size={40} className="text-[#D9D4CC]" />
+        <p className="text-[#999390]">{lang === 'tr' ? 'Takım bulunamadı' : 'Team not found'}: {name}</p>
+        <Link to="/matches" className="text-sm text-[#8B1E1E] hover:text-[#6F1717] transition-colors">
           ← {lang === 'tr' ? 'Maçlara dön' : 'Back to matches'}
         </Link>
       </div>
     );
   }
-
-  const primaryColor = team.strColour1 ?? '#16a34a';
 
   const description = lang === 'tr'
     ? (team.strDescriptionTR || team.strDescriptionEN || '')
@@ -226,158 +218,102 @@ export default function TeamPage() {
 
   return (
     <div className="space-y-6 animate-fade-up">
-
       {/* Hero */}
-      <div
-        className="relative rounded-[24px] overflow-hidden"
-        style={{ minHeight: 200 }}
-      >
+      <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
         {team.strFanart1 && (
           <div
-            className="absolute inset-0 bg-cover bg-center"
+            className="h-32 sm:h-44 bg-cover bg-center relative"
             style={{ backgroundImage: `url(${team.strFanart1})` }}
-          />
+          >
+            <div className="absolute inset-0 bg-[#111111]/40" />
+          </div>
         )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: team.strFanart1
-              ? 'linear-gradient(to right, rgba(6,13,26,0.92) 40%, rgba(6,13,26,0.6) 100%)'
-              : `linear-gradient(135deg, ${primaryColor}22 0%, #0B1220 60%)`,
-          }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `radial-gradient(600px 300px at 0% 50%, ${primaryColor}30, transparent 60%)` }}
-        />
-
-        <div className="relative px-6 py-8 sm:px-8 sm:py-10 flex items-center gap-6">
+        <div className="px-6 py-6 flex items-center gap-5">
           {team.strBadge && (
-            <div
-              className="size-20 sm:size-24 rounded-2xl flex items-center justify-center shrink-0 p-2"
-              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
-            >
+            <div className="size-16 sm:size-20 rounded-lg bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center shrink-0 p-2 -mt-10 relative z-10 ring-2 ring-white">
               <img src={team.strBadge} alt={team.strTeam} className="size-full object-contain" />
             </div>
           )}
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5 mb-2">
+          <div className={`min-w-0 ${team.strBadge ? '' : ''}`}>
+            <div className="flex items-center gap-2 mb-1">
               {[team.strColour1, team.strColour2].filter(Boolean).map((c, i) => (
-                <span key={i} className="size-3 rounded-full border border-white/10 shrink-0" style={{ background: c! }} />
+                <span key={i} className="size-3 rounded-full border border-[#E8E4DE] shrink-0" style={{ background: c! }} />
               ))}
               {team.strTeamShort && (
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">{team.strTeamShort}</span>
+                <span className="text-[10px] font-bold text-[#999390] uppercase tracking-widest ml-1">{team.strTeamShort}</span>
               )}
             </div>
-
-            <h1 className="font-heading font-bold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight">
+            <h1 className="font-heading font-black text-2xl sm:text-3xl lg:text-4xl text-[#111111] leading-tight">
               {team.strTeam}
             </h1>
-
-            <div className="flex flex-wrap items-center gap-3 mt-2">
+            <div className="flex flex-wrap items-center gap-3 mt-1.5">
               {team.strCountry && (
-                <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                  <Icon name="pin" size={12} /> {team.strCountry}
+                <span className="flex items-center gap-1 text-xs text-[#666666]">
+                  <Icon name="pin" size={11} /> {team.strCountry}
                 </span>
               )}
               {team.strStadium && (
-                <span className="text-xs text-slate-500">· {team.strStadium}
-                  {team.intStadiumCapacity && ` (${Number(team.intStadiumCapacity).toLocaleString()})`}
+                <span className="text-xs text-[#999390]">
+                  · {team.strStadium}{team.intStadiumCapacity && ` (${Number(team.intStadiumCapacity).toLocaleString()})`}
                 </span>
               )}
               {team.intFormedYear && (
-                <span className="text-xs text-slate-600">· {formedLabel} {team.intFormedYear}</span>
+                <span className="text-xs text-[#999390]">· {formedLabel} {team.intFormedYear}</span>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Two-column layout on lg */}
+      {/* Two-column layout */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)]">
-
-        {/* Left column */}
         <div className="space-y-6">
-
-          {/* Description */}
           {description && (
-            <div
-              className="rounded-[20px] p-5 sm:p-6"
-              style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
-            >
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest mb-3">{aboutLabel}</h2>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                {showFullDesc ? description : shortDesc}
-              </p>
-              {description.length > 400 && (
-                <button
-                  onClick={() => setShowFullDesc(!showFullDesc)}
-                  className="mt-3 text-xs text-green-500 hover:text-green-400 transition-colors font-semibold"
-                >
-                  {showFullDesc ? readLessLabel : readMoreLabel}
-                </button>
-              )}
-            </div>
+            <Section title={`${aboutLabel}${lang === 'tr' && !team.strDescriptionTR ? ' (EN)' : ''}`}>
+              <div className="p-5">
+                <p className="text-sm text-[#666666] leading-relaxed">{showFullDesc ? description : shortDesc}</p>
+                {description.length > 400 && (
+                  <button
+                    onClick={() => setShowFullDesc(!showFullDesc)}
+                    className="mt-3 text-xs text-[#8B1E1E] hover:text-[#6F1717] transition-colors font-semibold"
+                  >
+                    {showFullDesc ? readLessLabel : readMoreLabel}
+                  </button>
+                )}
+              </div>
+            </Section>
           )}
 
-          {/* Players */}
           {players.length > 0 && (
-            <div
-              className="rounded-[20px] overflow-hidden"
-              style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
-            >
-              <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">
-                  {squadLabel} · {players.length} {playerLabel}
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-0">
+            <Section title={`${squadLabel} · ${players.length} ${playerLabel}`}>
+              <div className="grid grid-cols-2 sm:grid-cols-3">
                 {players.map((p) => (
-                  <div
-                    key={p.idPlayer}
-                    className="flex items-center gap-3 px-4 py-3"
-                    style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-                  >
-                    <div
-                      className="size-9 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-                      style={{ background: 'rgba(255,255,255,0.06)' }}
-                    >
+                  <div key={p.idPlayer} className="flex items-center gap-2.5 px-4 py-3 border-b border-[#F2EFE9]">
+                    <div className="size-9 rounded-lg overflow-hidden shrink-0 bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center">
                       {p.strThumb ? (
                         <img src={p.strThumb} alt={p.strPlayer} className="size-full object-cover" loading="lazy" />
                       ) : (
-                        <span className="text-xs font-bold text-slate-400">{p.strPlayer[0]}</span>
+                        <span className="text-xs font-bold text-[#666666]">{p.strPlayer[0]}</span>
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{p.strPlayer}</p>
-                      <p className="text-[10px] text-slate-600 truncate">
-                        {translatePosition(p.strPosition, lang) ?? '—'}
-                      </p>
+                      <p className="text-xs font-semibold text-[#111111] truncate">{p.strPlayer}</p>
+                      <p className="text-[10px] text-[#999390] truncate">{translatePosition(p.strPosition, lang) ?? '—'}</p>
                     </div>
                     {p.strNumber && (
-                      <span className="ml-auto font-score text-sm text-slate-600 shrink-0">{p.strNumber}</span>
+                      <span className="ml-auto font-display text-sm text-[#999390] shrink-0">{p.strNumber}</span>
                     )}
                   </div>
                 ))}
               </div>
-            </div>
+            </Section>
           )}
         </div>
 
-        {/* Right column */}
         <div className="space-y-6">
-
-          {/* Upcoming matches */}
-          <div
-            className="rounded-[20px] overflow-hidden"
-            style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">{upcomingLabel}</h2>
-            </div>
+          <Section title={upcomingLabel}>
             {nextEvents.length === 0 ? (
-              <p className="px-5 py-8 text-sm text-slate-600 text-center">{noUpcomingLabel}</p>
+              <p className="px-5 py-8 text-sm text-[#999390] text-center">{noUpcomingLabel}</p>
             ) : (
               <div>
                 {nextEvents.slice(0, 5).map((e) => (
@@ -385,18 +321,11 @@ export default function TeamPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Section>
 
-          {/* Last results */}
-          <div
-            className="rounded-[20px] overflow-hidden"
-            style={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.08)' }}
-          >
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="font-heading font-bold text-xs text-slate-500 uppercase tracking-widest">{lastResultsLabel}</h2>
-            </div>
+          <Section title={lastResultsLabel}>
             {lastEvents.length === 0 ? (
-              <p className="px-5 py-8 text-sm text-slate-600 text-center">{noResultsLabel}</p>
+              <p className="px-5 py-8 text-sm text-[#999390] text-center">{noResultsLabel}</p>
             ) : (
               <div>
                 {lastEvents.slice(0, 5).map((e) => (
@@ -404,7 +333,7 @@ export default function TeamPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Section>
         </div>
       </div>
     </div>

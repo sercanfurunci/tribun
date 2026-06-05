@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { footballApi, Standing } from '../services/football';
-import { Card, CardBody, CardHeader } from '../components/ui/Card';
 import { Spinner } from '../components/ui/Spinner';
 import { useT } from '../store/language';
 import type { TranslationKey } from '../i18n/translations';
@@ -18,13 +17,13 @@ const TOURNAMENTS = [
 ];
 
 function FormBadge({ result }: { result: string }) {
-  const colors: Record<string, string> = {
-    W: 'bg-green-500/20 text-green-400',
-    D: 'bg-slate-600 text-slate-300',
-    L: 'bg-red-500/20 text-red-400',
+  const cls: Record<string, string> = {
+    W: 'bg-[#DCFCE7] text-[#166534]',
+    D: 'bg-[#F2EFE9] text-[#666666]',
+    L: 'bg-[#FEF2F2] text-[#C1121F]',
   };
   return (
-    <span className={`inline-flex items-center justify-center size-5 rounded text-xs font-bold ${colors[result] || 'bg-slate-700 text-slate-400'}`}>
+    <span className={`inline-flex items-center justify-center size-5 rounded text-[10px] font-bold ${cls[result] ?? 'bg-[#F2EFE9] text-[#999390]'}`}>
       {result}
     </span>
   );
@@ -35,42 +34,42 @@ function StandingsGroup({ standings, t }: { standings: Standing[]; t: (key: Tran
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700/50 text-xs text-slate-500">
-            <th className="text-left py-2 px-3 w-8">#</th>
-            <th className="text-left py-2 px-3">{t('standings.col.team')}</th>
-            <th className="text-center py-2 px-2">{t('standings.col.played')}</th>
-            <th className="text-center py-2 px-2">{t('standings.col.wins')}</th>
-            <th className="text-center py-2 px-2">{t('standings.col.draws')}</th>
-            <th className="text-center py-2 px-2">{t('standings.col.losses')}</th>
-            <th className="text-center py-2 px-2">{t('standings.col.gd')}</th>
-            <th className="text-center py-2 px-2 font-bold">{t('standings.col.pts')}</th>
-            <th className="text-center py-2 px-3 hidden sm:table-cell">{t('standings.col.form')}</th>
+          <tr className="border-b border-[#E8E4DE] text-xs text-[#999390]">
+            <th className="text-left py-2.5 px-4 w-8">#</th>
+            <th className="text-left py-2.5 px-4">{t('standings.col.team')}</th>
+            <th className="text-center py-2.5 px-2">{t('standings.col.played')}</th>
+            <th className="text-center py-2.5 px-2">{t('standings.col.wins')}</th>
+            <th className="text-center py-2.5 px-2">{t('standings.col.draws')}</th>
+            <th className="text-center py-2.5 px-2">{t('standings.col.losses')}</th>
+            <th className="text-center py-2.5 px-2">{t('standings.col.gd')}</th>
+            <th className="text-center py-2.5 px-2 font-bold">{t('standings.col.pts')}</th>
+            <th className="text-center py-2.5 px-4 hidden sm:table-cell">{t('standings.col.form')}</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-800/50">
+        <tbody className="divide-y divide-[#F2EFE9]">
           {standings.map((s) => (
-            <tr key={s.team.id} className="hover:bg-slate-800/30 transition-colors">
-              <td className="py-2.5 px-3 text-slate-500">{s.rank}</td>
-              <td className="py-2.5 px-3">
+            <tr key={s.team.id} className="hover:bg-[#FAFAFA] transition-colors">
+              <td className="py-2.5 px-4 text-[#999390] font-heading font-bold text-xs">{s.rank}</td>
+              <td className="py-2.5 px-4">
                 <div className="flex items-center gap-2.5">
                   <img src={s.team.logo} alt={s.team.name} className="size-5 object-contain" />
-                  <span className="font-medium text-white truncate max-w-[120px] sm:max-w-none">{s.team.name}</span>
+                  <span className="font-medium text-[#111111] truncate max-w-[120px] sm:max-w-none">{s.team.name}</span>
                   {s.description && (
-                    <span className="hidden md:inline text-xs text-green-400 bg-green-500/10 px-1.5 py-0.5 rounded">
+                    <span className="hidden md:inline text-[10px] text-[#8B1E1E] bg-[#FEF2F2] border border-[#FECACA] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
                       {s.description}
                     </span>
                   )}
                 </div>
               </td>
-              <td className="py-2.5 px-2 text-center text-slate-400">{s.all.played}</td>
-              <td className="py-2.5 px-2 text-center text-green-400">{s.all.win}</td>
-              <td className="py-2.5 px-2 text-center text-slate-400">{s.all.draw}</td>
-              <td className="py-2.5 px-2 text-center text-red-400">{s.all.lose}</td>
-              <td className={`py-2.5 px-2 text-center ${s.goalsDiff > 0 ? 'text-green-400' : s.goalsDiff < 0 ? 'text-red-400' : 'text-slate-400'}`}>
+              <td className="py-2.5 px-2 text-center text-[#666666]">{s.all.played}</td>
+              <td className="py-2.5 px-2 text-center text-[#166534] font-semibold">{s.all.win}</td>
+              <td className="py-2.5 px-2 text-center text-[#666666]">{s.all.draw}</td>
+              <td className="py-2.5 px-2 text-center text-[#C1121F]">{s.all.lose}</td>
+              <td className={`py-2.5 px-2 text-center font-semibold ${s.goalsDiff > 0 ? 'text-[#166534]' : s.goalsDiff < 0 ? 'text-[#C1121F]' : 'text-[#666666]'}`}>
                 {s.goalsDiff > 0 ? '+' : ''}{s.goalsDiff}
               </td>
-              <td className="py-2.5 px-2 text-center font-bold text-white">{s.points}</td>
-              <td className="py-2.5 px-3 hidden sm:table-cell">
+              <td className="py-2.5 px-2 text-center font-display text-base text-[#111111]">{s.points}</td>
+              <td className="py-2.5 px-4 hidden sm:table-cell">
                 <div className="flex gap-0.5 justify-center">
                   {s.form?.split('').map((r, i) => <FormBadge key={i} result={r} />)}
                 </div>
@@ -96,10 +95,10 @@ export default function StandingsPage() {
   const standingsGroups = data?.data.standings ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-up">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1">{t('standings.title')}</h1>
-        <p className="text-slate-400 text-sm">{t('standings.subtitle')}</p>
+        <h1 className="font-heading font-black text-3xl sm:text-4xl text-[#111111] mb-1">{t('standings.title')}</h1>
+        <p className="text-[#666666] text-sm">{t('standings.subtitle')}</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -107,10 +106,10 @@ export default function StandingsPage() {
           <button
             key={tournament.leagueId}
             onClick={() => setSelected(tournament)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+            className={`px-3 py-1.5 rounded text-sm font-medium transition-colors duration-150 border ${
               selected.leagueId === tournament.leagueId
-                ? 'bg-green-600 text-white'
-                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                ? 'bg-[#8B1E1E] text-white border-[#8B1E1E]'
+                : 'bg-white text-[#666666] border-[#D9D4CC] hover:border-[#B8B2AA] hover:text-[#111111]'
             }`}
           >
             {tournament.name}
@@ -121,28 +120,24 @@ export default function StandingsPage() {
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : error ? (
-        <Card>
-          <CardBody className="text-center py-8 text-slate-500">
-            {t('standings.error')}
-          </CardBody>
-        </Card>
+        <div className="bg-white border border-[#D9D4CC] rounded-lg px-6 py-8 text-center text-[#999390] text-sm">
+          {t('standings.error')}
+        </div>
       ) : standingsGroups.length === 0 ? (
-        <Card>
-          <CardBody className="text-center py-8 text-slate-500">
-            {t('standings.empty')}
-          </CardBody>
-        </Card>
+        <div className="bg-white border border-[#D9D4CC] rounded-lg px-6 py-8 text-center text-[#999390] text-sm">
+          {t('standings.empty')}
+        </div>
       ) : (
         <div className="space-y-4">
           {standingsGroups.map((group, i) => (
-            <Card key={i}>
+            <div key={i} className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
               {standingsGroups.length > 1 && (
-                <CardHeader>
-                  <h2 className="font-semibold text-white text-sm">{group[0]?.group}</h2>
-                </CardHeader>
+                <div className="px-4 py-3 border-b border-[#E8E4DE]">
+                  <h2 className="font-heading font-black text-sm text-[#111111]">{group[0]?.group}</h2>
+                </div>
               )}
               <StandingsGroup standings={group} t={t} />
-            </Card>
+            </div>
           ))}
         </div>
       )}

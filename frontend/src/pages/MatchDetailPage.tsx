@@ -15,11 +15,11 @@ import { Icon, type IconName } from '../components/ui/Icon';
 import { formatMatchDay, formatTeamName } from '../lib/matchDisplay';
 import type { TranslationKey } from '../i18n/translations';
 
-const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'blue' | 'live' | 'slate' | 'yellow' }> = {
-  scheduled: { labelKey: 'matchDetail.upcoming', variant: 'blue' },
-  live: { labelKey: 'matchDetail.live', variant: 'live' },
-  finished: { labelKey: 'match.ftBadge', variant: 'slate' },
-  postponed: { labelKey: 'matchDetail.postponed', variant: 'yellow' },
+const STATUS_CONFIG: Record<string, { labelKey: TranslationKey; variant: 'pending' | 'live' | 'default' | 'gold' }> = {
+  scheduled: { labelKey: 'matchDetail.upcoming', variant: 'pending' },
+  live:      { labelKey: 'matchDetail.live',     variant: 'live'    },
+  finished:  { labelKey: 'match.ftBadge',        variant: 'default' },
+  postponed: { labelKey: 'matchDetail.postponed', variant: 'gold'   },
 };
 
 const EVENT_ICONS: Record<string, IconName> = {
@@ -28,6 +28,17 @@ const EVENT_ICONS: Record<string, IconName> = {
   Var: 'video',
 };
 
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white border border-[#D9D4CC] rounded-lg overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-[#E8E4DE]">
+        <h2 className="text-sm font-heading font-black text-[#111111]">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string }) {
   const isHome = event.team.name === homeName;
   const iconName: IconName = event.type === 'Card'
@@ -35,16 +46,13 @@ function MatchEvent({ event, homeName }: { event: FixtureEvent; homeName: string
     : EVENT_ICONS[event.type] ?? 'check';
 
   return (
-    <div
-      className={`flex items-center gap-3 px-5 py-3 ${isHome ? 'flex-row' : 'flex-row-reverse'}`}
-      style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-    >
-      <span className="text-xs text-slate-600 w-8 text-center shrink-0 font-score">{event.time.elapsed}'</span>
-      <span className="shrink-0 text-slate-300"><Icon name={iconName} size={16} /></span>
+    <div className={`flex items-center gap-3 px-5 py-3 border-b border-[#F2EFE9] ${isHome ? 'flex-row' : 'flex-row-reverse'}`}>
+      <span className="text-xs text-[#999390] w-8 text-center shrink-0 font-display">{event.time.elapsed}'</span>
+      <span className="shrink-0 text-[#666666]"><Icon name={iconName} size={16} /></span>
       <div className={`flex-1 min-w-0 ${isHome ? 'text-left' : 'text-right'}`}>
-        <span className="text-sm text-white">{event.player.name}</span>
-        {event.assist.name && <span className="text-xs text-slate-500 ml-1">({event.assist.name})</span>}
-        <span className="text-xs text-slate-600 ml-1">{event.detail}</span>
+        <span className="text-sm text-[#111111]">{event.player.name}</span>
+        {event.assist.name && <span className="text-xs text-[#999390] ml-1">({event.assist.name})</span>}
+        <span className="text-xs text-[#999390] ml-1">{event.detail}</span>
       </div>
     </div>
   );
@@ -113,18 +121,15 @@ export default function MatchDetailPage() {
     refetchInterval: match?.status === 'live' ? 60000 : false,
   });
 
-  const homeTeamExternalId = match?.home_team_external_id;
-  const awayTeamExternalId = match?.away_team_external_id;
-
   const { data: h2hData } = useQuery({
-    queryKey: ['h2h', homeTeamExternalId, awayTeamExternalId],
-    queryFn: () => footballApi.getH2H(homeTeamExternalId!, awayTeamExternalId!, 5),
-    enabled: !!homeTeamExternalId && !!awayTeamExternalId,
+    queryKey: ['h2h', match?.home_team_external_id, match?.away_team_external_id],
+    queryFn: () => footballApi.getH2H(match!.home_team_external_id!, match!.away_team_external_id!, 5),
+    enabled: !!match?.home_team_external_id && !!match?.away_team_external_id,
     staleTime: 1000 * 60 * 60,
   });
 
   if (isLoading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
-  if (!match) return <div className="text-center text-slate-400 py-20 text-sm">{t('matchDetail.notFound')}</div>;
+  if (!match) return <div className="text-center text-[#999390] py-20 text-sm">{t('matchDetail.notFound')}</div>;
 
   const myPrediction = myPredictionsData?.data.predictions.find((p) => p.match_id === id);
   const events = eventsData?.data.events ?? [];
@@ -135,6 +140,7 @@ export default function MatchDetailPage() {
   const isLocked = match.status !== 'scheduled' || new Date(match.kickoff_time) <= new Date();
   const leagues = leaguesData?.data.leagues ?? [];
   const predictions = predictionsData?.data.predictions ?? [];
+  const hasRightPanel = !!(apiPrediction || (leagueId && predictions.length > 0 && match.status === 'finished'));
   const statusEntry = STATUS_CONFIG[match.status] ?? STATUS_CONFIG.scheduled;
   const label = t(statusEntry.labelKey);
   const variant = statusEntry.variant;
@@ -146,114 +152,82 @@ export default function MatchDetailPage() {
 
   return (
     <div className="space-y-5 animate-fade-up">
-
-      {/* Match hero card */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: isLive
-            ? 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(12,22,40,0.95) 60%)'
-            : 'linear-gradient(135deg, rgba(22,163,74,0.1) 0%, rgba(12,22,40,0.95) 60%)',
-          border: isLive ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        {/* Top meta */}
-        <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-        >
+      {/* Match hero */}
+      <div className={`bg-white border rounded-lg overflow-hidden ${isLive ? 'border-[#FECACA]' : 'border-[#D9D4CC]'}`}>
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#E8E4DE]">
           <Badge variant={variant}>{label}</Badge>
           <div className="text-right">
             {match.tournament && (
-              <p className="text-xs text-slate-600 uppercase tracking-wide">{match.tournament}</p>
+              <p className="text-xs text-[#999390] uppercase tracking-wide">{match.tournament}</p>
             )}
-            <p className="text-sm text-slate-400 mt-0.5">
+            <p className="text-sm text-[#666666] mt-0.5">
               {format(new Date(match.kickoff_time), 'EEEE, d MMMM yyyy · HH:mm', { locale: dateLocale })}
             </p>
           </div>
         </div>
 
-        {/* Teams & score */}
         <div className="px-6 py-8">
           <div className="flex items-center gap-4 sm:gap-8">
-
-            {/* Home team */}
             <Link to={`/teams/${encodeURIComponent(match.home_team)}`} className="flex-1 flex flex-col items-center gap-3 group">
-              <div
-                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-              >
+              <div className="size-16 sm:size-20 rounded-xl bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                 {match.home_team_logo
                   ? <img src={match.home_team_logo} alt={match.home_team} className="size-12 sm:size-16 object-contain" />
-                  : <span className="text-2xl font-bold text-slate-300">{match.home_team[0]}</span>
+                  : <span className="text-2xl font-bold text-[#666666]">{match.home_team[0]}</span>
                 }
               </div>
-              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base group-hover:text-green-400 transition-colors">
+              <span className="font-heading font-black text-[#111111] text-center leading-tight text-sm sm:text-base group-hover:text-[#8B1E1E] transition-colors">
                 {homeTeam}
               </span>
             </Link>
 
-            {/* Score / VS */}
             <div className="flex flex-col items-center gap-2 shrink-0">
               {showScore ? (
                 <>
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <span
-                      className="font-score text-5xl sm:text-6xl leading-none text-white"
-                      style={isLive ? { textShadow: '0 0 20px rgba(239,68,68,0.7)' } : undefined}
-                    >
+                    <span className={`font-display text-5xl sm:text-6xl leading-none ${isLive ? 'text-[#8B1E1E]' : 'text-[#111111]'}`}>
                       {match.home_score ?? 0}
                     </span>
-                    <span className="font-score text-3xl text-slate-600 leading-none">:</span>
-                    <span
-                      className="font-score text-5xl sm:text-6xl leading-none text-white"
-                      style={isLive ? { textShadow: '0 0 20px rgba(239,68,68,0.7)' } : undefined}
-                    >
+                    <span className="font-display text-3xl text-[#D9D4CC] leading-none">:</span>
+                    <span className={`font-display text-5xl sm:text-6xl leading-none ${isLive ? 'text-[#8B1E1E]' : 'text-[#111111]'}`}>
                       {match.away_score ?? 0}
                     </span>
                   </div>
                   {isLive && (
-                    <span className="text-xs font-bold text-red-400 live-indicator uppercase tracking-widest">● {t('matchDetail.live')}</span>
+                    <span className="text-xs font-bold text-[#8B1E1E] uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="live-dot" />{t('matchDetail.live')}
+                    </span>
                   )}
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <span className="font-score text-3xl text-slate-600 leading-none">{t('match.vs')}</span>
-                  <span
-                    className="text-sm font-bold tabular-nums px-3 py-1.5 rounded-xl font-score"
-                    style={{ background: 'rgba(22,163,74,0.12)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.2)' }}
-                  >
+                  <span className="font-heading font-black text-2xl text-[#D9D4CC] leading-none">{t('match.vs')}</span>
+                  <span className="text-sm font-semibold tabular-nums px-3 py-1.5 rounded bg-[#FEF2F2] border border-[#FECACA] text-[#8B1E1E] font-sans">
                     {format(new Date(match.kickoff_time), 'HH:mm', { locale: dateLocale })}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Away team */}
             <Link to={`/teams/${encodeURIComponent(match.away_team)}`} className="flex-1 flex flex-col items-center gap-3 group">
-              <div
-                className="size-16 sm:size-20 rounded-2xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
-              >
+              <div className="size-16 sm:size-20 rounded-xl bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
                 {match.away_team_logo
                   ? <img src={match.away_team_logo} alt={match.away_team} className="size-12 sm:size-16 object-contain" />
-                  : <span className="text-2xl font-bold text-slate-300">{match.away_team[0]}</span>
+                  : <span className="text-2xl font-bold text-[#666666]">{match.away_team[0]}</span>
                 }
               </div>
-              <span className="font-heading font-bold text-white text-center leading-tight text-sm sm:text-base group-hover:text-green-400 transition-colors">
+              <span className="font-heading font-black text-[#111111] text-center leading-tight text-sm sm:text-base group-hover:text-[#8B1E1E] transition-colors">
                 {awayTeam}
               </span>
             </Link>
           </div>
 
-          {/* Match meta */}
           {(match.venue || matchDay) && (
             <div className="flex items-center justify-center gap-4 mt-6 flex-wrap">
               {matchDay && (
-                <span className="text-xs text-slate-600 uppercase tracking-widest font-heading">{matchDay}</span>
+                <span className="text-xs text-[#999390] uppercase tracking-widest font-heading">{matchDay}</span>
               )}
               {match.venue && (
-                <span className="inline-flex items-center gap-1 text-xs text-slate-600">
+                <span className="inline-flex items-center gap-1 text-xs text-[#999390]">
                   <Icon name="pin" size={12} /> {match.venue}
                 </span>
               )}
@@ -261,29 +235,20 @@ export default function MatchDetailPage() {
           )}
         </div>
 
-        {/* Live bar */}
-        {isLive && <div className="h-0.5 bg-red-500/20"><div className="h-full bg-red-500 live-indicator w-3/5" /></div>}
+        {isLive && (
+          <div className="h-0.5 bg-[#E8E4DE]">
+            <div className="h-full bg-[#8B1E1E] w-3/5" />
+          </div>
+        )}
       </div>
 
-      {/* Main content: 2 columns on large screens */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-
+      {/* Main grid */}
+      <div className={`grid gap-5 ${hasRightPanel ? 'lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]' : ''}`}>
         {/* Prediction section */}
-        <div
-          className="rounded-[24px] overflow-hidden"
-          style={{
-            background: 'linear-gradient(180deg, rgba(18,30,52,0.96) 0%, rgba(12,22,40,0.98) 100%)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 10px 30px -18px rgba(0,0,0,0.55)',
-          }}
-        >
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-green-400/80 mb-1">{t('matchDetail.sectionHint')}</p>
-            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.yourPrediction')}</h2>
-          </div>
+        <Section title={t('matchDetail.yourPrediction')}>
           <div className="p-5">
             {leagues.length === 0 ? (
-              <p className="text-sm text-slate-500">{t('matchDetail.joinLeagueFirst')}</p>
+              <p className="text-sm text-[#999390]">{t('matchDetail.joinLeagueFirst')}</p>
             ) : leagueId ? (
               <PredictionForm
                 matchId={match.id}
@@ -296,14 +261,13 @@ export default function MatchDetailPage() {
               />
             ) : (
               <div>
-                <p className="text-sm text-slate-400 mb-3">{t('matchDetail.selectLeague')}</p>
+                <p className="text-sm text-[#666666] mb-3">{t('matchDetail.selectLeague')}</p>
                 <div className="flex flex-wrap gap-2">
                   {leagues.map((league) => (
                     <button
                       key={league.id}
                       onClick={() => navigate(`?leagueId=${league.id}`)}
-                      className="px-3 py-2 rounded-xl text-sm font-medium text-white transition-colors"
-                      style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      className="px-3 py-2 rounded text-sm font-medium text-[#111111] bg-white border border-[#D9D4CC] hover:border-[#B8B2AA] hover:bg-[#F7F4EF] transition-colors duration-150"
                     >
                       {league.name}
                     </button>
@@ -312,135 +276,103 @@ export default function MatchDetailPage() {
               </div>
             )}
           </div>
-        </div>
+        </Section>
 
         {/* AI prediction / League predictions */}
         {apiPrediction ? (
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.aiPrediction')}</h2>
-            </div>
+          <Section title={t('matchDetail.aiPrediction')}>
             <div className="p-5 space-y-4">
               {apiPrediction.advice && (
-                <p className="text-sm text-slate-300 italic">"{apiPrediction.advice}"</p>
+                <p className="text-sm text-[#666666] italic">"{apiPrediction.advice}"</p>
               )}
-            <div className="grid grid-cols-3 gap-3 text-center">
-              {[
-                  { label: homeTeam, value: apiPrediction.percent.home, color: 'text-blue-400' },
-                  { label: t('matchDetail.draw'), value: apiPrediction.percent.draw, color: 'text-slate-400' },
-                  { label: awayTeam, value: apiPrediction.percent.away, color: 'text-green-400' },
+              <div className="grid grid-cols-3 gap-3 text-center">
+                {[
+                  { label: homeTeam, value: apiPrediction.percent.home, color: 'text-[#1D4ED8]' },
+                  { label: t('matchDetail.draw'), value: apiPrediction.percent.draw, color: 'text-[#666666]' },
+                  { label: awayTeam, value: apiPrediction.percent.away, color: 'text-[#166534]' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="flex flex-col gap-2">
-                    <span className={`font-score text-2xl leading-none ${color}`}>{value}</span>
-                    <span className="text-xs text-slate-500 truncate">{label}</span>
-                    <div className="h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <span className={`font-display text-2xl leading-none ${color}`}>{value}</span>
+                    <span className="text-xs text-[#999390] truncate">{label}</span>
+                    <div className="h-1 rounded-full bg-[#E8E4DE]">
                       <div className={`h-full rounded-full ${color.replace('text-', 'bg-')}`} style={{ width: value }} />
                     </div>
                   </div>
                 ))}
               </div>
               {apiPrediction.winner?.name && (
-                <p className="text-xs text-slate-600 text-center">
-                  {t('matchDetail.predictedWinner')} <span className="text-slate-300 font-medium">{apiPrediction.winner.name}</span>
+                <p className="text-xs text-[#999390] text-center">
+                  {t('matchDetail.predictedWinner')} <span className="text-[#111111] font-semibold">{apiPrediction.winner.name}</span>
                 </p>
               )}
             </div>
-          </div>
+          </Section>
         ) : leagueId && predictions.length > 0 && match.status === 'finished' ? (
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-              <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.leaguePredictions')}</h2>
-            </div>
+          <Section title={t('matchDetail.leaguePredictions')}>
             <div>
               {predictions.map((pred) => (
                 <div
                   key={pred.id}
-                  className="flex items-center justify-between px-5 py-3"
-                  style={{
-                    borderBottom: '1px solid rgba(255,255,255,0.04)',
-                    background: pred.user_id === user?.id ? 'rgba(22,163,74,0.05)' : 'transparent',
-                  }}
+                  className={`flex items-center justify-between px-5 py-3 border-b border-[#F2EFE9] ${pred.user_id === user?.id ? 'bg-[#FEF2F2]' : ''}`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <div
-                      className="size-7 rounded-lg flex items-center justify-center text-xs font-bold text-white font-heading"
-                      style={{ background: 'rgba(255,255,255,0.1)' }}
-                    >
+                    <div className="size-7 rounded-lg bg-[#8B1E1E] flex items-center justify-center text-xs font-bold text-white font-heading">
                       {pred.username?.[0]?.toUpperCase()}
                     </div>
-                    <span className="text-sm text-slate-300">{pred.username}</span>
+                    <span className="text-sm text-[#111111]">{pred.username}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-white font-score">
+                    <span className="text-sm font-bold text-[#111111] font-display">
                       {pred.predicted_home_score} – {pred.predicted_away_score}
                     </span>
-                    <span className={`text-sm font-bold w-10 text-right font-score ${
-                      pred.points_awarded === 3 ? 'text-amber-400' :
-                      pred.points_awarded >= 1 ? 'text-green-400' : 'text-slate-600'
+                    <span className={`text-sm font-bold w-10 text-right font-display ${
+                      pred.points_awarded === 3 ? 'text-[#92400E]' :
+                      pred.points_awarded >= 1 ? 'text-[#166534]' : 'text-[#999390]'
                     }`}>+{pred.points_awarded}</span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </Section>
         ) : null}
       </div>
 
-      {/* Injuries & suspensions — split by team */}
+      {/* Injuries */}
       {injuries.length > 0 && (
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-        >
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.injuries')}</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/5">
+        <Section title={t('matchDetail.injuries')}>
+          <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-[#E8E4DE]">
             {[match.home_team, match.away_team].map((teamName) => {
               const list = injuries.filter((i) => i.team.name === teamName);
               return (
                 <div key={teamName} className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 font-heading mb-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#999390] font-heading mb-3">
                     {formatTeamName(teamName, lang)}
                   </p>
                   {list.length === 0 ? (
-                    <p className="text-xs text-slate-600">{t('matchDetail.noInjuries')}</p>
+                    <p className="text-xs text-[#999390]">{t('matchDetail.noInjuries')}</p>
                   ) : (
                     <ul className="space-y-2.5">
                       {list.map((inj) => {
                         const type = inj.player.type?.toLowerCase() ?? '';
                         const isSuspended = type.includes('suspend') || inj.player.reason?.toLowerCase().includes('suspen');
-                        const label = isSuspended
+                        const lbl = isSuspended
                           ? t('matchDetail.injuryType.suspended')
                           : type.includes('injur')
                             ? t('matchDetail.injuryType.injured')
                             : t('matchDetail.injuryType.missing');
                         return (
                           <li key={`${inj.player.id}-${inj.player.name}`} className="flex items-center gap-3">
-                            <span
-                              className="size-1.5 rounded-full shrink-0"
-                              style={{ background: isSuspended ? '#f59e0b' : '#ef4444' }}
-                            />
+                            <span className={`size-1.5 rounded-full shrink-0 ${isSuspended ? 'bg-[#F59E0B]' : 'bg-[#C1121F]'}`} />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-white truncate">{inj.player.name}</p>
+                              <p className="text-sm text-[#111111] truncate">{inj.player.name}</p>
                               {inj.player.reason && (
-                                <p className="text-[11px] text-slate-600 truncate">{inj.player.reason}</p>
+                                <p className="text-[11px] text-[#999390] truncate">{inj.player.reason}</p>
                               )}
                             </div>
-                            <span
-                              className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0"
-                              style={{
-                                color: isSuspended ? '#fbbf24' : '#fca5a5',
-                                background: isSuspended ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
-                              }}
-                            >
-                              {label}
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
+                              isSuspended ? 'bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]' : 'bg-[#FEF2F2] text-[#C1121F] border border-[#FECACA]'
+                            }`}>
+                              {lbl}
                             </span>
                           </li>
                         );
@@ -451,20 +383,14 @@ export default function MatchDetailPage() {
               );
             })}
           </div>
-        </div>
+        </Section>
       )}
 
-      {/* Match Statistics */}
+      {/* Statistics */}
       {(match.status === 'live' || match.status === 'finished') && (
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-        >
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.statistics')}</h2>
-          </div>
+        <Section title={t('matchDetail.statistics')}>
           {statistics.length === 0 ? (
-            <p className="px-5 py-8 text-sm text-slate-600 text-center">{t('matchDetail.noStats')}</p>
+            <p className="px-5 py-8 text-sm text-[#999390] text-center">{t('matchDetail.noStats')}</p>
           ) : (
             <div className="p-5 space-y-3">
               {statistics[0]?.statistics
@@ -478,108 +404,83 @@ export default function MatchDetailPage() {
                     ? parseFloat(awayVal) : Number(awayVal ?? 0);
                   const total = homeNum + awayNum || 1;
                   const homeWidth = Math.round((homeNum / total) * 100);
-                  const awayWidth = 100 - homeWidth;
 
                   return (
                     <div key={stat.type}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-semibold text-white tabular-nums">{homeVal ?? 0}</span>
-                        <span className="text-[10px] text-slate-500 uppercase tracking-wider font-heading text-center flex-1 px-3">
+                        <span className="text-sm font-semibold text-[#111111] tabular-nums">{homeVal ?? 0}</span>
+                        <span className="text-[10px] text-[#999390] uppercase tracking-wider font-heading text-center flex-1 px-3">
                           {stat.type}
                         </span>
-                        <span className="text-sm font-semibold text-white tabular-nums">{awayVal ?? 0}</span>
+                        <span className="text-sm font-semibold text-[#111111] tabular-nums">{awayVal ?? 0}</span>
                       </div>
-                      <div className="flex rounded-full overflow-hidden h-1.5" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${homeWidth}%`, background: '#22c55e', transition: 'width 0.4s ease' }}
-                        />
-                        <div
-                          className="h-full rounded-full ml-auto"
-                          style={{ width: `${awayWidth}%`, background: '#3b82f6', transition: 'width 0.4s ease' }}
-                        />
+                      <div className="flex rounded-full overflow-hidden h-1.5 bg-[#E8E4DE]">
+                        <div className="h-full rounded-full bg-[#8B1E1E]" style={{ width: `${homeWidth}%`, transition: 'width 0.4s ease' }} />
+                        <div className="h-full rounded-full bg-[#1D4ED8] ml-auto" style={{ width: `${100 - homeWidth}%`, transition: 'width 0.4s ease' }} />
                       </div>
                     </div>
                   );
                 })}
               <div className="flex items-center justify-between pt-2">
-                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-                  <span className="size-2 rounded-full bg-green-500 inline-block" /> {homeTeam}
+                <span className="inline-flex items-center gap-1.5 text-xs text-[#999390]">
+                  <span className="size-2 rounded-full bg-[#8B1E1E] inline-block" /> {homeTeam}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
-                  {awayTeam} <span className="size-2 rounded-full bg-blue-500 inline-block" />
+                <span className="inline-flex items-center gap-1.5 text-xs text-[#999390]">
+                  {awayTeam} <span className="size-2 rounded-full bg-[#1D4ED8] inline-block" />
                 </span>
               </div>
             </div>
           )}
-        </div>
+        </Section>
       )}
 
       {/* H2H */}
       {h2hFixtures.length > 0 && (
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-        >
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.h2h')}</h2>
-            <p className="text-xs text-slate-600 mt-0.5">{t('matchDetail.h2hLast')}</p>
-          </div>
+        <Section title={t('matchDetail.h2h')}>
           <div>
             {h2hFixtures.slice(0, 5).map((fixture) => {
               const hWin = fixture.teams.home.winner === true;
               const aWin = fixture.teams.away.winner === true;
-              const isDraw = fixture.teams.home.winner === false && fixture.teams.away.winner === false;
+              const isDraw = !hWin && !aWin;
               return (
-                <div
-                  key={fixture.fixture.id}
-                  className="flex items-center gap-3 px-5 py-3"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-                >
-                  <span className="text-[11px] text-slate-600 w-20 shrink-0">
+                <div key={fixture.fixture.id} className="flex items-center gap-3 px-5 py-3 border-b border-[#F2EFE9]">
+                  <span className="text-[11px] text-[#999390] w-20 shrink-0">
                     {fixture.fixture.date ? format(new Date(fixture.fixture.date), 'dd MMM yy', { locale: dateLocale }) : ''}
                   </span>
                   <div className="flex-1 flex items-center gap-2 min-w-0">
-                    <span className={`text-xs truncate text-right flex-1 ${hWin ? 'text-white font-semibold' : 'text-slate-500'}`}>
+                    <span className={`text-xs truncate text-right flex-1 ${hWin ? 'text-[#111111] font-semibold' : 'text-[#999390]'}`}>
                       {fixture.teams.home.name}
                     </span>
-                    <span
-                      className="font-score text-base text-white shrink-0 px-2 py-0.5 rounded-lg"
-                      style={{
-                        background: isDraw ? 'rgba(255,255,255,0.06)' : hWin ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.10)',
-                      }}
-                    >
+                    <span className={`font-display text-base text-[#111111] shrink-0 px-2 py-0.5 rounded border ${
+                      isDraw ? 'bg-[#F7F4EF] border-[#E8E4DE]' :
+                      hWin   ? 'bg-[#DCFCE7] border-[#86EFAC]' :
+                               'bg-[#FEF2F2] border-[#FECACA]'
+                    }`}>
                       {fixture.goals.home ?? 0} – {fixture.goals.away ?? 0}
                     </span>
-                    <span className={`text-xs truncate flex-1 ${aWin ? 'text-white font-semibold' : 'text-slate-500'}`}>
+                    <span className={`text-xs truncate flex-1 ${aWin ? 'text-[#111111] font-semibold' : 'text-[#999390]'}`}>
                       {fixture.teams.away.name}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-700 shrink-0 w-16 text-right truncate">
+                  <span className="text-[10px] text-[#D9D4CC] shrink-0 w-16 text-right truncate">
                     {fixture.league.name}
                   </span>
                 </div>
               );
             })}
           </div>
-        </div>
+        </Section>
       )}
 
-      {/* Match events */}
+      {/* Events */}
       {events.length > 0 && (
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'rgba(12,22,40,0.8)', border: '1px solid rgba(255,255,255,0.07)' }}
-        >
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-            <h2 className="text-sm font-bold text-white font-heading">{t('matchDetail.matchEvents')}</h2>
-          </div>
+        <Section title={t('matchDetail.matchEvents')}>
           <div>
             {events.map((event: FixtureEvent, i: number) => (
               <MatchEvent key={i} event={event} homeName={match.home_team} />
             ))}
           </div>
-        </div>
+        </Section>
       )}
     </div>
   );

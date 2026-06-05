@@ -49,17 +49,15 @@ export default function LeaguesPage() {
 
   return (
     <div className="space-y-6 animate-fade-up">
-
-      {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1 font-heading">{t('leagues.eyebrow')}</p>
-          <h1 className="font-heading font-bold text-3xl sm:text-4xl text-white">{t('leagues.title')}</h1>
-          <p className="text-slate-500 text-sm mt-1">{t('leagues.subtitle')}</p>
+          <p className="text-[11px] font-bold text-[#999390] uppercase tracking-[0.28em] mb-1 font-heading">
+            {t('leagues.eyebrow')}
+          </p>
+          <h1 className="font-heading font-black text-3xl sm:text-4xl text-[#111111]">{t('leagues.title')}</h1>
+          <p className="text-[#666666] text-sm mt-1">{t('leagues.subtitle')}</p>
         </div>
-        <div
-          className="flex flex-wrap gap-2 rounded-[20px] border border-white/8 bg-[#0B1220] p-2 shadow-[0_10px_28px_-20px_rgba(0,0,0,0.7)]"
-        >
+        <div className="flex flex-wrap gap-2">
           <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>
             {t('leagues.joinWithCode')}
           </Button>
@@ -69,23 +67,16 @@ export default function LeaguesPage() {
         </div>
       </div>
 
-      {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-20"><Spinner size="lg" /></div>
       ) : leagues.length === 0 ? (
-        <div
-          className="rounded-2xl p-14 flex flex-col items-center gap-5 text-center"
-          style={{ background: 'rgba(12,22,40,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}
-        >
-          <div
-            className="size-16 rounded-2xl flex items-center justify-center text-slate-400"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            <Icon name="medal" size={28} />
+        <div className="bg-white border border-[#D9D4CC] rounded-lg p-14 flex flex-col items-center gap-5 text-center">
+          <div className="size-14 rounded-lg bg-[#F2EFE9] border border-[#E8E4DE] flex items-center justify-center text-[#999390]">
+            <Icon name="medal" size={26} />
           </div>
           <div>
-            <p className="font-heading font-bold text-white mb-1">{t('leagues.empty.title')}</p>
-            <p className="text-slate-600 text-sm">{t('leagues.empty.subtitle')}</p>
+            <p className="font-heading font-black text-[#111111] mb-1">{t('leagues.empty.title')}</p>
+            <p className="text-[#666666] text-sm">{t('leagues.empty.subtitle')}</p>
           </div>
           <div className="flex gap-2 mt-1">
             <Button variant="secondary" size="sm" onClick={() => setShowJoin(true)}>{t('leagues.joinWithCode')}</Button>
@@ -93,12 +84,11 @@ export default function LeaguesPage() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {leagues.map((league) => <LeagueCard key={league.id} league={league} />)}
         </div>
       )}
 
-      {/* Create modal */}
       <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title={t('leagues.createModal.title')} size="lg">
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
@@ -112,8 +102,9 @@ export default function LeaguesPage() {
             maxLength={100}
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest font-heading">
-              {t('leagues.field.description')} <span className="text-slate-700 normal-case tracking-normal font-normal">{t('leagues.field.optional')}</span>
+            <label className="text-[11px] font-semibold text-[#666666] uppercase tracking-[0.08em] font-sans">
+              {t('leagues.field.description')}{' '}
+              <span className="text-[#999390] normal-case tracking-normal font-normal">{t('leagues.field.optional')}</span>
             </label>
             <textarea
               value={newLeague.description}
@@ -121,7 +112,7 @@ export default function LeaguesPage() {
               placeholder={t('leagues.field.description')}
               maxLength={500}
               rows={3}
-              className="w-full rounded-xl border border-white/8 bg-white/4 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/40 resize-none transition-all"
+              className="w-full rounded px-4 py-3 text-sm text-[#111111] bg-white border border-[#D9D4CC] hover:border-[#B8B2AA] focus:border-[#111111] focus:outline-none placeholder:text-[#999390] resize-none transition-[border-color] duration-150"
             />
           </div>
           <div className="flex gap-2 pt-1">
@@ -131,7 +122,6 @@ export default function LeaguesPage() {
         </form>
       </Modal>
 
-      {/* Join modal */}
       <Modal isOpen={showJoin} onClose={() => setShowJoin(false)} title={t('leagues.joinModal.title')} size="lg">
         <form onSubmit={(e) => { e.preventDefault(); joinMutation.mutate(); }} className="flex flex-col gap-4">
           <Input
