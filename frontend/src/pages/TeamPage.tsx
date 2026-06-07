@@ -2,6 +2,9 @@ import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+
+// TheSportsDB strTimestamp has no timezone suffix — force UTC interpretation
+const parseTS = (ts: string) => new Date(/[Z+]/.test(ts) ? ts : ts.replace(' ', 'T') + 'Z');
 import type { Locale } from 'date-fns';
 import { enUS, tr as trLocale } from 'date-fns/locale';
 import { teamApi, SportsDBTeamEvent } from '../services/team';
@@ -126,11 +129,11 @@ function EventRow({ event, teamId, dateLocale, lang }: {
           <div>
             <p className="text-xs text-[#666666] font-semibold">
               {event.dateEvent
-                ? format(new Date(event.strTimestamp || event.dateEvent), 'dd MMM', { locale: dateLocale })
+                ? format(parseTS(event.strTimestamp || event.dateEvent), 'dd MMM', { locale: dateLocale })
                 : '—'}
             </p>
             <p className="text-[10px] text-[#999390]">
-              {event.strTimestamp ? format(new Date(event.strTimestamp), 'HH:mm', { locale: dateLocale }) : ''}
+              {event.strTimestamp ? format(parseTS(event.strTimestamp), 'HH:mm', { locale: dateLocale }) : ''}
             </p>
           </div>
         )}
