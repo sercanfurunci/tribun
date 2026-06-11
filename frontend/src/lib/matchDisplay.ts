@@ -160,6 +160,12 @@ export function formatTeamName(name: string | undefined | null, lang: Lang): str
   return name;
 }
 
+export function formatGroupName(group: string | undefined, lang: Lang): string {
+  if (!group) return '';
+  const letter = group.replace(/^group\s+/i, '');
+  return lang === 'tr' ? `${letter} Grubu` : `Group ${letter}`;
+}
+
 export function formatMatchDay(matchDay: string | undefined, lang: Lang) {
   if (!matchDay) return '';
 

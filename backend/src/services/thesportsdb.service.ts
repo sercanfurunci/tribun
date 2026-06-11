@@ -18,6 +18,7 @@ interface SportsDBEvent {
   strVenue: string | null;
   strPostponed: string;
   strStatus: string;
+  strGroup: string | null;
 }
 
 export interface SportsDBTeam {
@@ -120,6 +121,13 @@ export class TheSportsDBService {
   async getSeasonEvents(leagueId: string, season: string): Promise<SportsDBEvent[]> {
     const res = await client.get<{ events: SportsDBEvent[] | null }>(
       `/eventsseason.php?id=${leagueId}&s=${season}`
+    );
+    return res.data.events ?? [];
+  }
+
+  async getRoundEvents(leagueId: string, round: number, season: string): Promise<SportsDBEvent[]> {
+    const res = await client.get<{ events: SportsDBEvent[] | null }>(
+      `/eventsround.php?id=${leagueId}&r=${round}&s=${season}`
     );
     return res.data.events ?? [];
   }

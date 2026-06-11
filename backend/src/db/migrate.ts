@@ -76,6 +76,7 @@ const schema = `
 
   ALTER TABLE matches ADD COLUMN IF NOT EXISTS home_team_external_id INTEGER;
   ALTER TABLE matches ADD COLUMN IF NOT EXISTS away_team_external_id INTEGER;
+  ALTER TABLE matches ADD COLUMN IF NOT EXISTS group_name VARCHAR(20);
 `;
 
 async function migrate() {

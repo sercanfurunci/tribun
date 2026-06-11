@@ -30,6 +30,15 @@ export async function getLive(_req: Request, res: Response): Promise<void> {
   }
 }
 
+export async function getStandings(_req: Request, res: Response): Promise<void> {
+  try {
+    const standings = await matchService.getStandings();
+    res.json({ standings });
+  } catch {
+    res.status(500).json({ error: 'Failed to compute standings' });
+  }
+}
+
 export async function getMatchById(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;

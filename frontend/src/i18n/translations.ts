@@ -15,6 +15,7 @@ export const translations = {
     // Dashboard
     'dashboard.eyebrow': 'Dashboard',
     'dashboard.welcome': 'Welcome back,',
+    'dashboard.welcomeNew': 'Welcome,',
     'dashboard.subtitle': 'Track your predictions and climb the leaderboard.',
     'dashboard.yourStats': 'Your Stats',
     'dashboard.fullProfile': 'Full profile',
@@ -25,6 +26,7 @@ export const translations = {
     'dashboard.noLeagues': 'No leagues yet',
     'dashboard.createOrJoin': 'Create or join a league',
     'dashboard.nextUp': 'Next up',
+    'leagueDetail.myRank': 'My Rank',
     'dashboard.kickoffIn': 'Kicks off',
     'dashboard.predictCta': 'Make a Prediction',
     'dashboard.inviteTitle': 'Invite Friends',
@@ -99,7 +101,7 @@ export const translations = {
 
     // Auth
     'auth.login.eyebrow': 'Sign In',
-    'auth.login.title': 'Welcome back',
+    'auth.login.title': 'Welcome',
     'auth.login.subtitle': 'Continue your prediction streak.',
     'auth.login.highlight.1': 'Fast sign-in and instant access.',
     'auth.login.highlight.2': 'Keep your prediction streak alive.',
@@ -122,6 +124,7 @@ export const translations = {
     'auth.createNew': 'Create a new account',
     'auth.signInInstead': 'Sign in instead',
     'auth.welcomeBack': 'Welcome back, {name}!',
+    'auth.welcome': 'Welcome, {name}!',
     'auth.welcomeToTribun': 'Welcome to Tribün!',
     'auth.invalidCredentials': 'Invalid email or password',
     'auth.registerFailed': 'Registration failed. Try a different username or email.',
@@ -248,6 +251,7 @@ export const translations = {
     // Dashboard
     'dashboard.eyebrow': 'Panel',
     'dashboard.welcome': 'Tekrar hoş geldin,',
+    'dashboard.welcomeNew': 'Hoş geldin,',
     'dashboard.subtitle': 'Tahminlerini takip et, lider tablosunda yüksel.',
     'dashboard.yourStats': 'İstatistiklerin',
     'dashboard.fullProfile': 'Tüm profil',
@@ -258,6 +262,7 @@ export const translations = {
     'dashboard.noLeagues': 'Henüz lig yok',
     'dashboard.createOrJoin': 'Lig oluştur veya katıl',
     'dashboard.nextUp': 'Sırada',
+    'leagueDetail.myRank': 'Sıralamam',
     'dashboard.kickoffIn': 'Başlangıç',
     'dashboard.predictCta': 'Tahmin Yap',
     'dashboard.inviteTitle': 'Arkadaşlarını Davet Et',
@@ -332,7 +337,7 @@ export const translations = {
 
     // Auth
     'auth.login.eyebrow': 'Giriş',
-    'auth.login.title': 'Tekrar hoş geldin',
+    'auth.login.title': 'Hoş geldin',
     'auth.login.subtitle': 'Tahmin serine devam et.',
     'auth.login.highlight.1': 'Hızlı giriş ve anında erişim.',
     'auth.login.highlight.2': 'Tahmin serini canlı tut.',
@@ -355,6 +360,7 @@ export const translations = {
     'auth.createNew': 'Yeni hesap oluştur',
     'auth.signInInstead': 'Giriş yap',
     'auth.welcomeBack': 'Tekrar hoş geldin, {name}!',
+    'auth.welcome': 'Hoş geldin, {name}!',
     'auth.welcomeToTribun': 'Tribün\'e hoş geldin!',
     'auth.invalidCredentials': 'Geçersiz e-posta veya şifre',
     'auth.registerFailed': 'Kayıt başarısız. Farklı kullanıcı adı veya e-posta dene.',

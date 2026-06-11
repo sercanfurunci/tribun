@@ -9,6 +9,7 @@ import { predictionsApi } from '../services/predictions';
 import { LeaderboardTable } from '../components/features/LeaderboardTable';
 import { MatchCard } from '../components/features/MatchCard';
 import { Badge } from '../components/ui/Badge';
+import { StatCard } from '../components/ui/StatCard';
 import { Spinner } from '../components/ui/Spinner';
 import Button from '../components/ui/Button';
 import { useAuthStore } from '../store/auth';
@@ -124,16 +125,9 @@ export default function LeagueDetailPage() {
 
       {myPosition && (
         <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: t('leaderboard.col.rank'), value: `#${myPosition.position}` },
-            { label: t('stats.totalPoints'), value: myPosition.total_points },
-            { label: t('stats.exactScores'), value: myPosition.exact_scores },
-          ].map(({ label, value }) => (
-            <div key={label} className="bg-white border border-[#D9D4CC] rounded-lg px-4 py-3 text-center">
-              <div className="font-display text-2xl text-[#111111]">{value}</div>
-              <div className="text-[10px] text-[#999390] uppercase tracking-widest mt-0.5 font-heading">{label}</div>
-            </div>
-          ))}
+          <StatCard label={t('leagueDetail.myRank')} value={myPosition.position} prefix="#" />
+          <StatCard label={t('stats.totalPoints')} value={myPosition.total_points} />
+          <StatCard label={t('stats.exactScores')} value={myPosition.exact_scores} />
         </div>
       )}
 

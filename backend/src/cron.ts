@@ -7,7 +7,7 @@ const WC_SEASON = 2026;
 
 // TheSportsDB league ID for WC 2026
 const SPORTSDB_LEAGUE_ID = '4429';
-const SPORTSDB_SEASON = '2025-2026';
+const SPORTSDB_SEASON = '2026';
 
 let liveRunning = false;
 let dailyRunning = false;

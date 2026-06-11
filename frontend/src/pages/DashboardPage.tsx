@@ -93,7 +93,7 @@ export default function DashboardPage() {
           {t('dashboard.eyebrow')}
         </p>
         <h1 className="font-heading font-black text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#111111] mb-3">
-          {t('dashboard.welcome')}{' '}
+          {t(user?.created_at && Date.now() - new Date(user.created_at).getTime() < 24 * 60 * 60 * 1000 ? 'dashboard.welcomeNew' : 'dashboard.welcome')}{' '}
           <span className="text-[#8B1E1E]">{user?.username}</span>
         </h1>
         <p className="text-sm text-[#666666] mb-7 max-w-xl">

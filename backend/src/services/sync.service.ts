@@ -204,16 +204,23 @@ export class SyncService {
     return { scored, errors };
   }
 
-  /** Sync WC 2026 fixtures from TheSportsDB (free, no key required) */
+  /** Sync WC 2026 fixtures from TheSportsDB (free, no key required).
+   *  Uses eventsround.php because the free-tier eventsseason endpoint caps at 15 events. */
   async syncFromSportsDB(leagueId: string, season: string): Promise<SyncResult> {
     const result: SyncResult = { inserted: 0, updated: 0, scored: 0, errors: [] };
 
-    let events;
-    try {
-      events = await theSportsDBService.getSeasonEvents(leagueId, season);
-    } catch (err) {
-      result.errors.push(err instanceof Error ? err.message : 'TheSportsDB fetch failed');
-      return result;
+    // 1-3: group stage; the rest: TheSportsDB knockout round conventions (empty until scheduled)
+    const ROUNDS = [1, 2, 3, 4, 5, 6, 7, 125, 150, 160, 200];
+
+    const events = [];
+    for (const round of ROUNDS) {
+      try {
+        const roundEvents = await theSportsDBService.getRoundEvents(leagueId, round, season);
+        events.push(...roundEvents);
+        await new Promise((r) => setTimeout(r, 1500)); // free tier: 30 req/min
+      } catch (err) {
+        result.errors.push(`Round ${round}: ${err instanceof Error ? err.message : 'fetch failed'}`);
+      }
     }
 
     for (const e of events) {
@@ -233,8 +240,8 @@ export class SyncService {
             `INSERT INTO matches
                (external_id, home_team, away_team, home_team_logo, away_team_logo,
                 kickoff_time, status, home_score, away_score, tournament, match_day,
-                external_league_id, external_season, venue, referee)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+                external_league_id, external_season, venue, referee, group_name)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
             [
               e.idEvent,
               e.strHomeTeam,
@@ -251,6 +258,7 @@ export class SyncService {
               e.strSeason,
               e.strVenue || null,
               null,
+              e.strGroup || null,
             ]
           );
           result.inserted++;
@@ -259,9 +267,9 @@ export class SyncService {
           await pool.query(
             `UPDATE matches
              SET status = $1, home_score = $2, away_score = $3,
-                 home_team_logo = $4, away_team_logo = $5, kickoff_time = $6
-             WHERE external_id = $7`,
-            [status, homeScore, awayScore, e.strHomeTeamBadge, e.strAwayTeamBadge, kickoff.toISOString(), e.idEvent]
+                 home_team_logo = $4, away_team_logo = $5, kickoff_time = $6, group_name = $7
+             WHERE external_id = $8`,
+            [status, homeScore, awayScore, e.strHomeTeamBadge, e.strAwayTeamBadge, kickoff.toISOString(), e.strGroup || null, e.idEvent]
           );
           result.updated++;
 

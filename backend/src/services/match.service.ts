@@ -69,6 +69,84 @@ export class MatchService {
     return result.rows[0];
   }
 
+  /** Compute group standings from our own match results (shaped like API-Football standings) */
+  async getStandings() {
+    const result = await pool.query(
+      `SELECT home_team, away_team, home_team_logo, away_team_logo,
+              home_score, away_score, status, group_name, kickoff_time
+       FROM matches
+       WHERE group_name IS NOT NULL
+       ORDER BY kickoff_time ASC`
+    );
+
+    interface TeamRow {
+      name: string; logo: string; group: string;
+      played: number; win: number; draw: number; lose: number;
+      gf: number; ga: number; points: number; form: string[];
+    }
+    const teams = new Map<string, TeamRow>();
+
+    const ensure = (name: string, logo: string, group: string): TeamRow => {
+      let t = teams.get(name);
+      if (!t) {
+        t = { name, logo, group, played: 0, win: 0, draw: 0, lose: 0, gf: 0, ga: 0, points: 0, form: [] };
+        teams.set(name, t);
+      }
+      return t;
+    };
+
+    for (const m of result.rows) {
+      const home = ensure(m.home_team, m.home_team_logo, m.group_name);
+      const away = ensure(m.away_team, m.away_team_logo, m.group_name);
+      if (m.status !== 'finished' || m.home_score === null || m.away_score === null) continue;
+
+      home.played++; away.played++;
+      home.gf += m.home_score; home.ga += m.away_score;
+      away.gf += m.away_score; away.ga += m.home_score;
+
+      if (m.home_score > m.away_score) {
+        home.win++; home.points += 3; home.form.push('W');
+        away.lose++; away.form.push('L');
+      } else if (m.home_score < m.away_score) {
+        away.win++; away.points += 3; away.form.push('W');
+        home.lose++; home.form.push('L');
+      } else {
+        home.draw++; home.points++; home.form.push('D');
+        away.draw++; away.points++; away.form.push('D');
+      }
+    }
+
+    const groups = new Map<string, TeamRow[]>();
+    for (const t of teams.values()) {
+      if (!groups.has(t.group)) groups.set(t.group, []);
+      groups.get(t.group)!.push(t);
+    }
+
+    let teamId = 1;
+    return [...groups.keys()].sort().map((g) =>
+      groups.get(g)!
+        .sort((a, b) =>
+          b.points - a.points ||
+          (b.gf - b.ga) - (a.gf - a.ga) ||
+          b.gf - a.gf ||
+          a.name.localeCompare(b.name)
+        )
+        .map((t, i) => ({
+          rank: i + 1,
+          team: { id: teamId++, name: t.name, logo: t.logo },
+          points: t.points,
+          goalsDiff: t.gf - t.ga,
+          group: `Group ${g}`,
+          form: t.form.slice(-5).join(''),
+          description: null,
+          all: {
+            played: t.played, win: t.win, draw: t.draw, lose: t.lose,
+            goals: { for: t.gf, against: t.ga },
+          },
+        }))
+    );
+  }
+
   async updateResult(id: string, homeScore: number, awayScore: number) {
     const result = await pool.query<Match>(
       `UPDATE matches SET home_score = $1, away_score = $2, status = 'finished'

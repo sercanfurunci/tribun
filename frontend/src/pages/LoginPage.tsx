@@ -20,7 +20,8 @@ export default function LoginPage() {
     mutationFn: () => authApi.login(email, password),
     onSuccess: ({ data }) => {
       setAuth(data.user, data.token);
-      toast.success(t('auth.welcomeBack', { name: data.user.username }));
+      const isNewUser = Date.now() - new Date(data.user.created_at).getTime() < 24 * 60 * 60 * 1000;
+      toast.success(t(isNewUser ? 'auth.welcome' : 'auth.welcomeBack', { name: data.user.username }));
       navigate('/dashboard');
     },
     onError: () => toast.error(t('auth.invalidCredentials')),

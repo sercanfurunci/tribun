@@ -1,7 +1,9 @@
 import api from './api';
 import { Match } from '../types';
+import { Standing } from './football';
 
 export const matchesApi = {
+  getStandings: () => api.get<{ standings: Standing[][] }>('/matches/standings'),
   getUpcoming: () => api.get<{ matches: Match[] }>('/matches/upcoming'),
   getFinished: (limit = 20, offset = 0) =>
     api.get<{ matches: Match[] }>(`/matches/finished?limit=${limit}&offset=${offset}`),
