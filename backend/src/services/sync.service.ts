@@ -136,10 +136,10 @@ export class SyncService {
     const result: SyncResult = { inserted: 0, updated: 0, scored: 0, errors: [] };
 
     const candidates = await pool.query(
-      `SELECT id, external_id FROM matches
+      `SELECT id, external_id, kickoff_time FROM matches
        WHERE status IN ('scheduled', 'live')
          AND kickoff_time <= NOW() + interval '10 minutes'
-         AND kickoff_time >= NOW() - interval '5 hours'`
+         AND kickoff_time >= NOW() - interval '8 hours'`
     );
 
     for (const row of candidates.rows) {
@@ -147,7 +147,13 @@ export class SyncService {
         const e = await theSportsDBService.getEventById(row.external_id);
         if (!e) continue;
 
-        const status = theSportsDBService.mapStatus(e.strStatus, e.strPostponed);
+        let status = theSportsDBService.mapStatus(e.strStatus, e.strPostponed);
+
+        // TheSportsDB free tier can lag on FT status; no match runs past 3h after kickoff
+        const hoursSinceKickoff = (Date.now() - new Date(row.kickoff_time).getTime()) / 3_600_000;
+        if (status === 'live' && hoursSinceKickoff > 3) {
+          status = 'finished';
+        }
         const homeScore = e.intHomeScore !== null ? parseInt(e.intHomeScore) : null;
         const awayScore = e.intAwayScore !== null ? parseInt(e.intAwayScore) : null;
 
