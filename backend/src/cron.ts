@@ -16,9 +16,16 @@ async function syncLiveAndScore() {
   if (liveRunning) return; // skip if previous run still going
   liveRunning = true;
   try {
-    const live = await syncService.syncLive(WC_LEAGUE_ID);
-    if (live.updated > 0 || live.errors.length > 0) {
-      console.log(`[cron] live sync: ${live.updated} updated, ${live.errors.length} errors`);
+    if (process.env.FOOTBALL_API_KEY) {
+      const live = await syncService.syncLive(WC_LEAGUE_ID);
+      if (live.updated > 0 || live.errors.length > 0) {
+        console.log(`[cron] live sync: ${live.updated} updated, ${live.errors.length} errors`);
+      }
+    }
+
+    const sdbLive = await syncService.syncLiveFromSportsDB();
+    if (sdbLive.updated > 0 || sdbLive.errors.length > 0) {
+      console.log(`[cron] sportsdb live sync: ${sdbLive.updated} updated, ${sdbLive.scored} scored, ${sdbLive.errors.length} errors`);
     }
 
     const { scored, errors } = await syncService.scoreAllPending();

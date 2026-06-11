@@ -131,6 +131,48 @@ export class SyncService {
     return result;
   }
 
+  /** Update status/scores for matches around kickoff using TheSportsDB — lightweight, call frequently */
+  async syncLiveFromSportsDB(): Promise<SyncResult> {
+    const result: SyncResult = { inserted: 0, updated: 0, scored: 0, errors: [] };
+
+    const candidates = await pool.query(
+      `SELECT id, external_id FROM matches
+       WHERE status IN ('scheduled', 'live')
+         AND kickoff_time <= NOW() + interval '10 minutes'
+         AND kickoff_time >= NOW() - interval '5 hours'`
+    );
+
+    for (const row of candidates.rows) {
+      try {
+        const e = await theSportsDBService.getEventById(row.external_id);
+        if (!e) continue;
+
+        const status = theSportsDBService.mapStatus(e.strStatus, e.strPostponed);
+        const homeScore = e.intHomeScore !== null ? parseInt(e.intHomeScore) : null;
+        const awayScore = e.intAwayScore !== null ? parseInt(e.intAwayScore) : null;
+
+        await pool.query(
+          `UPDATE matches SET status = $1, home_score = $2, away_score = $3 WHERE id = $4`,
+          [status, homeScore, awayScore, row.id]
+        );
+        result.updated++;
+
+        if (status === 'finished' && homeScore !== null && awayScore !== null) {
+          try {
+            await predictionService.scoreFinishedMatch(row.id);
+            result.scored++;
+          } catch (scoreErr) {
+            result.errors.push(`Scoring failed for match ${row.id}: ${scoreErr}`);
+          }
+        }
+      } catch (err) {
+        result.errors.push(`Live update ${row.external_id}: ${err instanceof Error ? err.message : err}`);
+      }
+    }
+
+    return result;
+  }
+
   /** Score all finished matches that haven't been scored yet */
   async scoreAllPending(): Promise<{ scored: number; errors: string[] }> {
     const errors: string[] = [];

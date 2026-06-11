@@ -159,6 +159,13 @@ export class TheSportsDBService {
     return res.data.results ?? [];
   }
 
+  async getEventById(eventId: string): Promise<SportsDBEvent | null> {
+    const res = await client.get<{ events: SportsDBEvent[] | null }>(
+      `/lookupevent.php?id=${eventId}`
+    );
+    return res.data.events?.[0] ?? null;
+  }
+
   async getEventTimeline(eventId: string): Promise<SportsDBTimelineEvent[]> {
     const res = await client.get<{ timeline: SportsDBTimelineEvent[] | null }>(
       `/lookuptimeline.php?id=${eventId}`
