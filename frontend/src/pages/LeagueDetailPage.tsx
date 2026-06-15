@@ -13,6 +13,7 @@ import { MatchCard } from '../components/features/MatchCard';
 import { Badge } from '../components/ui/Badge';
 import { StatCard } from '../components/ui/StatCard';
 import { Spinner } from '../components/ui/Spinner';
+import { Modal } from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import { useAuthStore } from '../store/auth';
 import { useLanguageStore, useT } from '../store/language';
@@ -22,13 +23,6 @@ import { formatTeamName } from '../lib/matchDisplay';
 type Tab = 'leaderboard' | 'matches' | 'members';
 type MatchSubTab = 'upcoming' | 'past';
 
-interface MemberPredictionsModalProps {
-  userId: string;
-  username: string;
-  leagueId: string;
-  onClose: () => void;
-}
-
 function PredictionResultRow({ pred }: { pred: Prediction }) {
   const lang = useLanguageStore((s) => s.lang);
   const dateLocale = lang === 'tr' ? trLocale : enUS;
@@ -36,7 +30,7 @@ function PredictionResultRow({ pred }: { pred: Prediction }) {
   const awayTeam = pred.away_team ? formatTeamName(pred.away_team, lang) : '';
 
   return (
-    <div className="flex items-center gap-3 px-5 py-3 border-b border-[#F2EFE9] last:border-0">
+    <div className="flex items-center gap-3 py-3 border-b border-[#F2EFE9] last:border-0">
       <div className="flex-1 min-w-0">
         <p className="text-xs text-[#999390] mb-0.5">
           {pred.kickoff_time ? format(new Date(pred.kickoff_time), 'dd MMM yyyy', { locale: dateLocale }) : ''}
@@ -63,56 +57,16 @@ function PredictionResultRow({ pred }: { pred: Prediction }) {
   );
 }
 
-function MemberPredictionsModal({ userId, username, leagueId, onClose }: MemberPredictionsModalProps) {
+function MemberPredictionsModalContent({ userId, leagueId }: { userId: string; leagueId: string }) {
   const t = useT();
   const { data, isLoading } = useQuery({
     queryKey: ['predictions', 'user', userId, leagueId],
     queryFn: () => predictionsApi.getUserFinished(userId, leagueId),
   });
-
   const predictions = data?.data.predictions ?? [];
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/40" />
-      <div
-        className="relative bg-white w-full sm:max-w-md sm:rounded-xl overflow-hidden shadow-2xl max-h-[80vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#E8E4DE]">
-          <div className="flex items-center gap-3">
-            <div className="size-9 rounded-full bg-[#8B1E1E] flex items-center justify-center text-sm font-bold text-white font-heading">
-              {username[0].toUpperCase()}
-            </div>
-            <div>
-              <p className="font-heading font-black text-sm text-[#111111]">{username}</p>
-              <p className="text-xs text-[#999390]">{t('leagueDetail.memberPredictions')}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="size-8 flex items-center justify-center rounded-lg text-[#999390] hover:text-[#111111] hover:bg-[#F2EFE9] transition-colors"
-          >
-            <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="overflow-y-auto flex-1">
-          {isLoading ? (
-            <div className="flex justify-center py-8"><Spinner /></div>
-          ) : predictions.length === 0 ? (
-            <p className="text-center text-[#999390] text-sm py-8">{t('leagueDetail.noPredictions')}</p>
-          ) : (
-            predictions.map((pred) => <PredictionResultRow key={pred.id} pred={pred} />)
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  if (isLoading) return <div className="flex justify-center py-8"><Spinner /></div>;
+  if (predictions.length === 0) return <p className="text-center text-[#999390] text-sm py-4">{t('leagueDetail.noPredictions')}</p>;
+  return <>{predictions.map((pred) => <PredictionResultRow key={pred.id} pred={pred} />)}</>;
 }
 
 export default function LeagueDetailPage() {
@@ -356,14 +310,15 @@ export default function LeagueDetailPage() {
         </div>
       )}
 
-      {selectedMember && id && (
-        <MemberPredictionsModal
-          userId={selectedMember.id}
-          username={selectedMember.username}
-          leagueId={id}
-          onClose={() => setSelectedMember(null)}
-        />
-      )}
+      <Modal
+        isOpen={!!selectedMember}
+        onClose={() => setSelectedMember(null)}
+        title={selectedMember ? `${selectedMember.username} — ${t('leagueDetail.memberPredictions')}` : ''}
+      >
+        {selectedMember && id && (
+          <MemberPredictionsModalContent userId={selectedMember.id} leagueId={id} />
+        )}
+      </Modal>
     </div>
   );
 }
