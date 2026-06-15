@@ -52,6 +52,26 @@ export async function getMatchPredictions(req: AuthenticatedRequest, res: Respon
   }
 }
 
+export async function getOtherUserPredictions(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const { userId } = req.params;
+    const { leagueId } = req.query;
+    if (!leagueId) {
+      res.status(400).json({ error: 'leagueId is required' });
+      return;
+    }
+    const predictions = await predictionService.getOtherUserPredictions(
+      userId,
+      leagueId as string,
+      req.user!.id
+    );
+    res.json({ predictions });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch predictions';
+    res.status(403).json({ error: message });
+  }
+}
+
 export async function getUserStats(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { leagueId } = req.query;

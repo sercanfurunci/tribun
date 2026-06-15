@@ -103,6 +103,26 @@ export class PredictionService {
     }
   }
 
+  async getOtherUserPredictions(targetUserId: string, leagueId: string, requestingUserId: string) {
+    const memberCheck = await pool.query(
+      'SELECT id FROM league_members WHERE league_id = $1 AND user_id = $2',
+      [leagueId, requestingUserId]
+    );
+    if (memberCheck.rows.length === 0) throw new Error('Not a member of this league');
+
+    const result = await pool.query(
+      `SELECT p.*, m.home_team, m.away_team, m.kickoff_time, m.status,
+              m.home_score, m.away_score, m.tournament, m.match_day,
+              m.home_team_logo, m.away_team_logo
+       FROM predictions p
+       JOIN matches m ON p.match_id = m.id
+       WHERE p.user_id = $1 AND p.league_id = $2 AND m.status = 'finished'
+       ORDER BY m.kickoff_time DESC`,
+      [targetUserId, leagueId]
+    );
+    return result.rows;
+  }
+
   async getUserStats(userId: string, leagueId?: string) {
     let query = `
       SELECT

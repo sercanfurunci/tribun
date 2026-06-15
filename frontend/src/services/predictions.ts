@@ -13,6 +13,9 @@ export const predictionsApi = {
   getForMatch: (matchId: string, leagueId: string) =>
     api.get<{ predictions: Prediction[] }>(`/predictions/match/${matchId}?leagueId=${leagueId}`),
 
+  getUserFinished: (userId: string, leagueId: string) =>
+    api.get<{ predictions: Prediction[] }>(`/predictions/user/${userId}?leagueId=${leagueId}`),
+
   getStats: (leagueId?: string) =>
     api.get<{ stats: UserStats }>(`/predictions/stats${leagueId ? `?leagueId=${leagueId}` : ''}`),
 };
